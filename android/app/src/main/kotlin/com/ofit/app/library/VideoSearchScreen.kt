@@ -1,5 +1,6 @@
 package com.ofit.app.library
 
+import androidx.compose.foundation.background
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -61,6 +62,8 @@ fun VideoSearchScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     initialQuery: String = "",
+    hasOwnKey: Boolean = false,
+    onAddKey: () -> Unit = {},
 ) {
     var query by rememberSaveable(initialQuery) { mutableStateOf(initialQuery) }
 
@@ -71,6 +74,26 @@ fun VideoSearchScreen(
             .padding(16.dp),
     ) {
         HeaderBar(title = "Find a running video", onBack = onBack)
+        // Bring your own key: where people need it, a one-tap way to set it up.
+        androidx.compose.foundation.layout.Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)
+                .clip(androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f))
+                .padding(horizontal = 16.dp, vertical = 6.dp),
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+        ) {
+            Text(
+                if (hasOwnKey) "Making workouts uses your own Gemini key."
+                else "Making a workout uses Google Gemini. Add your own free key for no daily limit.",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f),
+            )
+            androidx.compose.material3.TextButton(onClick = onAddKey) {
+                Text(if (hasOwnKey) "Manage key" else "Get a free key")
+            }
+        }
         Spacer(Modifier.height(8.dp))
 
         when (analysis) {

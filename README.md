@@ -16,6 +16,19 @@ It was built against a NordicTrack T 6.5 (console `I_TL`); other iFit consoles m
 - Profiles, themes, workout history, a browse screen, and a community workout library.
 - Turns a YouTube walking or running video into a workout (needs the backend in `backend/`).
 
+## Use your own Gemini key (optional, free)
+
+Making a workout from a YouTube video uses Google's Gemini model. The shared service has a daily limit;
+with your own key there is no OpenFit limit and Google's free tier covers normal use.
+
+1. Open **[Google AI Studio → API keys](https://aistudio.google.com/app/apikey)** and sign in with your
+   Google account.
+2. Tap **Create API key** (pick the default project if asked) and copy the key. It starts with `AIza`.
+3. In OpenFit, open the menu → **Your Gemini key**, paste it and tap **Save key**.
+
+The key is stored encrypted on the tablet and sent only with video-to-workout requests; the server uses it
+for that request and never stores or logs it. Keep it private, and delete it in AI Studio any time.
+
 ## Repository layout
 
 | Path | What it is |

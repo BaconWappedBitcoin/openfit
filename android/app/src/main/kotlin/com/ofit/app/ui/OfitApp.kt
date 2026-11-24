@@ -98,6 +98,7 @@ fun OfitApp(
     val coachStatus by controller.coach.status.collectAsStateWithLifecycle()
     val coachNotice by controller.coach.notice.collectAsStateWithLifecycle()
     val coachLevel by controller.heart.coachLevel.collectAsStateWithLifecycle()
+    val hasGeminiKey by controller.secrets.hasGeminiKey.collectAsStateWithLifecycle()
     val profileList by controller.profiles.profiles.collectAsStateWithLifecycle()
     val currentProfile by controller.profiles.current.collectAsStateWithLifecycle()
 
@@ -105,6 +106,8 @@ fun OfitApp(
     var crash by remember { mutableStateOf(CrashLog.read(context)) }
     // A topic chosen on Browse, so the search screen opens with it filled in.
     var videoTopic by remember { mutableStateOf("") }
+    // Where the Gemini key screen was opened from, so Back returns there.
+    var aiKeyFrom by remember { mutableStateOf<AppScreen>(AppScreen.Home) }
     // Where the video search was opened from, so Back returns there (Browse, Home or My workouts).
     var searchFrom by remember { mutableStateOf<AppScreen>(AppScreen.Workouts) }
     fun openSearch() {
@@ -226,7 +229,10 @@ fun OfitApp(
 
             AppScreen.AiKey -> com.ofit.app.settings.AiKeyScreen(
                 secrets = controller.secrets,
-                onBack = { onNavigate(AppScreen.Home) },
+                onBack = {
+                    onNavigate(aiKeyFrom)
+                    aiKeyFrom = AppScreen.Home
+                },
             )
 
             AppScreen.QuickStart -> com.ofit.app.workout.QuickStartScreen(
@@ -345,6 +351,11 @@ fun OfitApp(
                 },
                 onDiscard = controller.library::clearAnalysis,
                 initialQuery = videoTopic,
+                hasOwnKey = hasGeminiKey,
+                onAddKey = {
+                    aiKeyFrom = AppScreen.VideoSearch
+                    onNavigate(AppScreen.AiKey)
+                },
                 onBack = {
                     controller.library.clearAnalysis()
                     onNavigate(searchFrom)

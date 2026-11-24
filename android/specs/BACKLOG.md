@@ -85,6 +85,7 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done (date) · `[you]` waiting 
 ## Lane 6 — Open-source release (spec 009)
 
 - [ ] Split handoff.md into public DEVELOPMENT.md + private git-ignored handoff.
+- [x] (2026-11-23, app + backend built, backend not deployed) Bring your own Gemini key (menu → Your Gemini key).
 - [ ] "Backend URL" setting so self-hosters point OpenFit at their own backend (all Pro features free).
 - [ ] Free daily allowance per install on the hosted analyze endpoint (until Pro exists).
 - [ ] Pro: payment method decision [you], then Pro key check on api/analyze.

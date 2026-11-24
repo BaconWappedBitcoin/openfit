@@ -95,11 +95,22 @@ fun AiKeyScreen(secrets: SecretStore, onBack: () -> Unit) {
                     Spacer(Modifier.height(4.dp))
                     Text("Replace it", style = MaterialTheme.typography.labelLarge)
                 }
-                Text("1. Get a free key from Google AI Studio (sign in with your Google account, then \"Create API key\").")
-                TextButton(onClick = { uri.openUri("https://aistudio.google.com/app/apikey") }) {
-                    Text("Open Google AI Studio")
+                Text("How to get a key (free, about a minute)", style = MaterialTheme.typography.titleMedium)
+                KeyStep("1", "Open Google AI Studio on this tablet or any computer:")
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Button(onClick = { uri.openUri(AI_STUDIO_URL) }) { Text("Open Google AI Studio") }
+                    Text("aistudio.google.com/app/apikey", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold)
                 }
-                Text("2. Paste it here:")
+                KeyStep("2", "Sign in with your Google account and accept Google's terms if asked.")
+                KeyStep("3", "Tap \"Create API key\". If it asks for a project, pick the default one or create one.")
+                KeyStep("4", "Copy the key. It starts with AIza and is 39 characters long.")
+                KeyStep("5", "Paste it below and tap Save key.")
+                Text(
+                    "Keep the key private, like a password. You can delete it any time in Google AI Studio, " +
+                        "and remove it here.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xB3FFFFFF),
+                )
                 OutlinedTextField(
                     value = input,
                     onValueChange = { input = it.trim(); error = null },
@@ -123,5 +134,22 @@ fun AiKeyScreen(secrets: SecretStore, onBack: () -> Unit) {
                 ) { Text("Save key") }
             }
         }
+    }
+}
+
+private const val AI_STUDIO_URL = "https://aistudio.google.com/app/apikey"
+
+@Composable
+private fun KeyStep(number: String, text: String) {
+    Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(
+            number,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF111111),
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.primary, androidx.compose.foundation.shape.CircleShape)
+                .padding(horizontal = 10.dp, vertical = 3.dp),
+        )
+        Text(text, style = MaterialTheme.typography.bodyLarge)
     }
 }
