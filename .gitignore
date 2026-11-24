@@ -1,0 +1,48 @@
+# OpenFit is open source. These must never be published:
+
+# Third-party app files and anything decompiled or extracted from them.
+re/
+*.apk
+*.xapk
+
+# Third-party catalogue data and downloaded media (not ours to redistribute).
+android/dist/catalogue/
+android/dist/media/
+
+# Secrets and per-machine settings.
+.env
+.env.*
+!.env.example
+local.properties
+.vercel/
+*.keystore
+*.jks
+
+# Build output and caches.
+build/
+.gradle/
+.kotlin/
+node_modules/
+android/dist/generated/
+hs_err_pid*.log
+*.log
+.idea/
+*.iml
+.DS_Store
+
+# Private working notes (device serial, tablet address, session log): not published.
+handoff.md
+
+# Local Claude Code settings.
+.claude/
+private/
+
+# Local agent tooling.
+.minimax/
+android/.minimax/
+
+# Build outputs, generated programs and anything derived from third-party content.
+android/dist/
+
+# Old folder name (left empty by a locked rename).
+*-control/

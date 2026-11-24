@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <!--
+      The location permission is only needed for Bluetooth scanning on Android 11 and below. On
+      Android 12 and above the Bluetooth permissions are enough, and asking for location there
+      would be a permission the user has no reason to grant. Android 12 also requires the coarse
+      permission to be declared alongside the fine one.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+</manifest>

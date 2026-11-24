@@ -1,0 +1,7 @@
+{
+  "name": "Too fast to be allowed",
+  "steps": [
+    { "speedKph": 4.0, "inclinePercent": 0.0, "durationSeconds": 120 },
+    { "speedKph": 16.0, "inclinePercent": 14.0, "durationSeconds": 60 }
+  ]
+}

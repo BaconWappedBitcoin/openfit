@@ -1,0 +1,10 @@
+{
+  "name": "Warm up and settle",
+  "steps": [
+    { "speedKph": 3.0, "inclinePercent": 0.0, "durationSeconds": 120 },
+    { "speedKph": 6.0, "inclinePercent": 1.0, "durationSeconds": 180 },
+    { "speedKph": 8.0, "inclinePercent": 2.0, "durationSeconds": 300 },
+    { "speedKph": 5.0, "inclinePercent": 0.0, "durationSeconds": 120 },
+    { "speedKph": 0.0, "inclinePercent": 0.0, "durationSeconds": 60 }
+  ]
+}

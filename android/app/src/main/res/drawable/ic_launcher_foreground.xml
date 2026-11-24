@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The launcher glyph: a treadmill in side view - deck, slanted upright, console, handle.
+  Drawn on the 108x108 adaptive-icon grid; the content stays inside the central 72x72
+  safe zone so no launcher mask can cut it off.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- deck -->
+    <path
+        android:fillColor="#E8F1F8"
+        android:pathData="M24,68 L74,68 L74,75 L24,75 Z" />
+
+    <!-- rear roller -->
+    <path
+        android:fillColor="#7FD3F7"
+        android:pathData="M64,58 L74,58 L74,68 L64,68 Z" />
+
+    <!-- upright, leaning forward -->
+    <path
+        android:fillColor="#E8F1F8"
+        android:pathData="M71,68 L77,68 L85,36 L79,36 Z" />
+
+    <!-- console -->
+    <path
+        android:fillColor="#7FD3F7"
+        android:pathData="M68,24 L90,24 L90,36 L68,36 Z" />
+
+    <!-- handle -->
+    <path
+        android:fillColor="#E8F1F8"
+        android:pathData="M50,30 L72,30 L72,35 L50,35 Z" />
+</vector>
