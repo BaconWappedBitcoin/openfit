@@ -50,6 +50,8 @@ class LibraryException(message: String) : Exception(message)
 class LibraryApi(
     private val installId: () -> String,
     private val baseUrl: String = DEFAULT_BASE_URL,
+    /** The user's own Gemini key, if they added one: sent only with analyses. */
+    private val geminiKey: () -> String? = { null },
 ) {
 
     suspend fun search(query: String): List<VideoHit> {
@@ -66,7 +68,13 @@ class LibraryApi(
 
     /** Ask the server to watch the video and write a workout. Takes up to a few minutes. */
     suspend fun analyze(videoId: String): Analysis {
-        val json = request("POST", "/api/analyze", JSONObject().put("videoId", videoId), readTimeoutMillis = 330_000)
+        val json = request(
+            "POST",
+            "/api/analyze",
+            JSONObject().put("videoId", videoId),
+            readTimeoutMillis = 330_000,
+            extraHeaders = geminiKey()?.let { mapOf("x-gemini-key" to it) } ?: emptyMap(),
+        )
         return Analysis(
             program = parseProgram(json.getJSONObject("program")),
             videoId = videoId,
@@ -112,6 +120,7 @@ class LibraryApi(
         path: String,
         body: JSONObject? = null,
         readTimeoutMillis: Int = 30_000,
+        extraHeaders: Map<String, String> = emptyMap(),
     ): JSONObject = withContext(Dispatchers.IO) {
         val connection = URL(baseUrl + path).openConnection() as HttpURLConnection
         try {
@@ -120,6 +129,7 @@ class LibraryApi(
             connection.readTimeout = readTimeoutMillis
             connection.setRequestProperty("Accept", "application/json")
             connection.setRequestProperty("x-install-id", installId())
+            extraHeaders.forEach { (name, value) -> connection.setRequestProperty(name, value) }
             if (body != null) {
                 connection.doOutput = true
                 connection.setRequestProperty("Content-Type", "application/json")

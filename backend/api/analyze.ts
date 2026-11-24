@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { allow, cacheAnalysis, cachedAnalysis } from "../lib/store.js";
-import { clientIp, env, fail, method, readBody, serverError } from "../lib/http.js";
+import { clientIp, env, fail, method, readBody, serverError, userGeminiKey } from "../lib/http.js";
 import { VIDEO_ID, videoDetails } from "../lib/youtube.js";
 import { analyseVideo } from "../lib/gemini.js";
 import { buildProgram } from "../lib/build.js";
@@ -29,13 +29,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (info.durationSeconds < MIN_SECONDS) return fail(res, 422, "video is too short to make a workout");
     if (info.durationSeconds > MAX_SECONDS) return fail(res, 422, "video is longer than 60 minutes");
 
+    // Bring your own key: the user's Gemini account pays, so the server's daily cap does not apply.
+    // A header that is present but malformed is refused rather than silently using the server key.
+    const ownKey = userGeminiKey(req);
+    if (req.headers["x-gemini-key"] && !ownKey) return fail(res, 400, "that does not look like a Gemini API key");
+
     let readings = await cachedAnalysis(videoId);
     if (!readings) {
       // Only an uncached analysis costs money, so only that is limited.
-      if (!(await allow("analyze", clientIp(req), 5, 3600))) return fail(res, 429, "too many analyses, try again later");
-      if (!(await allow("analyze-day", "all", DAILY_CAP, 86400))) return fail(res, 429, "the daily analysis limit is used up");
+      if (!(await allow("analyze", clientIp(req), ownKey ? 30 : 5, 3600))) return fail(res, 429, "too many analyses, try again later");
+      if (!ownKey && !(await allow("analyze-day", "all", DAILY_CAP, 86400))) {
+        return fail(res, 429, "the daily analysis limit is used up; add your own Gemini key in OpenFit to keep going");
+      }
       readings = await analyseVideo(
-        env("GEMINI_API_KEY"),
+        ownKey ?? env("GEMINI_API_KEY"),
         process.env.GEMINI_MODEL ?? "gemini-3.5-flash",
         `https://www.youtube.com/watch?v=${videoId}`,
         info.durationSeconds,

@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Search
@@ -122,6 +123,7 @@ fun AppDrawerContent(
             Item("Heart-rate monitor", Icons.Filled.Favorite, current == AppScreen.HeartRate) { onGo(AppScreen.HeartRate) }
             Item("Profiles", Icons.Filled.People, current == AppScreen.Profiles) { onGo(AppScreen.Profiles) }
 
+            Item("Your Gemini key", Icons.Filled.Key, current == AppScreen.AiKey) { onGo(AppScreen.AiKey) }
             Item("About & legal", Icons.Filled.Info, current == AppScreen.Legal) { onGo(AppScreen.Legal) }
 
             Section("Settings")

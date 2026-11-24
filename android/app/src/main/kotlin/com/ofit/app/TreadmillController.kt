@@ -132,9 +132,12 @@ class TreadmillController(context: Context) {
         }
     }
 
+    /** The user's own API keys, encrypted on this tablet. */
+    val secrets = com.ofit.app.settings.SecretStore(appContext)
+
     /** Video search, video-to-workout, and the community library. */
     val library = com.ofit.app.library.LibraryManager(
-        api = com.ofit.app.library.LibraryApi(installId = { settings.installId }),
+        api = com.ofit.app.library.LibraryApi(installId = { settings.installId }, geminiKey = { secrets.geminiKey() }),
         workouts = workouts,
         onMessage = { message -> _message.value = message },
     )

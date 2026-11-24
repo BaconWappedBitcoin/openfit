@@ -32,6 +32,9 @@ sealed interface AppScreen {
     /** About, licence and the safety / legal notice. */
     data object Legal : AppScreen
 
+    /** The user's own Gemini key for video-to-workout. */
+    data object AiKey : AppScreen
+
     /** Pick a speed, incline and goal and go. */
     data object QuickStart : AppScreen
 

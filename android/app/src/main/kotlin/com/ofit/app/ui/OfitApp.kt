@@ -127,6 +127,7 @@ fun OfitApp(
             AppScreen.ManualControl -> onNavigate(AppScreen.Home)
             AppScreen.Legal -> onNavigate(AppScreen.Home)
             AppScreen.QuickStart -> onNavigate(AppScreen.Home)
+            AppScreen.AiKey -> onNavigate(AppScreen.Home)
             AppScreen.Profiles -> onNavigate(AppScreen.Home)
             AppScreen.Browse -> onNavigate(AppScreen.Home)
             AppScreen.VideoSearch -> {
@@ -221,6 +222,11 @@ fun OfitApp(
                         onNavigate(destination)
                     }
                 },
+            )
+
+            AppScreen.AiKey -> com.ofit.app.settings.AiKeyScreen(
+                secrets = controller.secrets,
+                onBack = { onNavigate(AppScreen.Home) },
             )
 
             AppScreen.QuickStart -> com.ofit.app.workout.QuickStartScreen(

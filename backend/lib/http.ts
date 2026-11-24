@@ -47,3 +47,17 @@ export function env(name: string): string {
   if (!v) throw new Error(`${name} is not set`);
   return v;
 }
+
+/**
+ * A user's own Gemini API key, sent with an analysis so that it runs on their account instead of
+ * the server's ("bring your own key"). Returned only when it looks like a Google API key; it is
+ * never stored or logged.
+ */
+export function userGeminiKey(req: VercelRequest): string | undefined {
+  const raw = req.headers["x-gemini-key"];
+  const key = (Array.isArray(raw) ? raw[0] : raw)?.trim();
+  return key && USER_KEY.test(key) ? key : undefined;
+}
+
+/** Google API keys: "AIza" followed by 35 URL-safe characters. */
+export const USER_KEY = /^AIza[0-9A-Za-z_-]{35}$/;
