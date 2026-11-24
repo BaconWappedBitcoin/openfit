@@ -51,6 +51,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.runtime.CompositionLocalProvider
 import com.ofit.app.workout.AppScreen
 import com.ofit.app.workout.WorkoutEditorScreen
+import com.ofit.app.workout.VisualEditorScreen
 import com.ofit.app.workout.WorkoutListScreen
 import com.ofit.app.workout.WorkoutRunScreen
 import com.ofit.protocol.ConnectionState
@@ -325,8 +326,27 @@ fun OfitApp(
 
             AppScreen.Workouts -> WorkoutListScreen(
                 workouts = workouts,
-                onNew = { onNavigate(AppScreen.Editor(null)) },
-                onEdit = { saved -> onNavigate(AppScreen.Editor(saved)) },
+                onNew = {
+                    onNavigate(
+                        AppScreen.VisualEditor(
+                            savedId = null,
+                            name = "New workout",
+                            steps = com.ofit.protocol.ProgramEdit.forVideo(20 * 60, 4.8, 0.0),
+                            videoId = null,
+                        ),
+                    )
+                },
+                youtubeIdFor = controller.workouts::youtubeIdFor,
+                onEdit = { saved ->
+                    onNavigate(
+                        AppScreen.VisualEditor(
+                            savedId = saved.id,
+                            name = saved.program.name,
+                            steps = saved.program.steps,
+                            videoId = controller.workouts.youtubeIdFor(saved.id),
+                        ),
+                    )
+                },
                 onDelete = { saved -> controller.workouts.delete(saved.id) },
                 onRun = { saved ->
                     controller.workouts.clearFinished()
@@ -352,6 +372,17 @@ fun OfitApp(
                 onDiscard = controller.library::clearAnalysis,
                 initialQuery = videoTopic,
                 hasOwnKey = hasGeminiKey,
+                onMakeManual = { video ->
+                    controller.library.clearAnalysis()
+                    onNavigate(
+                        AppScreen.VisualEditor(
+                            savedId = null,
+                            name = video.title.take(60),
+                            steps = com.ofit.protocol.ProgramEdit.forVideo(video.durationSeconds, 4.8, 0.0),
+                            videoId = video.id,
+                        ),
+                    )
+                },
                 onAddKey = {
                     aiKeyFrom = AppScreen.VideoSearch
                     onNavigate(AppScreen.AiKey)
@@ -380,6 +411,18 @@ fun OfitApp(
                     onNavigate(AppScreen.Workouts)
                 },
                 onCancel = { onNavigate(AppScreen.Workouts) },
+            )
+
+            is AppScreen.VisualEditor -> VisualEditorScreen(
+                initialName = screen.name,
+                initialSteps = screen.steps,
+                videoId = screen.videoId,
+                limits = limits,
+                onSave = { program ->
+                    controller.workouts.saveEdited(screen.savedId, program, screen.videoId)
+                    onNavigate(AppScreen.Workouts)
+                },
+                onBack = { onNavigate(AppScreen.Workouts) },
             )
 
             is AppScreen.Run -> {

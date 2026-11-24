@@ -34,6 +34,10 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done (date) · `[you]` waiting 
 
 - [ ] Before Start, the workout screen's chart chip says "Last step" and "remaining" shows 0:00; show the first step's next and the total time.
 
+- [x] (2026-11-23) App locked to landscape (sensorLandscape).
+
+- [x] (2026-11-23, seen on tablet) My workouts redesigned: card grid, search, sort, delete confirmation; incline drawings stay in frame.
+
 ## Lane 2 — Home and navigation (spec 004, to write)
 
 - [x] (2026-11-23, seen on tablet) Home dashboard: treadmill status card, "Start where you left off", this week's totals, quick links;
@@ -43,7 +47,8 @@ Status: `[ ]` open · `[~]` in progress · `[x]` done (date) · `[you]` waiting 
 
 ## Lane 3 — Workouts (spec 005, to write)
 
-- [ ] Visual workout editor: steps on a speed/incline chart, drag to change.
+- [x] (2026-11-23, seen on tablet) Visual workout editor under the video: tap to seek, drag levels, drag step edges, split, delete, undo; "Make it myself" from video search (no AI).
+- [ ] Editor: zoom the timeline for long workouts with many steps; local video files in the editor.
 - [ ] Templates: intervals, hill climb, warm-up/cool-down, steady.
 - [ ] Duplicate / rename a workout.
 

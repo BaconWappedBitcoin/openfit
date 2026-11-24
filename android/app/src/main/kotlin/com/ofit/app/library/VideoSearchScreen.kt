@@ -64,6 +64,7 @@ fun VideoSearchScreen(
     initialQuery: String = "",
     hasOwnKey: Boolean = false,
     onAddKey: () -> Unit = {},
+    onMakeManual: (VideoHit) -> Unit = {},
 ) {
     var query by rememberSaveable(initialQuery) { mutableStateOf(initialQuery) }
 
@@ -174,8 +175,14 @@ fun VideoSearchScreen(
                             )
                             Spacer(Modifier.height(8.dp))
                             val tooShortOrLong = video.durationSeconds < 120 || video.durationSeconds > 3600
-                            Button(onClick = { onMakeWorkout(video) }, enabled = !tooShortOrLong) {
-                                Text(if (tooShortOrLong) "Needs 2 to 60 minutes" else "Make a workout")
+                            androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(onClick = { onMakeWorkout(video) }, enabled = !tooShortOrLong) {
+                                    Text(if (tooShortOrLong) "Needs 2 to 60 minutes" else "Make a workout (AI)")
+                                }
+                                // No AI: author it by hand on the timeline while the video plays.
+                                androidx.compose.material3.OutlinedButton(onClick = { onMakeManual(video) }) {
+                                    Text("Make it myself")
+                                }
                             }
                         }
                     }

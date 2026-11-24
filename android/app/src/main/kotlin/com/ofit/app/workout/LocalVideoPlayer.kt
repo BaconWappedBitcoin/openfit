@@ -46,8 +46,13 @@ fun LocalVideoPlayer(
     playing: Boolean,
     positionMillis: () -> Int = { 0 },
     modifier: Modifier = Modifier,
+    /** Bump to jump exactly to [positionMillis] now, even while paused (the editor's scrubbing). */
+    seekRequest: Int = 0,
 ) {
     val holder = remember { VideoHolder() }
+    androidx.compose.runtime.LaunchedEffect(seekRequest) {
+        if (seekRequest > 0) holder.seekExactly(positionMillis())
+    }
     val currentPlaying by rememberUpdatedState(playing)
     val currentPosition by rememberUpdatedState(positionMillis)
     val context = LocalContext.current
@@ -228,6 +233,13 @@ class VideoHolder {
         if (!ready) return
         val drift = kotlin.math.abs(mediaPlayer.currentPosition - millis)
         if (drift < MAX_DRIFT_MILLIS) return
+        mediaPlayer.seekTo(millis.toLong(), MediaPlayer.SEEK_CLOSEST)
+    }
+
+    /** Jump to an exact position, playing or not. */
+    fun seekExactly(millis: Int) {
+        val mediaPlayer = player ?: return
+        if (!ready) return
         mediaPlayer.seekTo(millis.toLong(), MediaPlayer.SEEK_CLOSEST)
     }
 

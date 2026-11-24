@@ -1,5 +1,22 @@
 package com.ofit.app.workout
 
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.grid.items as gridItems
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import com.ofit.app.ui.MenuButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -59,8 +76,14 @@ fun WorkoutListScreen(
     onShare: (SavedWorkout) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    youtubeIdFor: (String) -> String? = { null },
 ) {
     var confirmShare by remember { mutableStateOf<SavedWorkout?>(null) }
+    var confirmDelete by remember { mutableStateOf<SavedWorkout?>(null) }
+    var query by remember { mutableStateOf("") }
+    var sort by remember { mutableStateOf("Recent") }
+    val units = com.ofit.app.settings.LocalUnits.current
+    val accent = MaterialTheme.colorScheme.primary
 
     confirmShare?.let { saved ->
         AlertDialog(
@@ -73,102 +96,223 @@ fun WorkoutListScreen(
                         "name or anything else about you. It cannot be taken back from here.",
                 )
             },
-            confirmButton = {
-                Button(onClick = {
-                    confirmShare = null
-                    onShare(saved)
-                }) { Text("Share") }
-            },
+            confirmButton = { Button(onClick = { confirmShare = null; onShare(saved) }) { Text("Share") } },
             dismissButton = { TextButton(onClick = { confirmShare = null }) { Text("Cancel") } },
         )
     }
+    confirmDelete?.let { saved ->
+        AlertDialog(
+            onDismissRequest = { confirmDelete = null },
+            title = { Text("Delete \"${saved.program.name}\"?") },
+            text = { Text("It is removed from this tablet. Your history of runs is kept.") },
+            confirmButton = {
+                TextButton(onClick = { confirmDelete = null; onDelete(saved) }) { Text("Delete", color = Danger) }
+            },
+            dismissButton = { TextButton(onClick = { confirmDelete = null }) { Text("Keep") } },
+        )
+    }
+
+    val shown = workouts
+        .filter { query.isBlank() || it.program.name.contains(query.trim(), ignoreCase = true) }
+        .let { list ->
+            when (sort) {
+                "Name" -> list.sortedBy { it.program.name.lowercase() }
+                "Shortest" -> list.sortedBy { it.program.totalDurationSeconds }
+                "Longest" -> list.sortedByDescending { it.program.totalDurationSeconds }
+                else -> list.sortedByDescending { it.updatedAtMillis }
+            }
+        }
 
     Column(
         modifier = modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .statusBarsPadding()
             .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        HeaderBar(title = "Workouts", onBack = onBack)
-
-        Spacer(Modifier.height(12.dp))
-
-        Button(onClick = onNew, modifier = Modifier.fillMaxWidth()) {
-            Icon(Icons.Filled.Add, contentDescription = null)
-            Spacer(Modifier.height(4.dp))
-            Text("New workout")
+        // Header: title, count and the main actions, kept compact.
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            com.ofit.app.ui.MenuButton()
+            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
+            Column(Modifier.weight(1f)) {
+                Text("My workouts", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                Text(
+                    "${workouts.size} saved · ${formatClock(workouts.sumOf { it.program.totalDurationSeconds })} in all",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Muted,
+                )
+            }
+            Button(onClick = onNew) {
+                Icon(Icons.Filled.Add, contentDescription = null)
+                Spacer(Modifier.width(6.dp))
+                Text("New")
+            }
+            OutlinedButton(onClick = onFindVideo) {
+                Icon(Icons.Filled.Search, contentDescription = null)
+                Spacer(Modifier.width(6.dp))
+                Text("From a video")
+            }
+            OutlinedButton(onClick = onLibrary) {
+                Icon(Icons.Filled.Public, contentDescription = null)
+                Spacer(Modifier.width(6.dp))
+                Text("Community")
+            }
         }
 
-        Spacer(Modifier.height(8.dp))
-
-        Button(onClick = onFindVideo, modifier = Modifier.fillMaxWidth()) {
-            Icon(Icons.Filled.Search, contentDescription = null)
-            Spacer(Modifier.height(4.dp))
-            Text("Make a workout from a YouTube video")
+        // Search and sort.
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                placeholder = { Text("Search your workouts") },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                singleLine = true,
+                shape = RoundedCornerShape(14.dp),
+                modifier = Modifier.width(420.dp),
+            )
+            Spacer(Modifier.weight(1f))
+            listOf("Recent", "Name", "Shortest", "Longest").forEach { option ->
+                val on = option == sort
+                Text(
+                    option,
+                    color = if (on) Ink else Color.White,
+                    fontWeight = if (on) FontWeight.Bold else FontWeight.Medium,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(if (on) accent else Color(0x1AFFFFFF))
+                        .clickable { sort = option }
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                )
+            }
         }
-
-        Spacer(Modifier.height(8.dp))
-
-        OutlinedButton(onClick = onLibrary, modifier = Modifier.fillMaxWidth()) {
-            Icon(Icons.Filled.Public, contentDescription = null)
-            Spacer(Modifier.height(4.dp))
-            Text("Community workouts")
-        }
-
-
-        Spacer(Modifier.height(12.dp))
 
         if (workouts.isEmpty()) {
-            Text(
-                text = "No workouts yet. Create one and it will be saved on this phone.",
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            Column(
+                Modifier.fillMaxWidth().padding(top = 48.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                Text("No workouts yet", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                Text("Build one on the timeline, make one from a video, or save one from the community.")
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Button(onClick = onNew) { Text("New workout") }
+                    OutlinedButton(onClick = onFindVideo) { Text("From a video") }
+                }
+            }
+            return@Column
+        }
+        if (shown.isEmpty()) {
+            Text("Nothing matches \"$query\".", style = MaterialTheme.typography.bodyLarge)
             return@Column
         }
 
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(workouts, key = { it.id }) { saved ->
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text(
-                            text = saved.program.name,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Text(
-                            text = "${saved.program.steps.size} steps, " +
-                                "${formatClock(saved.program.totalDurationSeconds)}",
-                            style = MaterialTheme.typography.bodySmall,
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Button(onClick = { onRun(saved) }) {
-                                Icon(Icons.Filled.PlayArrow, contentDescription = null)
-                                Text("Run")
-                            }
-                            OutlinedButton(onClick = { onEdit(saved) }) {
-                                Icon(Icons.Filled.Edit, contentDescription = null)
-                                Text("Edit")
-                            }
-                            IconButton(onClick = { confirmShare = saved }) {
-                                Icon(
-                                    Icons.Filled.Share,
-                                    contentDescription = "Share ${saved.program.name} with the community",
-                                )
-                            }
-                            IconButton(onClick = { onDelete(saved) }) {
-                                Icon(
-                                    Icons.Filled.Delete,
-                                    contentDescription = "Remove ${saved.program.name}",
-                                )
-                            }
-                        }
-                    }
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 340.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(bottom = 24.dp),
+        ) {
+            gridItems(shown, key = { it.id }) { saved ->
+                WorkoutCard(
+                    saved = saved,
+                    videoId = youtubeIdFor(saved.id),
+                    speedText = { units.speedText(it) },
+                    onRun = { onRun(saved) },
+                    onEdit = { onEdit(saved) },
+                    onShare = { confirmShare = saved },
+                    onDelete = { confirmDelete = saved },
+                )
+            }
+        }
+    }
+}
+
+private val Danger = Color(0xFFF87171)
+private val Muted = Color(0x99FFFFFF)
+private val Ink = Color(0xFF111111)
+
+@Composable
+private fun WorkoutCard(
+    saved: SavedWorkout,
+    videoId: String?,
+    speedText: (Double) -> String,
+    onRun: () -> Unit,
+    onEdit: () -> Unit,
+    onShare: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    val p = saved.program
+    val accent = MaterialTheme.colorScheme.primary
+    Card(modifier = Modifier.fillMaxWidth().clickable(onClick = onRun), shape = RoundedCornerShape(18.dp)) {
+        Box(Modifier.fillMaxWidth().aspectRatio(16f / 9f)) {
+            com.ofit.app.browse.WorkoutArt(videoId, p.steps, accent, Modifier.fillMaxSize())
+            Badge(formatClock(p.totalDurationSeconds), Modifier.align(Alignment.BottomEnd))
+            if (videoId != null) {
+                Row(
+                    Modifier
+                        .align(Alignment.TopStart)
+                        .padding(10.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color(0xCC000000))
+                        .padding(horizontal = 8.dp, vertical = 3.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                    Text("Video", color = Color.White, fontWeight = FontWeight.SemiBold)
                 }
             }
         }
+        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(p.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            val maxSpeed = p.steps.maxOfOrNull { it.speedKph } ?: 0.0
+            val maxIncline = p.steps.maxOfOrNull { it.inclinePercent } ?: 0.0
+            Text(
+                "${p.steps.size} step${if (p.steps.size == 1) "" else "s"} · up to ${speedText(maxSpeed)} · ${"%.0f".format(maxIncline)} %",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xB3FFFFFF),
+            )
+            Spacer(Modifier.height(6.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = onRun, modifier = Modifier.weight(1f)) {
+                    Icon(Icons.Filled.PlayArrow, contentDescription = null)
+                    Spacer(Modifier.width(4.dp))
+                    Text("Start")
+                }
+                CardIcon(Icons.Filled.Edit, "Edit ${p.name}", onClick = onEdit)
+                CardIcon(Icons.Filled.Share, "Share ${p.name} with the community", onClick = onShare)
+                CardIcon(Icons.Filled.Delete, "Delete ${p.name}", danger = true, onClick = onDelete)
+            }
+        }
+    }
+}
+
+@Composable
+private fun Badge(text: String, modifier: Modifier) {
+    Text(
+        text,
+        color = Color.White,
+        fontWeight = FontWeight.Bold,
+        modifier = modifier
+            .padding(10.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color(0xCC000000))
+            .padding(horizontal = 8.dp, vertical = 3.dp),
+    )
+}
+
+/** A square icon button for a workout card. */
+@Composable
+private fun CardIcon(icon: ImageVector, description: String, danger: Boolean = false, onClick: () -> Unit) {
+    Box(
+        Modifier
+            .size(48.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0x1AFFFFFF))
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(icon, contentDescription = description, tint = if (danger) Danger else Color.White)
     }
 }
 

@@ -147,6 +147,20 @@ class WorkoutManager(
         }
     }
 
+    /**
+     * Save from the visual editor: overwrite [existingId] when editing, or save a new workout, and
+     * remember its YouTube video.
+     */
+    fun saveEdited(existingId: String?, program: WorkoutProgram, videoId: String?, onSaved: (SavedWorkout) -> Unit = {}) {
+        scope.launch {
+            val saved = if (existingId != null) repository.replace(existingId, program) else repository.save(program)
+            if (videoId != null) videoPrefs.edit().putString("yt:${saved.id}", videoId).apply()
+            refresh()
+            onMessage("Saved ${program.name}.")
+            onSaved(saved)
+        }
+    }
+
     /** Remove a program and refresh the list. */
     fun delete(id: String) {
         scope.launch {

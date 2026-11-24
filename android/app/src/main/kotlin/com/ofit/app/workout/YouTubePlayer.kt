@@ -37,6 +37,8 @@ fun YouTubePlayer(
     playing: Boolean,
     positionMillis: () -> Int = { 0 },
     modifier: Modifier = Modifier,
+    /** Bump to jump exactly to [positionMillis] now, even while paused (the editor's scrubbing). */
+    seekRequest: Int = 0,
 ) {
     val currentPosition by rememberUpdatedState(positionMillis)
     val currentPlaying by rememberUpdatedState(playing)
@@ -87,6 +89,10 @@ fun YouTubePlayer(
         }
     }
 
+    LaunchedEffect(seekRequest) {
+        if (seekRequest > 0) webView[0]?.evaluateJavascript("ofitSeek(${currentPosition() / 1000.0})", null)
+    }
+
     DisposableEffect(Unit) {
         onDispose {
             webView[0]?.destroy()
@@ -113,7 +119,8 @@ function ofitFit(){var el=document.getElementById('p');if(!el)return;
   el.style.width=cw+'px';el.style.height=ch+'px';el.style.left=((w-cw)/2)+'px';el.style.top=((h-ch)/2)+'px';}
 window.addEventListener('resize',ofitFit);
 function ofitPlaying(p){wantPlaying=p;if(!ready)return;if(p)player.playVideo();else player.pauseVideo();}
-function ofitSync(sec){if(!ready)return;if(Math.abs(player.getCurrentTime()-sec)>DRIFT)player.seekTo(sec,true);}</script>
+function ofitSync(sec){if(!ready)return;if(Math.abs(player.getCurrentTime()-sec)>DRIFT)player.seekTo(sec,true);}
+function ofitSeek(sec){if(!ready)return;player.seekTo(sec,true);}</script>
 <script src="https://www.youtube.com/iframe_api" onerror="console.log('iframe_api failed to load')"></script>
 <script>
 function onYouTubeIframeAPIReady(){console.log('api ready');ofitFit();

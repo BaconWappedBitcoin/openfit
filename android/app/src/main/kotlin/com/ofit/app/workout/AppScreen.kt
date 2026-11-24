@@ -47,6 +47,14 @@ sealed interface AppScreen {
     /** Writing a new workout, or changing one that is already saved. */
     data class Editor(val saved: SavedWorkout?) : AppScreen
 
+    /** The visual editor: a workout on a timeline under its video (savedId null = a new one). */
+    data class VisualEditor(
+        val savedId: String?,
+        val name: String,
+        val steps: List<com.ofit.protocol.WorkoutStep>,
+        val videoId: String?,
+    ) : AppScreen
+
     /** Running a workout. */
     data class Run(val saved: SavedWorkout) : AppScreen
 }

@@ -15,6 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -70,14 +71,18 @@ fun WorkoutArt(videoId: String?, steps: List<WorkoutStep>, accent: Color, modifi
 @Composable
 private fun ProfileArt(steps: List<WorkoutStep>, accent: Color, modifier: Modifier) {
     Canvas(
-        modifier.background(Brush.verticalGradient(listOf(Color(0xFF1C1C24), Color(0xFF0E0E12)))),
+        modifier
+            .clipToBounds()
+            .background(Brush.verticalGradient(listOf(Color(0xFF1C1C24), Color(0xFF0E0E12)))),
     ) {
         if (steps.isEmpty()) return@Canvas
         val total = steps.sumOf { it.durationSeconds }.coerceAtLeast(1)
+        // Downhill steps (negative incline) are scaled in too, so the drawing never leaves its frame.
         val maxIncline = (steps.maxOf { it.inclinePercent }).coerceAtLeast(1.0)
+        val minIncline = (steps.minOf { it.inclinePercent }).coerceAtMost(0.0)
         val top = size.height * 0.25f
         val bottom = size.height * 0.92f
-        fun y(p: Double) = (bottom - (bottom - top) * (p / maxIncline)).toFloat()
+        fun y(p: Double) = (bottom - (bottom - top) * ((p - minIncline) / (maxIncline - minIncline))).toFloat()
         val path = Path().apply { moveTo(0f, bottom) }
         var t = 0
         steps.forEach { step ->

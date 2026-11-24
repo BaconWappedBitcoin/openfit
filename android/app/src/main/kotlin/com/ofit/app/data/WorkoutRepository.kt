@@ -64,6 +64,13 @@ class WorkoutRepository(context: Context) {
         SavedWorkout(id = id, program = program, updatedAtMillis = file.lastModified())
     }
 
+    /** Overwrite the program saved under [id] (the visual editor's "save changes"). */
+    suspend fun replace(id: String, program: WorkoutProgram): SavedWorkout = withContext(Dispatchers.IO) {
+        val file = File(directory, "$id.json")
+        file.writeText(WorkoutCodec.encode(program))
+        SavedWorkout(id = id, program = program, updatedAtMillis = file.lastModified())
+    }
+
     /** Load one program, or nothing when it is not there. */
     suspend fun load(id: String): SavedWorkout? = withContext(Dispatchers.IO) {
         read(File(directory, "$id.json"))
