@@ -27,6 +27,67 @@ class SecretStore(context: Context) {
     private val _hasGeminiKey = MutableStateFlow(prefs.contains(KEY_GEMINI))
     val hasGeminiKey: StateFlow<Boolean> = _hasGeminiKey.asStateFlow()
 
+    private val _hasYouTubeKey = MutableStateFlow(prefs.contains(KEY_YOUTUBE))
+    val hasYouTubeKey: StateFlow<Boolean> = _hasYouTubeKey.asStateFlow()
+
+    /**
+     * Whether to use the hosted OpenFit server (on by default). Off, OpenFit needs no server at all:
+     * the tablet uses the keys here and reads the community library from the project's repository.
+     */
+    private val _useServer = MutableStateFlow(prefs.getBoolean(KEY_USE_SERVER, true))
+    val useServer: StateFlow<Boolean> = _useServer.asStateFlow()
+
+    fun setUseServer(on: Boolean) {
+        prefs.edit().putBoolean(KEY_USE_SERVER, on).apply()
+        _useServer.value = on
+    }
+
+    /** Which OpenFit server: the hosted one, or a self-hoster's own deployment of backend/. */
+    private val _serverUrl = MutableStateFlow(prefs.getString(KEY_SERVER_URL, null) ?: com.ofit.protocol.ServerUrl.DEFAULT)
+    val serverUrl: StateFlow<String> = _serverUrl.asStateFlow()
+
+    /** Sets the server address; false if it cannot be used. Null goes back to the hosted server. */
+    fun setServerUrl(input: String?): Boolean {
+        val url = if (input == null) com.ofit.protocol.ServerUrl.DEFAULT else com.ofit.protocol.ServerUrl.normalize(input) ?: return false
+        if (url == com.ofit.protocol.ServerUrl.DEFAULT) prefs.edit().remove(KEY_SERVER_URL).apply() else prefs.edit().putString(KEY_SERVER_URL, url).apply()
+        _serverUrl.value = url
+        return true
+    }
+
+    /** The user's own YouTube Data API key, or null. */
+    fun youtubeKey(): String? = open(KEY_YOUTUBE)
+
+    fun setYouTubeKey(key: String): Boolean {
+        val clean = key.trim()
+        if (!looksLikeGeminiKey(clean)) return false
+        seal(KEY_YOUTUBE, clean)
+        _hasYouTubeKey.value = true
+        return true
+    }
+
+    fun clearYouTubeKey() {
+        prefs.edit().remove(KEY_YOUTUBE).apply()
+        _hasYouTubeKey.value = false
+    }
+
+    private fun open(name: String): String? {
+        val stored = prefs.getString(name, null) ?: return null
+        return runCatching {
+            val bytes = Base64.decode(stored, Base64.NO_WRAP)
+            val iv = bytes.copyOfRange(0, IV_BYTES)
+            val cipher = Cipher.getInstance(TRANSFORMATION)
+            cipher.init(Cipher.DECRYPT_MODE, secretKey(), GCMParameterSpec(128, iv))
+            String(cipher.doFinal(bytes, IV_BYTES, bytes.size - IV_BYTES), Charsets.UTF_8)
+        }.getOrNull()
+    }
+
+    private fun seal(name: String, value: String) {
+        val cipher = Cipher.getInstance(TRANSFORMATION)
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey())
+        val sealed = cipher.iv + cipher.doFinal(value.toByteArray(Charsets.UTF_8))
+        prefs.edit().putString(name, Base64.encodeToString(sealed, Base64.NO_WRAP)).apply()
+    }
+
     /** The key, or null if none is saved or it cannot be decrypted (e.g. the keystore was reset). */
     fun geminiKey(): String? {
         val stored = prefs.getString(KEY_GEMINI, null) ?: return null
@@ -73,6 +134,9 @@ class SecretStore(context: Context) {
     companion object {
         private const val PREFS = "ofit_secrets"
         private const val KEY_GEMINI = "gemini_key"
+        private const val KEY_YOUTUBE = "youtube_key"
+        private const val KEY_USE_SERVER = "use_server"
+        private const val KEY_SERVER_URL = "server_url"
         private const val ALIAS = "openfit_secrets"
         private const val TRANSFORMATION = "AES/GCM/NoPadding"
         private const val IV_BYTES = 12

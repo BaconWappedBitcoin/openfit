@@ -1,5 +1,16 @@
 package com.ofit.app.ui
 
+import androidx.compose.material3.Icon
+
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
+
+import androidx.compose.ui.unit.sp
+
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.filled.Bluetooth
+import androidx.compose.material.icons.filled.BluetoothConnected
+
 import androidx.compose.material.icons.filled.Menu
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.size
@@ -30,6 +41,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -92,7 +104,12 @@ fun OfitApp(
     val libraryLoading by controller.library.loading.collectAsStateWithLifecycle()
     val libraryError by controller.library.libraryError.collectAsStateWithLifecycle()
     val heartRate by controller.heart.shown.collectAsStateWithLifecycle()
-    val heartSummary by controller.heart.summary.collectAsStateWithLifecycle()
+    val heartSummaryOnly by controller.heart.summary.collectAsStateWithLifecycle()
+    val estimatedCalories by controller.heart.calories.collectAsStateWithLifecycle()
+    val playbackRate by controller.workouts.effectiveRate.collectAsStateWithLifecycle()
+    val chosenRate by controller.workouts.playbackRate.collectAsStateWithLifecycle()
+    val matchSpeed by controller.workouts.matchSpeed.collectAsStateWithLifecycle()
+    val heartSummary = heartSummaryOnly.copy(calories = estimatedCalories)
     val hudTiles by controller.settings.hudTiles.collectAsStateWithLifecycle()
     val hudSwapped by controller.settings.hudSwapped.collectAsStateWithLifecycle()
     val historyEntries by controller.history.entries.collectAsStateWithLifecycle()
@@ -100,8 +117,13 @@ fun OfitApp(
     val coachNotice by controller.coach.notice.collectAsStateWithLifecycle()
     val coachLevel by controller.heart.coachLevel.collectAsStateWithLifecycle()
     val hasGeminiKey by controller.secrets.hasGeminiKey.collectAsStateWithLifecycle()
+    val startProblem by controller.workouts.startProblem.collectAsStateWithLifecycle()
     val profileList by controller.profiles.profiles.collectAsStateWithLifecycle()
     val currentProfile by controller.profiles.current.collectAsStateWithLifecycle()
+    val heartAge by controller.heart.age.collectAsStateWithLifecycle()
+    val heartMaxHr by controller.heart.maxHr.collectAsStateWithLifecycle()
+    val heartWeight by controller.heart.weightKg.collectAsStateWithLifecycle()
+    val heartSex by controller.heart.sex.collectAsStateWithLifecycle()
 
     val context = LocalContext.current
     var crash by remember { mutableStateOf(CrashLog.read(context)) }
@@ -115,6 +137,9 @@ fun OfitApp(
         if (screen != AppScreen.VideoSearch) searchFrom = screen
         onNavigate(AppScreen.VideoSearch)
     }
+
+    // "Quit workout?": asked before a running workout is ended, from End, Back or the screen's back.
+    var askQuit by remember { mutableStateOf(false) }
 
     // System Back goes up one level instead of closing the app. While a workout is running it does
     // nothing: leaving the screen would hide the controls of a moving belt, so the workout has to
@@ -134,11 +159,14 @@ fun OfitApp(
             AppScreen.AiKey -> onNavigate(AppScreen.Home)
             AppScreen.Profiles -> onNavigate(AppScreen.Home)
             AppScreen.Browse -> onNavigate(AppScreen.Home)
+            AppScreen.CoachDesigner -> onNavigate(AppScreen.Home)
+            AppScreen.Plans -> onNavigate(AppScreen.Home)
             AppScreen.VideoSearch -> {
                 controller.library.clearAnalysis()
                 onNavigate(searchFrom)
             }
-            is AppScreen.Run -> if (!engine.isActive) onNavigate(AppScreen.Workouts)
+            is AppScreen.Run -> if (engine.isActive) askQuit = true else onNavigate(AppScreen.Workouts)
+            is AppScreen.Summary -> onNavigate(AppScreen.Home)
             else -> onNavigate(AppScreen.Workouts)
         }
     }
@@ -157,15 +185,46 @@ fun OfitApp(
     }
 
     CompositionLocalProvider(LocalUnits provides units) {
+    // OpenFit was closed during a workout and the belt is still going: offer to stop it.
+    val leftRunning by controller.leftRunning.collectAsStateWithLifecycle()
+    if (leftRunning && state.connectionState == com.ofit.protocol.ConnectionState.CONNECTED && controller.beltMoving(state)) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = {},
+            title = { Text("The treadmill is still running") },
+            text = {
+                Text(
+                    "OpenFit closed during a workout and the belt kept going at " +
+                        units.speedText(state.displayedSpeedKph ?: 0.0) + ". Stop it now?",
+                )
+            },
+            confirmButton = {
+                androidx.compose.material3.Button(
+                    onClick = { controller.stopLeftRunning() },
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color(0xFFDC2626)),
+                ) { Text("Stop the belt") }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { controller.clearLeftRunning() }) { Text("Leave it running") }
+            },
+        )
+    }
     // The menu opens from every screen except the workout itself and "Who's running?".
     val drawerState = androidx.compose.material3.rememberDrawerState(androidx.compose.material3.DrawerValue.Closed)
     val drawerScope = androidx.compose.runtime.rememberCoroutineScope()
     val fullscreenSetting by controller.settings.fullscreen.collectAsStateWithLifecycle()
-    val menuAllowed = screen !is AppScreen.Run && screen != AppScreen.Profiles
+    // The menu is on every screen (user request). From a running workout, leaving asks first.
+    val menuAllowed = true
     val openMenu: (() -> Unit)? = if (menuAllowed) ({ drawerScope.launch { drawerState.open() } }) else null
+    // A menu left open while going to the workout screen (which has no menu) drew nothing but still
+    // caught every tap, so Start, the menu and Hide did nothing. Shut it whenever the screen changes.
+    androidx.compose.runtime.LaunchedEffect(screen) {
+        if (drawerState.currentValue != androidx.compose.material3.DrawerValue.Closed) {
+            drawerState.snapTo(androidx.compose.material3.DrawerValue.Closed)
+        }
+    }
     androidx.compose.material3.ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = menuAllowed,
+        gesturesEnabled = screen !is AppScreen.Run, // no edge swipe over the workout controls
         drawerContent = {
             if (menuAllowed) {
                 AppDrawerContent(
@@ -176,6 +235,7 @@ fun OfitApp(
                     onGo = { destination ->
                         drawerScope.launch { drawerState.close() }
                         when {
+                            screen is AppScreen.Run && engine.isActive && destination != screen -> askQuit = true
                             destination == screen -> Unit
                             destination == AppScreen.VideoSearch -> {
                                 videoTopic = ""
@@ -228,6 +288,8 @@ fun OfitApp(
                 },
             )
 
+            AppScreen.CoachDesigner -> com.ofit.app.workout.CoachDesignerScreen(onBack = { onNavigate(AppScreen.Home) })
+
             AppScreen.AiKey -> com.ofit.app.settings.AiKeyScreen(
                 secrets = controller.secrets,
                 onBack = {
@@ -236,8 +298,19 @@ fun OfitApp(
                 },
             )
 
+            AppScreen.Plans -> com.ofit.app.workout.PlansScreen(
+                profileKey = controller.profiles.fileName("plan", "json"),
+                history = controller.history.entries.collectAsState().value,
+                onStart = { program ->
+                    controller.workouts.clearFinished()
+                    onNavigate(AppScreen.Run(planOneOff(program, limits)))
+                },
+                onBack = { onNavigate(AppScreen.Home) },
+            )
+
             AppScreen.QuickStart -> com.ofit.app.workout.QuickStartScreen(
                 limits = limits,
+                body = controller.heart.body,
                 onGo = { program ->
                     // Not saved to My workouts: a one-off. History still records it when run.
                     val oneOff = com.ofit.app.data.SavedWorkout(
@@ -265,9 +338,23 @@ fun OfitApp(
                     controller.profiles.select(profile)
                     onNavigate(AppScreen.Home)
                 },
-                onAdd = { name, color, accent -> controller.profiles.add(name, color, accent) },
+                onAdd = { name, color, accent, icon -> controller.profiles.add(name, color, accent, icon) },
                 onUpdate = controller.profiles::update,
                 onRemove = controller.profiles::remove,
+                health = com.ofit.app.profile.HealthDetails(
+                    ageYears = heartAge,
+                    maxHr = heartMaxHr,
+                    weightKg = heartWeight,
+                    sex = heartSex,
+                    units = units,
+                ),
+                onHealth = { h ->
+                    controller.heart.setAge(h.ageYears)
+                    controller.heart.setMaxHr(h.maxHr)
+                    controller.heart.setWeightKg(h.weightKg)
+                    controller.heart.setSex(h.sex)
+                    controller.settings.setUnits(h.units)
+                },
             )
 
             AppScreen.Browse -> com.ofit.app.browse.BrowseScreen(
@@ -314,28 +401,44 @@ fun OfitApp(
             }
 
             AppScreen.History -> com.ofit.app.history.HistoryScreen(
+                onRate = { e, stars, feel -> controller.history.rate(e.startedAtMillis, stars, feel) },
                 entries = historyEntries,
                 onDelete = controller.history::delete,
                 onBack = { onNavigate(AppScreen.Home) },
+                workouts = workouts,
+                youtubeIdFor = controller.workouts::youtubeIdFor,
+                onRepeat = { saved ->
+                    controller.workouts.clearFinished()
+                    onNavigate(AppScreen.Run(saved))
+                },
             )
 
-            AppScreen.HeartRate -> com.ofit.app.heart.HeartRateScreen(
-                manager = controller.heart,
-                onBack = { onNavigate(AppScreen.Home) },
+            // Devices: the treadmill and the heart-rate strap in one place (user request).
+            AppScreen.HeartRate -> DevicesScreen(
+                state = state,
+                devices = devices,
+                scanning = scanning,
+                controller = controller,
+                onScan = onScan,
+                onBack = {
+                    controller.heart.stopScan()
+                    onNavigate(AppScreen.Home)
+                },
             )
 
             AppScreen.Workouts -> WorkoutListScreen(
                 workouts = workouts,
-                onNew = {
+                onNew = { template ->
                     onNavigate(
                         AppScreen.VisualEditor(
                             savedId = null,
-                            name = "New workout",
-                            steps = com.ofit.protocol.ProgramEdit.forVideo(20 * 60, 4.8, 0.0),
+                            name = if (template.name == "Blank") "New workout" else template.name,
+                            steps = template.steps,
                             videoId = null,
                         ),
                     )
                 },
+                onDuplicate = { saved -> controller.workouts.duplicate(saved) },
                 youtubeIdFor = controller.workouts::youtubeIdFor,
                 onEdit = { saved ->
                     onNavigate(
@@ -400,7 +503,9 @@ fun OfitApp(
                 onLoad = controller.library::loadLibrary,
                 onSave = controller.library::save,
                 onRate = controller.library::rate,
+                onReport = controller.library::report,
                 onBack = { onNavigate(AppScreen.Workouts) },
+                savedNames = workouts.map { it.program.name }.toSet(),
             )
 
             is AppScreen.Editor -> WorkoutEditorScreen(
@@ -417,43 +522,139 @@ fun OfitApp(
                 initialName = screen.name,
                 initialSteps = screen.steps,
                 videoId = screen.videoId,
+                initialVideoFile = screen.savedId?.let(controller.workouts::videoFileFor),
                 limits = limits,
-                onSave = { program ->
-                    controller.workouts.saveEdited(screen.savedId, program, screen.videoId)
+                onSave = { program, videoId, videoFile ->
+                    controller.workouts.saveEdited(screen.savedId, program, videoId, videoFile)
                     onNavigate(AppScreen.Workouts)
                 },
                 onBack = { onNavigate(AppScreen.Workouts) },
             )
 
+            is AppScreen.Summary -> WorkoutSummaryScreen(
+                entry = com.ofit.protocol.SummaryLookup.find(historyEntries, screen.name, screen.startedAfterMillis),
+                onRate = { e, stars, feel -> controller.history.rate(e.startedAtMillis, stars, feel) },
+                name = screen.name,
+                onRepeat = workouts.firstOrNull { it.program.name == screen.name }?.let { saved ->
+                    {
+                        controller.workouts.clearFinished()
+                        onNavigate(AppScreen.Run(saved))
+                    }
+                },
+                onDone = { onNavigate(AppScreen.Home) },
+                onHistory = { onNavigate(AppScreen.History) },
+            )
+
             is AppScreen.Run -> {
+                if (askQuit) {
+                    androidx.compose.material3.AlertDialog(
+                        onDismissRequest = { askQuit = false },
+                        title = { Text(if (engine.isCoolingDown) "End the cool-down?" else "End workout?") },
+                        text = {
+                            Text(
+                                when {
+                                    engine.isCoolingDown -> "The belt stops now. The workout is saved to History."
+                                    engine.isRunning && !preview -> "A 10-minute cool-down starts: the belt slows to an easy walk, then stops. " +
+                                        "For an instant stop, use E-STOP."
+                                    else -> "The workout ends here and is saved to History if it ran at least a minute."
+                                },
+                            )
+                        },
+                        confirmButton = {
+                            androidx.compose.material3.Button(
+                                onClick = { askQuit = false; controller.workouts.end() },
+                                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color(0xFFDC2626)),
+                            ) {
+                                Text(
+                                    when {
+                                        engine.isCoolingDown -> "Stop the belt"
+                                        engine.isRunning && !preview -> "Start cool-down"
+                                        else -> "End workout"
+                                    },
+                                )
+                            }
+                        },
+                        dismissButton = { androidx.compose.material3.TextButton(onClick = { askQuit = false }) { Text("Keep going") } },
+                    )
+                }
+                // When a workout ends (finished or quit), go to its summary.
+                var wasActive by remember(screen.saved.id) { mutableStateOf(false) }
+                // When the workout began, by the wall clock (not worked out from the program clock,
+                // which runs slower or faster than real time at a matched video rate).
+                var startedWall by remember(screen.saved.id) { mutableStateOf(0L) }
+                androidx.compose.runtime.LaunchedEffect(engine.isActive, engine.isFinished) {
+                    if (engine.isActive) {
+                        if (!wasActive) startedWall = System.currentTimeMillis() - engine.totalElapsedMillis
+                        wasActive = true
+                    } else if (wasActive && (engine.isFinished || engine.state == com.ofit.protocol.WorkoutEngineState.ABANDONED)) {
+                        wasActive = false
+                        // The workout has stopped (finished, ended after the cool-down, or E-STOP):
+                        // the runner's music stops with it (user request 2026-11-24).
+                        com.ofit.app.workout.OutsideMusic.pause(context)
+                        val since = startedWall.takeIf { it > 0 } ?: (System.currentTimeMillis() - engine.totalElapsedMillis)
+                        onNavigate(AppScreen.Summary(since, screen.saved.program.name))
+                    }
+                }
                 // Spec 007: the treadmill is connected while the workout screen is open, and let go
                 // of when it closes and nothing is running.
                 androidx.compose.runtime.DisposableEffect(Unit) {
                     controller.setWorkoutScreenOpen(true)
                     onDispose { controller.setWorkoutScreenOpen(false) }
                 }
+                // Intensity (P7): the profile's level, changeable before Start; the workout keeps its name.
+                val intensityKey = controller.profiles.fileName("intensity", "json")
+                var intensity by remember(screen.saved.id, intensityKey) { mutableStateOf(com.ofit.app.workout.IntensityStore.load(context, intensityKey)) }
+                val intensitySuggestion = remember(screen.saved.id, intensity) {
+                    com.ofit.protocol.Intensity.suggest(controller.history.entries.value, screen.saved.program.name, intensity)
+                }
+                val runSaved = remember(screen.saved, intensity, limits) {
+                    if (intensity == com.ofit.protocol.Intensity.Level.STANDARD) screen.saved
+                    else screen.saved.copy(program = com.ofit.protocol.Intensity.apply(screen.saved.program, intensity).fitTo(limits))
+                }
                 WorkoutRunScreen(
-                saved = screen.saved,
+                saved = runSaved,
+                intensity = intensity,
+                intensitySuggestion = intensitySuggestion,
+                onIntensity = { level ->
+                    intensity = level
+                    com.ofit.app.workout.IntensityStore.save(context, intensityKey, level)
+                },
+                resumeAtMillis = screen.resumeAtMillis,
                 snapshot = engine,
                 state = state,
                 limits = limits,
                 preview = preview,
-                onPreviewChange = controller.workouts::setPreview,
+                onPreviewChange = { on -> controller.workouts.setPreview(on) },
+                onNoTreadmill = controller::setNoTreadmill,
+                onVideoHeld = controller.workouts::setVideoHeld,
+                startProblem = startProblem,
                 onStart = {
-                    if (preview) controller.workouts.start(screen.saved.program)
-                    else controller.whenConnected { controller.workouts.start(screen.saved.program) }
+                    if (preview) controller.workouts.start(runSaved.program)
+                    else controller.whenConnected { controller.workouts.start(runSaved.program) }
                 },
                 onPause = { controller.workouts.pause() },
                 onResume = { controller.workouts.resume() },
                 onSkip = { controller.workouts.skip() },
-                onAbandon = { controller.workouts.abandon() },
+                // Ending the cool-down needs no question: the belt is already at an easy walk (user
+                // request 2026-11-24). Ending the workout itself still asks.
+                onAbandon = { if (engine.isCoolingDown) controller.workouts.end() else askQuit = true },
+                onSeek = controller.workouts::seekTo,
+                playbackRate = playbackRate,
+                onPlaybackRate = controller.workouts::setPlaybackRate,
+                chosenRate = chosenRate,
+                matchSpeed = matchSpeed,
+                onMatchSpeed = controller.workouts::setMatchSpeed,
                 onOverrideSpeed = controller.workouts::overrideSpeed,
                 onOverrideIncline = controller.workouts::overrideIncline,
                 onResetToProgram = controller.workouts::resetToProgram,
                 onResetSpeed = controller.workouts::resetSpeed,
                 onResetIncline = controller.workouts::resetIncline,
-                onEmergencyStop = { controller.stopWorkout() },
-                onBack = { onNavigate(AppScreen.Workouts) },
+                // E-STOP: stop the belt at once and end the program (no cool-down).
+                onEmergencyStop = {
+                    controller.stopWorkout()
+                    controller.workouts.abandon()
+                },
+                onBack = { if (engine.isActive) askQuit = true else onNavigate(AppScreen.Workouts) },
                 heartRate = heartRate,
                 heartSummary = heartSummary,
                 tiles = hudTiles,
@@ -522,8 +723,9 @@ private fun HomeScreen(
                     color = MaterialTheme.colorScheme.primary,
                 )
                 Text(
-                    text = "Open treadmill control · NordicTrack T 6.5 Foldable",
+                    text = "Hi, ${profile.name}",
                     style = MaterialTheme.typography.bodyMedium,
+                    color = androidx.compose.ui.graphics.Color(0x99FFFFFF),
                 )
             }
             Button(onClick = onBrowse) { Text("Browse workouts") }
@@ -558,16 +760,45 @@ private fun HomeScreen(
 
         val historyEntries by controller.history.entries.collectAsStateWithLifecycle()
         val savedWorkouts by controller.workouts.workouts.collectAsStateWithLifecycle()
+        val communityEntries by controller.library.entries.collectAsStateWithLifecycle()
+        // A workout OpenFit was running when it closed (P4), if worth picking up again.
+        val homeContext = androidx.compose.ui.platform.LocalContext.current
+        var resumeOffer by remember(savedWorkouts) {
+            mutableStateOf(
+                com.ofit.app.workout.ResumeStore.load(homeContext)
+                    ?.takeIf { it.worthOffering(System.currentTimeMillis()) }
+                    ?.let { point -> savedWorkouts.firstOrNull { it.id == point.workoutId }?.let { it to point } },
+            )
+        }
+        val planKey = controller.profiles.fileName("plan", "json")
         HomeDashboard(
             state = state,
             treadmillName = controller.savedDevice()?.name,
             history = historyEntries,
             workouts = savedWorkouts,
             onConnect = controller::connectToSaved,
-            onFindTreadmill = { onNavigate(AppScreen.ManualControl) },
+            onFindTreadmill = { onNavigate(AppScreen.HeartRate) },
             onOpenWorkout = { saved ->
                 controller.workouts.clearFinished()
                 onNavigate(AppScreen.Run(saved))
+            },
+            resume = resumeOffer,
+            plan = remember(historyEntries, planKey) {
+                com.ofit.app.workout.PlanStore.load(homeContext, planKey)?.let { com.ofit.protocol.TrainingPlans.status(it, historyEntries) }
+            },
+            onPlanStart = { program ->
+                controller.workouts.clearFinished()
+                onNavigate(AppScreen.Run(planOneOff(program, limits)))
+            },
+            onPlans = { onNavigate(AppScreen.Plans) },
+            onResume = { saved, at ->
+                resumeOffer = null
+                controller.workouts.clearFinished()
+                onNavigate(AppScreen.Run(saved, resumeAtMillis = at))
+            },
+            onDismissResume = {
+                resumeOffer = null
+                com.ofit.app.workout.ResumeStore.clear(homeContext)
             },
             onBrowse = onBrowse,
             onMyWorkouts = onOpenWorkouts,
@@ -575,6 +806,29 @@ private fun HomeScreen(
             onHistory = { onNavigate(AppScreen.History) },
             onManual = { onNavigate(AppScreen.ManualControl) },
             onQuickStart = { onNavigate(AppScreen.QuickStart) },
+            youtubeIdFor = controller.workouts::youtubeIdFor,
+            onEdit = { saved ->
+                onNavigate(
+                    AppScreen.VisualEditor(
+                        savedId = saved.id,
+                        name = saved.program.name,
+                        steps = saved.program.steps,
+                        videoId = controller.workouts.youtubeIdFor(saved.id),
+                    ),
+                )
+            },
+            community = communityEntries,
+            onLoadCommunity = { controller.library.loadLibrary(false) },
+            onTemplate = { template ->
+                onNavigate(
+                    AppScreen.VisualEditor(
+                        savedId = null,
+                        name = if (template.name == "Blank") "New workout" else template.name,
+                        steps = template.steps,
+                        videoId = null,
+                    ),
+                )
+            },
         )
     }
 }
@@ -661,13 +915,6 @@ private fun ConnectScreen(
             }
         }
 
-        Spacer(Modifier.height(12.dp))
-
-        // The workouts do not need a treadmill to be connected. A user
-        // may well want to import a workout before ever turning the machine on.
-        OutlinedButton(onClick = onOpenWorkouts, modifier = Modifier.fillMaxWidth()) {
-            Text("Workouts")
-        }
     }
 }
 
@@ -752,10 +999,6 @@ private fun ControlScreen(
                     else -> "Take control"
                 },
             )
-        }
-
-        Button(onClick = onOpenWorkouts, modifier = Modifier.fillMaxWidth()) {
-            Text("Workouts")
         }
 
         SliderRow(
@@ -957,12 +1200,7 @@ private fun ManualControlScreen(
             .statusBarsPadding()
             .padding(16.dp),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            MenuButton()
-            OutlinedButton(onClick = onBack) { Text("Back") }
-            Spacer(Modifier.padding(start = 12.dp))
-            Text("Manual control", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-        }
+        ScreenHeader("Manual control", "Drive the treadmill by hand", onBack = onBack)
         Spacer(Modifier.height(12.dp))
         if (message != null) {
             Card(modifier = Modifier.fillMaxWidth()) {
@@ -979,19 +1217,8 @@ private fun ManualControlScreen(
             )
         } else {
             controller.savedDevice()?.let { saved ->
-                Card(modifier = Modifier.fillMaxWidth()) {
-                    Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) {
-                            Text("Treadmill: ${saved.name}", style = MaterialTheme.typography.titleMedium)
-                            Text(
-                                "Not connected. OpenFit connects when you open a workout, and lets go when none is running.",
-                                style = MaterialTheme.typography.bodySmall,
-                            )
-                        }
-                        Button(onClick = controller::connectToSaved) { Text("Connect now") }
-                    }
-                }
-                Spacer(Modifier.height(12.dp))
+                TreadmillHero(name = saved.name, limits = limits, onConnect = controller::connectToSaved)
+                Spacer(Modifier.height(16.dp))
             }
             ConnectScreen(
                 devices = devices,
@@ -1003,3 +1230,208 @@ private fun ManualControlScreen(
         }
     }
 }
+
+/**
+ * After a workout: its numbers and charts (the History entry), or a short note when it ran under a
+ * minute and so was not kept.
+ */
+@Composable
+private fun WorkoutSummaryScreen(
+    entry: com.ofit.protocol.HistoryEntry?,
+    onRate: (com.ofit.protocol.HistoryEntry, Int?, String?) -> Unit = { _, _, _ -> },
+    name: String,
+    onDone: () -> Unit,
+    onHistory: () -> Unit,
+    onRepeat: (() -> Unit)? = null,
+) {
+    // The History entry is written a moment after the workout ends; wait briefly for it.
+    var waited by remember { mutableStateOf(false) }
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        kotlinx.coroutines.delay(2_500)
+        waited = true
+    }
+    val units = com.ofit.app.settings.LocalUnits.current
+    when {
+        entry != null -> com.ofit.app.history.WorkoutDetail(
+            entry, units, onClose = onDone, title = "Workout summary", onRepeat = onRepeat,
+            onRate = { stars, feel -> onRate(entry, stars, feel) },
+        )
+        !waited -> androidx.compose.foundation.layout.Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            androidx.compose.material3.CircularProgressIndicator()
+        }
+        else -> Column(
+            Modifier.fillMaxSize().padding(32.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(name, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(8.dp))
+            Text("Workout ended. It ran under a minute, so it was not saved to History.")
+            Spacer(Modifier.height(16.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                androidx.compose.material3.Button(onClick = onDone) { Text("Done") }
+                androidx.compose.material3.OutlinedButton(onClick = onHistory) { Text("History") }
+            }
+        }
+    }
+}
+
+/**
+ * Devices: the treadmill on the left (its state, connect, "No treadmill", and the scan for another),
+ * the heart-rate strap on the right (strap, zones, Hold zone).
+ */
+@Composable
+private fun DevicesScreen(
+    state: TreadmillState,
+    devices: List<Scanner.Device>,
+    scanning: Boolean,
+    controller: TreadmillController,
+    onScan: () -> Unit,
+    onBack: () -> Unit,
+) {
+    val noTreadmill by controller.workouts.noTreadmill.collectAsStateWithLifecycle()
+    val saved = controller.savedDevice()
+    val connected = state.connectionState == ConnectionState.CONNECTED
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .statusBarsPadding()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        ScreenHeader("Devices", "Your treadmill and heart-rate strap", onBack = onBack)
+        Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+            Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text("TREADMILL", style = MaterialTheme.typography.labelLarge, color = androidx.compose.ui.graphics.Color(0x99FFFFFF))
+                Card(Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            androidx.compose.material3.Icon(
+                                if (connected) androidx.compose.material.icons.Icons.Filled.BluetoothConnected else androidx.compose.material.icons.Icons.Filled.Bluetooth,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(36.dp),
+                            )
+                            Spacer(Modifier.width(12.dp))
+                            Column(Modifier.weight(1f)) {
+                                Text(saved?.name ?: "No treadmill set up", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                                Text(
+                                    when {
+                                        saved == null -> "Look for it below; OpenFit remembers it."
+                                        connected -> "Connected"
+                                        state.connectionState == ConnectionState.CONNECTING -> "Connecting…"
+                                        else -> "Not connected · OpenFit connects when you start a workout"
+                                    },
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                            }
+                            if (saved != null && !connected && !noTreadmill) {
+                                Button(onClick = controller::connectToSaved) { Text("Connect now") }
+                            }
+                        }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Column(Modifier.weight(1f)) {
+                                Text("No treadmill", style = MaterialTheme.typography.titleMedium)
+                                Text(
+                                    "Run workouts on screen only, with suggested speeds; nothing is sent to a machine.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
+                            androidx.compose.material3.Switch(checked = noTreadmill, onCheckedChange = { controller.setNoTreadmill(it) })
+                        }
+                    }
+                }
+                Text("Another treadmill", style = MaterialTheme.typography.titleMedium)
+                ConnectScreen(
+                    devices = devices,
+                    scanning = scanning,
+                    onScan = onScan,
+                    onConnect = controller::connect,
+                    onOpenWorkouts = {},
+                )
+            }
+            Column(Modifier.weight(1f).fillMaxHeight()) {
+                com.ofit.app.heart.HeartRateScreen(manager = controller.heart, onBack = onBack, embedded = true)
+            }
+        }
+    }
+}
+
+/**
+ * Manual control's treadmill card, in Home's style: a big picture of the machine, its name, what it
+ * can do, and a white Connect pill. Connecting only watches the treadmill; nothing moves until a run
+ * is started.
+ */
+@Composable
+private fun TreadmillHero(name: String, limits: SafetyLimits, onConnect: () -> Unit) {
+    val accent = MaterialTheme.colorScheme.primary
+    val units = com.ofit.app.settings.LocalUnits.current
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(230.dp)
+            .clip(androidx.compose.foundation.shape.RoundedCornerShape(24.dp))
+            .background(
+                androidx.compose.ui.graphics.Brush.linearGradient(
+                    listOf(accent.copy(alpha = 0.45f), androidx.compose.ui.graphics.Color(0xFF16161C), androidx.compose.ui.graphics.Color(0xFF0D0D0D)),
+                ),
+            )
+            .padding(horizontal = 36.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(32.dp),
+    ) {
+        androidx.compose.foundation.layout.Box(
+            Modifier
+                .size(150.dp)
+                .clip(androidx.compose.foundation.shape.CircleShape)
+                .background(androidx.compose.ui.graphics.Color(0x1FFFFFFF)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                androidx.compose.material.icons.Icons.AutoMirrored.Filled.DirectionsRun,
+                contentDescription = null,
+                tint = androidx.compose.ui.graphics.Color.White,
+                modifier = Modifier.size(84.dp),
+            )
+        }
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text("YOUR TREADMILL", color = accent, fontWeight = FontWeight.Bold, letterSpacing = 2.sp)
+            Text(name, fontSize = 40.sp, fontWeight = FontWeight.Bold, color = androidx.compose.ui.graphics.Color.White)
+            Text(
+                "Up to ${units.speedText(limits.effectiveMaxSpeedKph)} · incline " +
+                    "${"%.0f".format(limits.machineMinInclinePercent ?: 0.0)} to ${"%.0f".format(limits.effectiveMaxInclinePercent)} %",
+                color = androidx.compose.ui.graphics.Color(0xCCFFFFFF),
+                fontSize = 17.sp,
+            )
+            Text(
+                "Not connected. Connecting only watches the treadmill; nothing moves until you start. " +
+                    "OpenFit lets go after 5 minutes with no workout.",
+                color = androidx.compose.ui.graphics.Color(0x99FFFFFF),
+                fontSize = 14.sp,
+            )
+        }
+        Row(
+            Modifier
+                .height(64.dp)
+                .clip(androidx.compose.foundation.shape.RoundedCornerShape(32.dp))
+                .background(androidx.compose.ui.graphics.Color(0xFFF5F7F8))
+                .clickable(onClick = onConnect)
+                .padding(horizontal = 30.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                androidx.compose.material.icons.Icons.Filled.Bluetooth,
+                contentDescription = null,
+                tint = androidx.compose.ui.graphics.Color(0xFF0D0D0D),
+            )
+            Spacer(Modifier.width(8.dp))
+            Text("Connect now", color = androidx.compose.ui.graphics.Color(0xFF0D0D0D), fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        }
+    }
+}
+
+
+/** A training plan session as a one-off workout: not saved to My workouts; History records it by name. */
+private fun planOneOff(program: com.ofit.protocol.WorkoutProgram, limits: com.ofit.protocol.SafetyLimits) =
+    com.ofit.app.data.SavedWorkout(id = "plan-session", program = program.fitTo(limits), updatedAtMillis = System.currentTimeMillis())

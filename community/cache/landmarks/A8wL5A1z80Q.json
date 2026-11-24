@@ -1,0 +1,29 @@
+{
+ "landmarks": [
+  {
+   "seconds": 140,
+   "name": "Washington Square Arch",
+   "fact": "Built in 1892, this marble arch celebrates the centennial of George Washington's inauguration as the first U.S. President."
+  },
+  {
+   "seconds": 200,
+   "name": "Washington Square Park",
+   "fact": "Located in Greenwich Village, this iconic public park features a famous central fountain and vibrant cultural gatherings."
+  },
+  {
+   "seconds": 685,
+   "name": "Union Square Park",
+   "fact": "Established in 1839, Union Square is known for its historic gatherings, popular Greenmarket, and vibrant public space."
+  },
+  {
+   "seconds": 725,
+   "name": "George Washington Equestrian Statue",
+   "fact": "Dedicated in 1856 in Union Square, this is the oldest outdoor statue managed by New York City Parks."
+  },
+  {
+   "seconds": 908,
+   "name": "Tammany Hall Building",
+   "fact": "Built in 1929, this historic building with a distinctive glass dome served as the headquarters of the Tammany Hall political machine."
+  }
+ ]
+}

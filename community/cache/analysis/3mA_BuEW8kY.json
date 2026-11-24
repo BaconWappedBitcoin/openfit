@@ -1,0 +1,612 @@
+[
+ {
+  "index": 0,
+  "startSeconds": 0,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 1.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The video shows a steady running pace along a narrow paved country road with a very slight uphill incline."
+ },
+ {
+  "index": 1,
+  "startSeconds": 30,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "The video shows a steady forward motion along a paved village road with houses and stone walls. The terrain is flat to slightly uphill, moving at a light jogging pace."
+ },
+ {
+  "index": 2,
+  "startSeconds": 60,
+  "durationSeconds": 30,
+  "speedKph": 5.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The camera moves at a steady walking/slow jogging speed through a flat village road with asphalt surface and minor puddles."
+ },
+ {
+  "index": 3,
+  "startSeconds": 90,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady pace along a flat, wet country lane passing houses and hedgerows."
+ },
+ {
+  "index": 4,
+  "startSeconds": 120,
+  "durationSeconds": 30,
+  "speedKph": 10.8,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Running along a flat asphalt country road with hedges on both sides at a steady pace."
+ },
+ {
+  "index": 5,
+  "startSeconds": 150,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Runner maintaining a steady pace along a flat paved rural road with hedgerows on both sides."
+ },
+ {
+  "index": 6,
+  "startSeconds": 180,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is traveling along a paved rural lane at a steady running pace with a flat to minimal incline."
+ },
+ {
+  "index": 7,
+  "startSeconds": 210,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 1.5,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "The runner is moving along a quiet paved rural lane with a slight upward incline."
+ },
+ {
+  "index": 8,
+  "startSeconds": 240,
+  "durationSeconds": 30,
+  "speedKph": 10.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a consistent running pace on a flat, paved country lane."
+ },
+ {
+  "index": 9,
+  "startSeconds": 270,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner moves along a flat to very gently rising narrow country road at a steady pace."
+ },
+ {
+  "index": 10,
+  "startSeconds": 300,
+  "durationSeconds": 30,
+  "speedKph": 11,
+  "inclinePercent": 0.5,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "The runner maintains a steady pace of around 11 km/h along a flat, wet country lane."
+ },
+ {
+  "index": 11,
+  "startSeconds": 330,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady pace along a flat country lane with puddles."
+ },
+ {
+  "index": 12,
+  "startSeconds": 360,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The video shows a steady run along a flat, paved rural road with hedges on both sides."
+ },
+ {
+  "index": 13,
+  "startSeconds": 390,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady pace on a flat, paved rural road bordered by hedges."
+ },
+ {
+  "index": 14,
+  "startSeconds": 420,
+  "durationSeconds": 30,
+  "speedKph": 5.8,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The camera moves smoothly along a flat country lane at a steady jog pace."
+ },
+ {
+  "index": 15,
+  "startSeconds": 450,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner travels at a steady pace of around 11.5 km/h along a flat country lane with puddles, passing power poles and hedges."
+ },
+ {
+  "index": 16,
+  "startSeconds": 480,
+  "durationSeconds": 30,
+  "speedKph": 13.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "The video shows forward motion along a narrow paved country road heading past a sign for Hethe towards a large tree. The terrain is flat with a very minor slope, moving at a steady running pace of around 13.5 km/h."
+ },
+ {
+  "index": 17,
+  "startSeconds": 510,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "road",
+  "note": "The video shows a steady running pace along a flat paved rural road at approximately 156 to 160 steps per minute."
+ },
+ {
+  "index": 18,
+  "startSeconds": 540,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady pace on a flat, paved country road."
+ },
+ {
+  "index": 19,
+  "startSeconds": 570,
+  "durationSeconds": 30,
+  "speedKph": 12.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner travels along a paved road through a village on flat ground at a steady pace of approximately 12.2 km/h."
+ },
+ {
+  "index": 20,
+  "startSeconds": 600,
+  "durationSeconds": 30,
+  "speedKph": 10.6,
+  "inclinePercent": 0,
+  "confidence": 0.88,
+  "terrain": "road",
+  "note": "The runner moves along a flat paved village road at a steady jogging pace of around 10.6 kph."
+ },
+ {
+  "index": 21,
+  "startSeconds": 630,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The video shows a person running at a steady pace through a village on a paved road with a flat to very slight uphill gradient."
+ },
+ {
+  "index": 22,
+  "startSeconds": 660,
+  "durationSeconds": 30,
+  "speedKph": 13.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "The clip shows movement through a paved village road with mostly flat terrain and a very gentle slight incline towards the end."
+ },
+ {
+  "index": 23,
+  "startSeconds": 690,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 1,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner moves at a steady pace along a flat asphalt and gravel village road."
+ },
+ {
+  "index": 24,
+  "startSeconds": 720,
+  "durationSeconds": 30,
+  "speedKph": 7.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner moves forward along a flat paved village road before making a wide left turn near a stone bridge, averaging roughly 7.8 km/h."
+ },
+ {
+  "index": 25,
+  "startSeconds": 750,
+  "durationSeconds": 30,
+  "speedKph": 5.4,
+  "inclinePercent": 2.5,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "Moving along a narrow paved country road past parked cars and stone cottages on a slight uphill incline."
+ },
+ {
+  "index": 26,
+  "startSeconds": 780,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 4.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is ascending a steady uphill slope through a village street on a paved road."
+ },
+ {
+  "index": 27,
+  "startSeconds": 810,
+  "durationSeconds": 30,
+  "speedKph": 5.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Walking speed of approximately 5.2 km/h along a flat residential road in a village with parked cars and thatched houses."
+ },
+ {
+  "index": 28,
+  "startSeconds": 840,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The video shows a steady walking pace along a village road with stone cottages and flat ground."
+ },
+ {
+  "index": 29,
+  "startSeconds": 870,
+  "durationSeconds": 30,
+  "speedKph": 5.8,
+  "inclinePercent": 2,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The video shows a steady forward motion along a paved village road with a slight uphill gradient."
+ },
+ {
+  "index": 30,
+  "startSeconds": 900,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 1.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady jogging pace through a paved village road, turning right at a junction near a signpost on a slight uphill incline."
+ },
+ {
+  "index": 31,
+  "startSeconds": 930,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 2,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Walking pace along a paved village road with a slight uphill gradient."
+ },
+ {
+  "index": 32,
+  "startSeconds": 960,
+  "durationSeconds": 30,
+  "speedKph": 12.5,
+  "inclinePercent": 1,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Moving at a steady pace of around 12.5 km/h along a paved residential road with a nearly flat surface."
+ },
+ {
+  "index": 33,
+  "startSeconds": 990,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner moves along a flat, paved residential street at a steady pace of around 11.5 km/h."
+ },
+ {
+  "index": 34,
+  "startSeconds": 1020,
+  "durationSeconds": 30,
+  "speedKph": 15,
+  "inclinePercent": 0.5,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "The video shows steady forward movement along a relatively flat paved country road."
+ },
+ {
+  "index": 35,
+  "startSeconds": 1050,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner moves at a steady pace along a flat paved country road."
+ },
+ {
+  "index": 36,
+  "startSeconds": 1080,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Walking pace around a church and graveyard, flat paved and gravel surface."
+ },
+ {
+  "index": 37,
+  "startSeconds": 1110,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 1.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The camera moves at a steady running pace along a paved country road with a very slight uphill incline."
+ },
+ {
+  "index": 38,
+  "startSeconds": 1140,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner turns from a rural road onto a flat dirt trail at a consistent jogging pace."
+ },
+ {
+  "index": 39,
+  "startSeconds": 1170,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner maintains a steady jogging pace along a flat, unpaved tree-lined dirt path."
+ },
+ {
+  "index": 40,
+  "startSeconds": 1200,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner moves at a steady jogging pace along a flat dirt and gravel pathway lined with trees."
+ },
+ {
+  "index": 41,
+  "startSeconds": 1230,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walking motion along a flat dirt road lined with trees."
+ },
+ {
+  "index": 42,
+  "startSeconds": 1260,
+  "durationSeconds": 30,
+  "speedKph": 6,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The camera moves forward at a steady walking pace of approximately 6 km/h along a flat country lane with power lines."
+ },
+ {
+  "index": 43,
+  "startSeconds": 1290,
+  "durationSeconds": 30,
+  "speedKph": 8,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "The camera moves at a steady jogging pace along a flat unpaved rural road."
+ },
+ {
+  "index": 44,
+  "startSeconds": 1320,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The video shows forward motion along a flat paved country road surrounded by hedges and trees at a steady running pace of approximately 11.5 km/h."
+ },
+ {
+  "index": 45,
+  "startSeconds": 1350,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady pace along a flat, paved rural lane, passing two pedestrians."
+ },
+ {
+  "index": 46,
+  "startSeconds": 1380,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": 1.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner moves along a narrow paved country road with a slight uphill gradient flanked by hedges."
+ },
+ {
+  "index": 47,
+  "startSeconds": 1410,
+  "durationSeconds": 30,
+  "speedKph": 7,
+  "inclinePercent": 0,
+  "confidence": 0.75,
+  "terrain": "road",
+  "note": "The runner moves along a flat single-track rural road at a steady jogging speed of around 7.0 kph."
+ },
+ {
+  "index": 48,
+  "startSeconds": 1440,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "The runner moves along a flat, rural paved lane lined with hedges under cloudy skies."
+ },
+ {
+  "index": 49,
+  "startSeconds": 1470,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 1.5,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "The runner is moving along a narrow paved country road with a very slight upward slope."
+ },
+ {
+  "index": 50,
+  "startSeconds": 1500,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner moves along a flat, narrow rural paved road at a steady jogging pace."
+ },
+ {
+  "index": 51,
+  "startSeconds": 1530,
+  "durationSeconds": 30,
+  "speedKph": 12.5,
+  "inclinePercent": 1.5,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "The runner maintains a steady pace along a flat to slightly uphill paved country road as a cyclist passes by."
+ },
+ {
+  "index": 52,
+  "startSeconds": 1560,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is moving at a steady pace along a flat paved rural road with a car passing by."
+ },
+ {
+  "index": 53,
+  "startSeconds": 1590,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Running along a paved rural lane at approximately 10.5 km/h on flat ground."
+ },
+ {
+  "index": 54,
+  "startSeconds": 1620,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady pace on a flat asphalt road with countryside scenery."
+ },
+ {
+  "index": 55,
+  "startSeconds": 1650,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 1,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady pace of around 11.5 km/h along a narrow paved country road entering a village on mostly flat terrain."
+ },
+ {
+  "index": 56,
+  "startSeconds": 1680,
+  "durationSeconds": 30,
+  "speedKph": 13.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Smooth movement along a flat village road with puddles. Speed estimated at around 13.5 km/h based on distance covered over 30 seconds."
+ },
+ {
+  "index": 57,
+  "startSeconds": 1710,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is jogging at a steady pace of around 9.5 km/h along a flat village road."
+ },
+ {
+  "index": 58,
+  "startSeconds": 1740,
+  "durationSeconds": 30,
+  "speedKph": 14.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The camera moves smoothly forward along a paved country road passing village houses and a parked van, covering approximately 120 meters in 30 seconds on essentially flat terrain."
+ },
+ {
+  "index": 59,
+  "startSeconds": 1770,
+  "durationSeconds": 30,
+  "speedKph": 14,
+  "inclinePercent": 2.5,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "Moving steadily along a paved rural lane with a slight gentle uphill grade."
+ },
+ {
+  "index": 60,
+  "startSeconds": 1800,
+  "durationSeconds": 22,
+  "speedKph": 5,
+  "inclinePercent": 0,
+  "confidence": 0.3,
+  "terrain": "road",
+  "note": "The video transitions to a channel logo graphic shortly after 30:02."
+ }
+]

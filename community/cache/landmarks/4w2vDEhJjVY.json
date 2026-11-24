@@ -1,0 +1,14 @@
+{
+ "landmarks": [
+  {
+   "seconds": 1,
+   "name": "Kahekili Beach Park",
+   "fact": "Located in West Maui, this popular beach park is named after Kahekili II, the last king of Maui."
+  },
+  {
+   "seconds": 1110,
+   "name": "Maui Kai Resort",
+   "fact": "Maui Kai is an oceanfront condominium resort situated right on the shores of Kahekili Beach."
+  }
+ ]
+}

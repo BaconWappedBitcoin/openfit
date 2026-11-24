@@ -118,6 +118,32 @@ object HeartRateSelector {
     }
 }
 
+/**
+ * The heart rate for one chart sample: the average of every reading since the last sample, so a
+ * reading that comes and goes (hand grips read only while held) is kept, not lost between
+ * samples (seen 2026-11-24: 15 s of readings became one chart point).
+ */
+class HeartRateWindow {
+    private var sum = 0L
+    private var count = 0
+
+    @Synchronized
+    fun add(bpm: Int?) {
+        if (bpm == null || bpm <= 0) return
+        sum += bpm
+        count++
+    }
+
+    /** The average since the last take, or null with no reading; starts a new window. */
+    @Synchronized
+    fun take(): Int? {
+        val result = if (count == 0) null else Math.round(sum.toDouble() / count).toInt()
+        sum = 0
+        count = 0
+        return result
+    }
+}
+
 /** Per-workout heart-rate record (spec 002, H6): one sample per second at most. */
 class HeartRateRecord {
     private val samples = mutableListOf<Int>()

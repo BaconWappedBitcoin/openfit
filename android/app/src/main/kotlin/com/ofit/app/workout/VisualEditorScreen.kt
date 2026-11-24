@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.systemGestureExclusion
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -74,10 +76,28 @@ fun VisualEditorScreen(
     initialSteps: List<WorkoutStep>,
     videoId: String?,
     limits: SafetyLimits,
-    onSave: (WorkoutProgram) -> Unit,
+    /** Saves the workout with its video: a YouTube id or a video file's content URI (one or neither). */
+    onSave: (WorkoutProgram, String?, String?) -> Unit,
     onBack: () -> Unit,
+    initialVideoFile: String? = null,
 ) {
     val units = LocalUnits.current
+    val context = androidx.compose.ui.platform.LocalContext.current
+    var youtube by remember { mutableStateOf(if (initialVideoFile == null) videoId else null) }
+    var videoFile by remember { mutableStateOf(initialVideoFile) }
+    // A video from the device: kept with a lasting read permission, so the workout can play it later.
+    val filePicker = androidx.activity.compose.rememberLauncherForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.OpenDocument(),
+    ) { uri ->
+        if (uri != null) {
+            runCatching {
+                context.contentResolver.takePersistableUriPermission(uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            videoFile = uri.toString()
+            youtube = null
+        }
+    }
+    var zoom by remember { mutableIntStateOf(1) }
     var name by remember { mutableStateOf(initialName) }
     val steps = remember { mutableStateListOf<WorkoutStep>().also { it.addAll(initialSteps) } }
     val undo = remember { mutableStateListOf<List<WorkoutStep>>() }
@@ -125,7 +145,7 @@ fun VisualEditorScreen(
         // Header: name and save.
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             MenuButton()
-            OutlinedButton(onClick = onBack) { Text("Back") }
+            com.ofit.app.ui.BackButton(onClick = onBack)
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it.take(80) },
@@ -136,7 +156,7 @@ fun VisualEditorScreen(
             OutlinedButton(onClick = { undo.removeLastOrNull()?.let { steps.clear(); steps.addAll(it) } }, enabled = undo.isNotEmpty()) {
                 Text("Undo")
             }
-            Button(onClick = { onSave(WorkoutProgram(name.trim().ifBlank { "My workout" }, steps.toList())) }) {
+            Button(onClick = { onSave(WorkoutProgram(name.trim().ifBlank { "My workout" }, steps.toList()), youtube, videoFile) }) {
                 Text("Save", fontWeight = FontWeight.Bold)
             }
         }
@@ -144,18 +164,30 @@ fun VisualEditorScreen(
         Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             // Video, with play / pause and time.
             Column(Modifier.weight(1.4f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                // The video takes the room left above its controls, so Play and the file button stay on screen.
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .aspectRatio(16f / 9f)
+                        .weight(1f)
                         .clip(RoundedCornerShape(14.dp))
                         .background(Color.Black),
                     contentAlignment = Alignment.Center,
                 ) {
-                    if (videoId != null) {
+                    val file = videoFile
+                    val yt = youtube
+                    if (file != null) {
+                        val position by rememberUpdatedState(positionMillis)
+                        LocalVideoPlayer(
+                            uri = android.net.Uri.parse(file),
+                            playing = playing,
+                            positionMillis = { position },
+                            seekRequest = seekRequest,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else if (yt != null) {
                         val position by rememberUpdatedState(positionMillis)
                         YouTubePlayer(
-                            videoId = videoId,
+                            videoId = yt,
                             playing = playing,
                             positionMillis = { position },
                             seekRequest = seekRequest,
@@ -170,6 +202,10 @@ fun VisualEditorScreen(
                     OutlinedButton(onClick = { seekTo(positionMillis / 1000.0 - 10) }) { Text("−10 s") }
                     OutlinedButton(onClick = { seekTo(positionMillis / 1000.0 + 10) }) { Text("+10 s") }
                     Text("${formatClock(positionMillis / 1000)} / ${formatClock(total)}", fontSize = 18.sp)
+                    Spacer(Modifier.weight(1f))
+                    OutlinedButton(onClick = { filePicker.launch(arrayOf("video/*")) }) {
+                        Text(if (videoFile != null) "Change video file" else "Video file…")
+                    }
                 }
             }
 
@@ -201,7 +237,7 @@ fun VisualEditorScreen(
                         }
                     }
                     Text(
-                        "Tap the timeline to move the playhead. Drag a step up or down to change it. Drag a round handle " +
+                        "Tap the timeline to move the playhead. Drag a step up or down to change it. Drag a grip ‹ › under the chart " +
                             "left or right to move where one step ends and the next begins.",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color(0x99FFFFFF),
@@ -215,6 +251,23 @@ fun VisualEditorScreen(
             Text("Drag edits:", style = MaterialTheme.typography.labelLarge)
             LaneChip("Speed", SpeedBlue, lane == Lane.SPEED) { lane = Lane.SPEED }
             LaneChip("Incline", InclineOrange, lane == Lane.INCLINE) { lane = Lane.INCLINE }
+            Spacer(Modifier.weight(1f))
+            // Zoom: long workouts with many short steps need a closer look. The view follows the playhead.
+            Text("Zoom", style = MaterialTheme.typography.labelLarge)
+            SquareButton("−") { zoom = (zoom / 2).coerceAtLeast(1) }
+            Text("${zoom}×", fontWeight = FontWeight.Bold, modifier = Modifier.width(40.dp))
+            SquareButton("+") { zoom = (zoom * 2).coerceAtMost(16) }
+        }
+
+        // The whole workout, small: tap or drag along it to jump anywhere when zoomed in.
+        if (zoom > 1) {
+            Overview(
+                steps = steps,
+                positionSeconds = positionMillis / 1000.0,
+                zoom = zoom,
+                onSeek = { seconds -> seekTo(seconds) },
+                modifier = Modifier.fillMaxWidth().height(28.dp),
+            )
         }
 
         Timeline(
@@ -234,8 +287,56 @@ fun VisualEditorScreen(
                 val next = ProgramEdit.moveBoundary(steps, index, seconds)
                 steps.clear(); steps.addAll(next)
             },
-            modifier = Modifier.fillMaxWidth().height(240.dp),
+            zoom = zoom,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(if (zoom > 1) 212.dp else 240.dp)
+                .systemGestureExclusion(),
         )
+    }
+}
+
+/** The whole workout in one thin strip, with the zoomed window and the playhead marked. */
+@Composable
+private fun Overview(
+    steps: List<WorkoutStep>,
+    positionSeconds: Double,
+    zoom: Int,
+    onSeek: (Double) -> Unit,
+    modifier: Modifier,
+) {
+    val total = steps.sumOf { it.durationSeconds }.coerceAtLeast(1)
+    val speedMax = steps.maxOfOrNull { it.speedKph }?.coerceAtLeast(1.0) ?: 1.0
+    val currentTotal by rememberUpdatedState(total)
+    Canvas(
+        modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color(0xFF15151B))
+            .pointerInput(Unit) {
+                detectTapGestures { offset -> onSeek(currentTotal * (offset.x / size.width).toDouble()) }
+            }
+            .pointerInput(Unit) {
+                detectDragGestures { change, _ ->
+                    onSeek(currentTotal * (change.position.x / size.width).coerceIn(0f, 1f).toDouble())
+                    change.consume()
+                }
+            },
+    ) {
+        val w = size.width
+        val h = size.height
+        var acc = 0
+        steps.forEach { st ->
+            val x0 = w * acc / total; acc += st.durationSeconds; val x1 = w * acc / total
+            val top = h - h * (st.speedKph / speedMax).toFloat() * 0.9f
+            drawRect(SpeedBlue.copy(alpha = 0.45f), Offset(x0, top), Size(x1 - x0, h - top))
+        }
+        // The part shown in the timeline below, centred on the playhead like the timeline is.
+        val windowW = w / zoom
+        val px = (w * positionSeconds / total).toFloat()
+        val left = (px - windowW / 2).coerceIn(0f, w - windowW)
+        drawRect(Color(0x33FFFFFF), Offset(left, 0f), Size(windowW, h))
+        drawRect(Color.White, Offset(left, 0f), Size(windowW, h), style = Stroke(1.5.dp.toPx()))
+        drawLine(Color(0xFFF43F5E), Offset(px, 0f), Offset(px, h), strokeWidth = 2.dp.toPx())
     }
 }
 
@@ -250,27 +351,47 @@ private fun Timeline(
     onDragStart: () -> Unit,
     onLevel: (Int, Double) -> Unit,
     onBoundary: (Int, Int) -> Unit,
+    zoom: Int = 1,
     modifier: Modifier,
 ) {
     val total = steps.sumOf { it.durationSeconds }.coerceAtLeast(1)
+    val currentTotal by rememberUpdatedState(total)
     val speedMax = limits.effectiveMaxSpeedKph
     val inclineMax = limits.effectiveMaxInclinePercent.coerceAtLeast(1.0)
+    // Downhill too, when the treadmill (or the workout) goes below 0 %.
+    val inclineMin = minOf(limits.machineMinInclinePercent ?: 0.0, steps.minOfOrNull { it.inclinePercent } ?: 0.0, 0.0)
     val grab = with(LocalDensity.current) { 24.dp.toPx() }
+    // A strip along the bottom holds the step-edge grips (drag left/right); the lines sit above it,
+    // so dragging a level to 0 % never reaches the screen's bottom edge (the taskbar gesture).
+    val gripBand = with(LocalDensity.current) { 34.dp.toPx() }
     val currentSteps by rememberUpdatedState(steps)
     val currentLane by rememberUpdatedState(lane)
 
-    Box(
+    // Zoomed in, the timeline is wider than the screen; it scrolls (by the app, not the finger, so a
+    // drag still edits) to keep the playhead in the middle.
+    val scroll = androidx.compose.foundation.rememberScrollState()
+    androidx.compose.foundation.layout.BoxWithConstraints(
         modifier
             .clip(RoundedCornerShape(16.dp))
             .background(Color(0xFF15151B))
             .border(1.dp, Color(0x22FFFFFF), RoundedCornerShape(16.dp)),
     ) {
+        val viewport = maxWidth
+        val density = LocalDensity.current
+        LaunchedEffect(zoom, positionSeconds, total) {
+            val contentPx = with(density) { (viewport * zoom).toPx() }
+            val viewPx = with(density) { viewport.toPx() }
+            val target = (contentPx * positionSeconds / total - viewPx / 2).toInt()
+            scroll.scrollTo(target.coerceIn(0, scroll.maxValue.coerceAtLeast(0)))
+        }
         Canvas(
             Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
+                .horizontalScroll(scroll, enabled = false)
+                .width(viewport * zoom)
                 .padding(horizontal = 12.dp, vertical = 14.dp)
                 .pointerInput(Unit) {
-                    detectTapGestures { offset -> onTapAt(total * (offset.x / size.width).toDouble()) }
+                    detectTapGestures { offset -> onTapAt(currentTotal * (offset.x / size.width).toDouble()) }
                 }
                 .pointerInput(Unit) {
                     // A drag that starts on a boundary moves it; anywhere else it sets the level of
@@ -285,10 +406,10 @@ private fun Timeline(
                             var acc = 0
                             for (i in 1 until s.size) {
                                 acc += s[i - 1].durationSeconds
-                                // Only the round handle on the centre line grabs a boundary, so a
-                                // drag anywhere else always edits the step's level.
+                                // Only a grip in the bottom strip moves a step's edge, so a drag
+                                // anywhere else always edits the step's level.
                                 if (abs(size.width * acc / t.toFloat() - start.x) < grab &&
-                                    abs(start.y - size.height / 2f) < grab
+                                    start.y > size.height - gripBand - 8f
                                 ) { boundary = i; break }
                             }
                             stepIndex = com.ofit.protocol.ProgramEdit.stepAt(s, t * (start.x / size.width).toDouble())
@@ -300,8 +421,9 @@ private fun Timeline(
                             if (boundary > 0) {
                                 onBoundary(boundary, (t * (change.position.x / size.width)).toInt())
                             } else if (stepIndex >= 0) {
-                                val share = (1f - change.position.y / size.height).coerceIn(0f, 1f)
-                                val value = if (currentLane == Lane.SPEED) speedMax * share else inclineMax * share
+                                val chart = size.height - gripBand
+                                val share = (1f - change.position.y / chart).coerceIn(0f, 1f)
+                                val value = if (currentLane == Lane.SPEED) speedMax * share else inclineMin + (inclineMax - inclineMin) * share
                                 onLevel(stepIndex, value)
                             }
                             change.consume()
@@ -310,10 +432,10 @@ private fun Timeline(
                 },
         ) {
             val w = size.width
-            val h = size.height
+            val h = size.height - gripBand
             fun x(sec: Int) = w * sec / total.toFloat()
             fun ySpeed(kph: Double) = (h - h * (kph / speedMax)).toFloat()
-            fun yIncline(p: Double) = (h - h * (p / inclineMax)).toFloat()
+            fun yIncline(p: Double) = (h - h * ((p - inclineMin) / (inclineMax - inclineMin))).toFloat()
 
             // Grid.
             for (f in listOf(0f, 0.5f, 1f)) drawLine(Color(0x14FFFFFF), Offset(0f, h * f), Offset(w, h * f))
@@ -350,9 +472,27 @@ private fun Timeline(
             for (i in 0 until steps.size - 1) {
                 acc += steps[i].durationSeconds
                 val bx = x(acc)
-                drawLine(Color(0x88FFFFFF), Offset(bx, 0f), Offset(bx, h), strokeWidth = 2.dp.toPx())
-                drawCircle(Color.White, radius = 6.dp.toPx(), center = Offset(bx, h / 2))
+                drawLine(Color(0x55FFFFFF), Offset(bx, 0f), Offset(bx, h), strokeWidth = 1.5.dp.toPx())
+                // A grip below the chart that reads as "drag sideways": a pill with ‹ › marks.
+                val gy = h + gripBand / 2
+                val gw = 11.dp.toPx()
+                val gh = 9.dp.toPx()
+                drawRoundRect(
+                    Color(0xFFE5E7EB),
+                    topLeft = Offset(bx - gw, gy - gh),
+                    size = Size(gw * 2, gh * 2),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(gh, gh),
+                )
+                val a = 3.5.dp.toPx()
+                val dark = Color(0xFF15151B)
+                val sw = 1.6.dp.toPx()
+                drawLine(dark, Offset(bx - 3 * a / 2, gy), Offset(bx - a / 2, gy - a), sw)
+                drawLine(dark, Offset(bx - 3 * a / 2, gy), Offset(bx - a / 2, gy + a), sw)
+                drawLine(dark, Offset(bx + 3 * a / 2, gy), Offset(bx + a / 2, gy - a), sw)
+                drawLine(dark, Offset(bx + 3 * a / 2, gy), Offset(bx + a / 2, gy + a), sw)
             }
+            // The grip strip's floor line.
+            drawLine(Color(0x22FFFFFF), Offset(0f, h), Offset(w, h))
 
             // Playhead.
             val px = (w * positionSeconds / total).toFloat()

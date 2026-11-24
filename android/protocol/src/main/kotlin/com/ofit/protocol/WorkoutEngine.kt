@@ -21,6 +21,12 @@ import kotlinx.coroutines.flow.update
 class WorkoutEngine(
     private val limitsProvider: () -> SafetyLimits,
     private val sink: WorkoutCommandSink,
+    /**
+     * The cool-down to run when a workout ends (finished, or ended by the runner), or null for none
+     * (no treadmill). The belt slows down over it instead of stopping at once; only E-STOP or
+     * "End cool-down" stops it straight away (user request, 2026-11-24).
+     */
+    private val coolDownFor: (WorkoutEngineSnapshot) -> WorkoutProgram? = { null },
 ) {
 
     private val _snapshot = MutableStateFlow(WorkoutEngineSnapshot.idle())
@@ -33,15 +39,18 @@ class WorkoutEngine(
     /**
      * Start a program.
      *
-     * The whole program is validated first. If any step is out of bounds, nothing is sent to the
-     * machine and the problems are returned.
+     * Steps outside the machine's range or the user's ceilings are moved into range first, so a
+     * workout's values never stop it starting; then the program is validated (a program with no
+     * steps or a step with no duration is still rejected, and nothing is sent).
      */
-    suspend fun start(program: WorkoutProgram): StartOutcome {
+    suspend fun start(requested: WorkoutProgram): StartOutcome {
         if (_snapshot.value.isActive) {
             return StartOutcome.Failed("A workout is already running.")
         }
 
-        val validation = program.validate(limitsProvider())
+        val limits = limitsProvider()
+        val program = requested.fitTo(limits)
+        val validation = program.validate(limits)
         if (validation is ProgramValidation.Invalid) {
             return StartOutcome.Rejected(validation.problems)
         }
@@ -80,12 +89,12 @@ class WorkoutEngine(
      */
     suspend fun tick(elapsedMillis: Long) {
         if (elapsedMillis <= 0) return
-        if (_snapshot.value.state != WorkoutEngineState.RUNNING) return
+        if (!_snapshot.value.isRunning) return
 
         var remaining = elapsedMillis
         while (remaining > 0) {
             val state = _snapshot.value
-            if (state.state != WorkoutEngineState.RUNNING) return
+            if (!state.isRunning) return
 
             val program = this.program ?: return
             val step = program.steps.getOrNull(state.stepIndex) ?: return
@@ -166,11 +175,11 @@ class WorkoutEngine(
      * Override the target speed for the current step.
      *
      * The safety ceiling is checked in the protocol layer before anything is sent to the machine.
-     * The override lasts until the runner resets it or the program moves to the next step.
+     * The override lasts until the runner returns to the program (resetToProgram), across steps.
      */
     suspend fun overrideSpeed(speedKph: Double): LimitCheck {
         val state = _snapshot.value
-        if (state.state != WorkoutEngineState.RUNNING) {
+        if (!state.isRunning) {
             return LimitCheck.Refused(Refusal.MACHINE_NOT_ARMED)
         }
         if (speedKph < 0.0) {
@@ -199,11 +208,11 @@ class WorkoutEngine(
      * Override the target incline for the current step.
      *
      * The safety ceiling is checked in the protocol layer before anything is sent to the machine.
-     * The override lasts until the runner resets it or the program moves to the next step.
+     * The override lasts until the runner returns to the program (resetToProgram), across steps.
      */
     suspend fun overrideIncline(inclinePercent: Double): LimitCheck {
         val state = _snapshot.value
-        if (state.state != WorkoutEngineState.RUNNING) {
+        if (!state.isRunning) {
             return LimitCheck.Refused(Refusal.MACHINE_NOT_ARMED)
         }
         val limits = limitsProvider()
@@ -282,11 +291,137 @@ class WorkoutEngine(
     /** Move to the next step immediately. */
     suspend fun skip() {
         val state = _snapshot.value
-        if (state.state != WorkoutEngineState.RUNNING && state.state != WorkoutEngineState.PAUSED) return
+        if (!state.isRunning && state.state != WorkoutEngineState.PAUSED) return
+        // The workout's clock jumps to the start of the next step too, so the time, the progress
+        // and the video move ahead with it (before, only the step number changed).
+        val skipped = state.stepRemainingMillis.coerceAtLeast(0)
+        mutate {
+            it.copy(
+                totalElapsedMillis = it.totalElapsedMillis + skipped,
+                totalRemainingMillis = (it.totalRemainingMillis - skipped).coerceAtLeast(0),
+            )
+        }
+        if (state.state == WorkoutEngineState.PAUSED) {
+            // Paused means the belt stays stopped: move to the next step without sending it. Resume
+            // sends that step's speed and incline.
+            val program = this.program ?: return
+            val nextIndex = state.stepIndex + 1
+            if (nextIndex >= program.steps.size) {
+                complete()
+                return
+            }
+            val step = program.steps[nextIndex]
+            val next = program.steps.getOrNull(nextIndex + 1)
+            mutate {
+                it.copy(
+                    stepIndex = nextIndex,
+                    stepElapsedMillis = 0,
+                    stepRemainingMillis = step.durationMillis,
+                    inclinePercent = if (it.inclineOverride) it.inclinePercent else step.inclinePercent,
+                    nextSpeedKph = next?.speedKph,
+                    nextInclinePercent = next?.inclinePercent,
+                )
+            }
+            return
+        }
         advanceToNextStep()
     }
 
-    /** Stop the program and stop the machine. */
+    /**
+     * Jump to a point in the workout (the progress bar, rewind, fast forward). The step at that
+     * point becomes current: while running its speed and incline are sent; while paused nothing is
+     * sent until Resume. Jumping to the end finishes the workout.
+     */
+    suspend fun seekTo(targetMillis: Long) {
+        val state = _snapshot.value
+        if (state.state != WorkoutEngineState.RUNNING && state.state != WorkoutEngineState.PAUSED) return
+        val program = this.program ?: return
+        val total = program.totalDurationSeconds * 1000L
+        val target = targetMillis.coerceIn(0, total)
+        if (target >= total) {
+            mutate { it.copy(totalElapsedMillis = total, totalRemainingMillis = 0) }
+            complete()
+            return
+        }
+        var start = 0L
+        var index = 0
+        while (index < program.steps.size - 1 && start + program.steps[index].durationMillis <= target) {
+            start += program.steps[index].durationMillis
+            index++
+        }
+        val step = program.steps[index]
+        val inStep = target - start
+        // Manual speed or incline is kept across the jump, as at a step change.
+        val seekSpeed = if (state.speedOverride) state.speedKph else step.speedKph
+        val seekIncline = if (state.inclineOverride) state.inclinePercent else step.inclinePercent
+        if (state.state == WorkoutEngineState.RUNNING && index != state.stepIndex) {
+            if (!sink.applyStep(seekSpeed, seekIncline)) {
+                fail("The treadmill refused the step change.")
+                return
+            }
+        }
+        val next = program.steps.getOrNull(index + 1)
+        val running = state.state == WorkoutEngineState.RUNNING
+        val sameStep = index == state.stepIndex
+        mutate {
+            it.copy(
+                stepIndex = index,
+                stepElapsedMillis = inStep,
+                stepRemainingMillis = step.durationMillis - inStep,
+                totalElapsedMillis = target,
+                totalRemainingMillis = total - target,
+                speedKph = if (sameStep) it.speedKph else if (running) seekSpeed else it.speedKph,
+                inclinePercent = if (sameStep) it.inclinePercent else seekIncline,
+                nextSpeedKph = next?.speedKph,
+                nextInclinePercent = next?.inclinePercent,
+            )
+        }
+    }
+
+    /**
+     * The runner ended the workout: go into the cool-down when there is one (the belt slows down
+     * rather than stopping), otherwise stop. Ending the cool-down itself stops the belt. A paused
+     * workout (belt already stopped) just ends.
+     */
+    suspend fun end() {
+        val state = _snapshot.value
+        when {
+            state.state == WorkoutEngineState.COOLING_DOWN -> complete()
+            state.state == WorkoutEngineState.RUNNING && startCoolDown() -> Unit
+            else -> abandon()
+        }
+    }
+
+    /** Switch from the workout to its cool-down without stopping the belt. False if there is none. */
+    private suspend fun startCoolDown(): Boolean {
+        val current = _snapshot.value
+        val coolDown = coolDownFor(current)?.fitTo(limitsProvider()) ?: return false
+        val first = coolDown.steps.firstOrNull() ?: return false
+        if (!sink.applyStep(first.speedKph, first.inclinePercent)) return false
+        program = coolDown
+        val next = coolDown.steps.getOrNull(1)
+        mutate {
+            it.copy(
+                state = WorkoutEngineState.COOLING_DOWN,
+                stepIndex = 0,
+                stepCount = coolDown.steps.size,
+                stepElapsedMillis = 0,
+                stepRemainingMillis = first.durationMillis,
+                // The clock carries on from the workout, so time, history and summary include it.
+                totalRemainingMillis = coolDown.totalDurationSeconds * 1000L,
+                speedKph = first.speedKph,
+                inclinePercent = first.inclinePercent,
+                nextSpeedKph = next?.speedKph,
+                nextInclinePercent = next?.inclinePercent,
+                speedOverride = false,
+                inclineOverride = false,
+                message = null,
+            )
+        }
+        return true
+    }
+
+    /** Stop the program and stop the machine at once (E-STOP, no treadmill, or a paused workout). */
     suspend fun abandon() {
         if (!_snapshot.value.isActive) return
         sink.stopWorkout()
@@ -335,12 +470,19 @@ class WorkoutEngine(
         val nextIndex = _snapshot.value.stepIndex + 1
 
         if (nextIndex >= program.steps.size) {
+            // The workout ran to its end: cool down first, unless this already was the cool-down.
+            if (_snapshot.value.state == WorkoutEngineState.RUNNING && startCoolDown()) return true
             complete()
             return false
         }
 
         val step = program.steps[nextIndex]
-        val accepted = sink.applyStep(step.speedKph, step.inclinePercent)
+        // A speed or incline the runner set by hand stays until they choose to follow the program
+        // again (user request 2026-11-24): the new step only brings what was not overridden.
+        val now = _snapshot.value
+        val speed = if (now.speedOverride) now.speedKph else step.speedKph
+        val incline = if (now.inclineOverride) now.inclinePercent else step.inclinePercent
+        val accepted = sink.applyStep(speed, incline)
         if (!accepted) {
             fail("The treadmill refused the next step.")
             return false
@@ -352,12 +494,10 @@ class WorkoutEngine(
                 stepIndex = nextIndex,
                 stepElapsedMillis = 0,
                 stepRemainingMillis = step.durationMillis,
-                speedKph = step.speedKph,
-                inclinePercent = step.inclinePercent,
+                speedKph = speed,
+                inclinePercent = incline,
                 nextSpeedKph = next?.speedKph,
                 nextInclinePercent = next?.inclinePercent,
-                speedOverride = false,
-                inclineOverride = false,
                 message = null,
             )
         }
@@ -397,6 +537,8 @@ enum class WorkoutEngineState {
     IDLE,
     RUNNING,
     PAUSED,
+    /** The workout is over and the belt is slowing down over the cool-down; it stops at its end. */
+    COOLING_DOWN,
     COMPLETED,
     ABANDONED,
     FAILED,
@@ -455,10 +597,14 @@ data class WorkoutEngineSnapshot(
     val manualOverride: Boolean get() = speedOverride || inclineOverride
 
     /** Whether the program is running right now. */
-    val isRunning: Boolean get() = state == WorkoutEngineState.RUNNING
+    val isRunning: Boolean get() = state == WorkoutEngineState.RUNNING || state == WorkoutEngineState.COOLING_DOWN
+
+    /** In the cool-down after the workout. */
+    val isCoolingDown: Boolean get() = state == WorkoutEngineState.COOLING_DOWN
 
     /** Whether the program is started, whether or not it is paused. */
-    val isActive: Boolean get() = state == WorkoutEngineState.RUNNING || state == WorkoutEngineState.PAUSED
+    val isActive: Boolean get() = state == WorkoutEngineState.RUNNING || state == WorkoutEngineState.PAUSED ||
+        state == WorkoutEngineState.COOLING_DOWN
 
     /** Whether the program has ended, for any reason. */
     val isFinished: Boolean get() = state == WorkoutEngineState.COMPLETED ||

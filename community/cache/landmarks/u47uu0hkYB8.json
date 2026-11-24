@@ -1,0 +1,89 @@
+{
+ "landmarks": [
+  {
+   "seconds": 10,
+   "name": "Caesars Palace",
+   "fact": "Caesars Palace is a famous Roman-themed luxury hotel and casino on the Las Vegas Strip."
+  },
+  {
+   "seconds": 149,
+   "name": "Casino Royale",
+   "fact": "Casino Royale is a low-rise hotel and casino located on the Las Vegas Strip."
+  },
+  {
+   "seconds": 200,
+   "name": "The Venetian Las Vegas",
+   "fact": "The Venetian is an Italian-themed luxury resort featuring replicas of Venice landmarks and indoor canals."
+  },
+  {
+   "seconds": 405,
+   "name": "The Palazzo",
+   "fact": "The Palazzo is a luxury hotel and casino resort that forms part of the larger Venetian complex."
+  },
+  {
+   "seconds": 525,
+   "name": "Wynn Las Vegas",
+   "fact": "Wynn Las Vegas is a premier luxury resort tower known for its distinctive curved bronze-glass facade."
+  },
+  {
+   "seconds": 605,
+   "name": "Fashion Show Mall",
+   "fact": "Fashion Show is a massive shopping destination on the Strip recognized by its futuristic suspended steel structure."
+  },
+  {
+   "seconds": 765,
+   "name": "Encore Las Vegas",
+   "fact": "Encore is the sister resort tower to Wynn Las Vegas, offering high-end suites and nightlife."
+  },
+  {
+   "seconds": 1090,
+   "name": "Treasure Island Hotel & Casino",
+   "fact": "Treasure Island is a classic resort hotel on the Strip, originally known for its pirate theme."
+  },
+  {
+   "seconds": 1500,
+   "name": "The LINQ Hotel & Casino",
+   "fact": "The LINQ is a vibrant resort situated at the center of the Las Vegas Strip."
+  },
+  {
+   "seconds": 1655,
+   "name": "The Cromwell",
+   "fact": "The Cromwell is a boutique hotel and casino known for its vintage Parisian-inspired style."
+  },
+  {
+   "seconds": 1705,
+   "name": "Paris Las Vegas",
+   "fact": "Paris Las Vegas is a famous resort featuring a half-scale replica of the Eiffel Tower."
+  },
+  {
+   "seconds": 1955,
+   "name": "The Cosmopolitan of Las Vegas",
+   "fact": "The Cosmopolitan is a modern luxury resort and casino featuring two iconic high-rise towers."
+  },
+  {
+   "seconds": 2040,
+   "name": "ARIA Resort & Casino",
+   "fact": "ARIA is a contemporary resort located within the CityCenter complex on the Las Vegas Strip."
+  },
+  {
+   "seconds": 2060,
+   "name": "The Shops at Crystals",
+   "fact": "The Shops at Crystals is an upscale luxury shopping mall known for its striking crystalline architectural design."
+  },
+  {
+   "seconds": 2335,
+   "name": "New York-New York Hotel & Casino",
+   "fact": "New York-New York features iconic replicas of Big Apple landmarks, including the Brooklyn Bridge and Statue of Liberty."
+  },
+  {
+   "seconds": 2480,
+   "name": "Excalibur Hotel & Casino",
+   "fact": "Excalibur is a castle-themed resort and casino inspired by King Arthur and medieval legends."
+  },
+  {
+   "seconds": 2690,
+   "name": "Luxor Hotel & Casino",
+   "fact": "Luxor is an Egyptian-themed hotel famous for its massive black glass pyramid and Great Sphinx replica."
+  }
+ ]
+}

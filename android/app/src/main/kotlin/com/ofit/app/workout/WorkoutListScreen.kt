@@ -1,5 +1,8 @@
 package com.ofit.app.workout
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.Color
@@ -33,6 +36,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.PlayArrow
@@ -67,7 +71,8 @@ import com.ofit.app.data.SavedWorkout
 @Composable
 fun WorkoutListScreen(
     workouts: List<SavedWorkout>,
-    onNew: () -> Unit,
+    /** Start a new workout from a template (see WorkoutTemplates), in the editor. */
+    onNew: (com.ofit.protocol.WorkoutTemplates.Template) -> Unit,
     onEdit: (SavedWorkout) -> Unit,
     onDelete: (SavedWorkout) -> Unit,
     onRun: (SavedWorkout) -> Unit,
@@ -77,11 +82,83 @@ fun WorkoutListScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     youtubeIdFor: (String) -> String? = { null },
+    onDuplicate: (SavedWorkout) -> Unit = {},
 ) {
     var confirmShare by remember { mutableStateOf<SavedWorkout?>(null) }
+    var choosingTemplate by remember { mutableStateOf(false) }
+    // P6: a GPX route file becomes an incline workout, opened in the editor to set the pace.
+    val gpxContext = androidx.compose.ui.platform.LocalContext.current
+    val pickGpx = androidx.activity.compose.rememberLauncherForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.OpenDocument(),
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        runCatching {
+            val text = gpxContext.contentResolver.openInputStream(uri)!!.use { it.readBytes().decodeToString() }
+            val fileName = uri.lastPathSegment?.substringAfterLast('/')?.substringBeforeLast('.') ?: "Imported route"
+            val route = com.ofit.protocol.GpxRoute.parse(text, fallbackName = fileName)
+            com.ofit.protocol.WorkoutTemplates.Template(route.name, "From a GPX route", com.ofit.protocol.GpxRoute.steps(route, speedKph = 5.0))
+        }.onSuccess { onNew(it) }.onFailure { e ->
+            android.widget.Toast.makeText(
+                gpxContext,
+                (e as? com.ofit.protocol.GpxRoute.GpxException)?.message ?: "Could not read that file as GPX.",
+                android.widget.Toast.LENGTH_LONG,
+            ).show()
+        }
+    }
+    if (choosingTemplate) {
+        AlertDialog(
+            onDismissRequest = { choosingTemplate = false },
+            title = { Text("New workout") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Start from one of these, then change anything in the editor.", color = Muted)
+                    Card(
+                        Modifier.fillMaxWidth().clickable {
+                            choosingTemplate = false
+                            pickGpx.launch(arrayOf("application/gpx+xml", "application/xml", "text/xml", "application/octet-stream", "*/*"))
+                        },
+                        shape = RoundedCornerShape(12.dp),
+                    ) {
+                        Column(Modifier.padding(12.dp)) {
+                            Text("From a GPX route file", fontWeight = FontWeight.Bold)
+                            Text("A walk or run you recorded or downloaded: its hills become the incline, at a pace you set.", style = MaterialTheme.typography.bodySmall, color = Muted)
+                        }
+                    }
+                    com.ofit.protocol.WorkoutTemplates.all.forEach { template ->
+                        Card(
+                            Modifier.fillMaxWidth().clickable { choosingTemplate = false; onNew(template) },
+                            shape = RoundedCornerShape(12.dp),
+                        ) {
+                            Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                                com.ofit.app.browse.WorkoutArt(
+                                    null,
+                                    template.steps,
+                                    MaterialTheme.colorScheme.primary,
+                                    Modifier.width(120.dp).height(56.dp).clip(RoundedCornerShape(8.dp)),
+                                )
+                                Spacer(Modifier.width(12.dp))
+                                Column {
+                                    Text(template.name, fontWeight = FontWeight.Bold)
+                                    Text(template.description, style = MaterialTheme.typography.bodySmall, color = Muted)
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = { TextButton(onClick = { choosingTemplate = false }) { Text("Cancel") } },
+        )
+    }
     var confirmDelete by remember { mutableStateOf<SavedWorkout?>(null) }
     var query by remember { mutableStateOf("") }
     var sort by remember { mutableStateOf("Recent") }
+    // Filters, like Community's: with a video, under 20 minutes, 40 minutes or more.
+    var filter by remember { mutableStateOf("All") }
+    val listContext = androidx.compose.ui.platform.LocalContext.current
+    val favourites by Favourites.ids(listContext).collectAsState()
+    var levelFilter by remember { mutableStateOf(LEVEL_FILTERS[0]) }
+    var kindFilter by remember { mutableStateOf(KIND_FILTERS[0]) }
     val units = com.ofit.app.settings.LocalUnits.current
     val accent = MaterialTheme.colorScheme.primary
 
@@ -114,6 +191,16 @@ fun WorkoutListScreen(
 
     val shown = workouts
         .filter { query.isBlank() || it.program.name.contains(query.trim(), ignoreCase = true) }
+        .filter {
+            when (filter) {
+                "With video" -> youtubeIdFor(it.id) != null
+                "Favourites" -> it.id in favourites
+                "Under 20 min" -> it.program.totalDurationSeconds < 20 * 60
+                "40 min +" -> it.program.totalDurationSeconds >= 40 * 60
+                else -> true
+            }
+        }
+        .filter { com.ofit.protocol.WorkoutRating.of(it.program).matches(levelFilter, kindFilter) }
         .let { list ->
             when (sort) {
                 "Name" -> list.sortedBy { it.program.name.lowercase() }
@@ -132,18 +219,12 @@ fun WorkoutListScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         // Header: title, count and the main actions, kept compact.
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            com.ofit.app.ui.MenuButton()
-            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
-            Column(Modifier.weight(1f)) {
-                Text("My workouts", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-                Text(
-                    "${workouts.size} saved · ${formatClock(workouts.sumOf { it.program.totalDurationSeconds })} in all",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Muted,
-                )
-            }
-            Button(onClick = onNew) {
+        com.ofit.app.ui.ScreenHeader(
+            "My workouts",
+            "${workouts.size} saved · ${formatClock(workouts.sumOf { it.program.totalDurationSeconds })} in all",
+            onBack = onBack,
+        ) {
+            Button(onClick = { choosingTemplate = true }) {
                 Icon(Icons.Filled.Add, contentDescription = null)
                 Spacer(Modifier.width(6.dp))
                 Text("New")
@@ -169,13 +250,18 @@ fun WorkoutListScreen(
                 leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 singleLine = true,
                 shape = RoundedCornerShape(14.dp),
-                modifier = Modifier.width(420.dp),
+                modifier = Modifier.width(260.dp),
             )
+            listOf("All", "Favourites", "With video", "Under 20 min", "40 min +").forEach { option ->
+                androidx.compose.material3.FilterChip(selected = filter == option, onClick = { filter = option }, label = { Text(option) })
+            }
             Spacer(Modifier.weight(1f))
             listOf("Recent", "Name", "Shortest", "Longest").forEach { option ->
                 val on = option == sort
                 Text(
                     option,
+                    maxLines = 1,
+                    softWrap = false,
                     color = if (on) Ink else Color.White,
                     fontWeight = if (on) FontWeight.Bold else FontWeight.Medium,
                     modifier = Modifier
@@ -184,6 +270,16 @@ fun WorkoutListScreen(
                         .clickable { sort = option }
                         .padding(horizontal = 16.dp, vertical = 10.dp),
                 )
+            }
+        }
+        // Effort and type.
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            LEVEL_FILTERS.forEach { option ->
+                androidx.compose.material3.FilterChip(selected = levelFilter == option, onClick = { levelFilter = option }, label = { Text(option) })
+            }
+            Spacer(Modifier.width(14.dp))
+            KIND_FILTERS.forEach { option ->
+                androidx.compose.material3.FilterChip(selected = kindFilter == option, onClick = { kindFilter = option }, label = { Text(option) })
             }
         }
 
@@ -196,14 +292,14 @@ fun WorkoutListScreen(
                 Text("No workouts yet", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                 Text("Build one on the timeline, make one from a video, or save one from the community.")
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Button(onClick = onNew) { Text("New workout") }
+                    Button(onClick = { choosingTemplate = true }) { Text("New workout") }
                     OutlinedButton(onClick = onFindVideo) { Text("From a video") }
                 }
             }
             return@Column
         }
         if (shown.isEmpty()) {
-            Text("Nothing matches \"$query\".", style = MaterialTheme.typography.bodyLarge)
+            Text(if (query.isBlank()) "No workouts match these filters." else "Nothing matches \"$query\".", style = MaterialTheme.typography.bodyLarge)
             return@Column
         }
 
@@ -222,6 +318,9 @@ fun WorkoutListScreen(
                     onEdit = { onEdit(saved) },
                     onShare = { confirmShare = saved },
                     onDelete = { confirmDelete = saved },
+                    onDuplicate = { onDuplicate(saved) },
+                    favourite = saved.id in favourites,
+                    onFavourite = { Favourites.toggle(listContext, saved.id) },
                 )
             }
         }
@@ -241,6 +340,9 @@ private fun WorkoutCard(
     onEdit: () -> Unit,
     onShare: () -> Unit,
     onDelete: () -> Unit,
+    onDuplicate: () -> Unit = {},
+    favourite: Boolean = false,
+    onFavourite: () -> Unit = {},
 ) {
     val p = saved.program
     val accent = MaterialTheme.colorScheme.primary
@@ -248,6 +350,7 @@ private fun WorkoutCard(
         Box(Modifier.fillMaxWidth().aspectRatio(16f / 9f)) {
             com.ofit.app.browse.WorkoutArt(videoId, p.steps, accent, Modifier.fillMaxSize())
             Badge(formatClock(p.totalDurationSeconds), Modifier.align(Alignment.BottomEnd))
+            RatingBadges(com.ofit.protocol.WorkoutRating.of(p), Modifier.align(Alignment.BottomStart).padding(10.dp))
             if (videoId != null) {
                 Row(
                     Modifier
@@ -274,12 +377,23 @@ private fun WorkoutCard(
             )
             Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = onRun, modifier = Modifier.weight(1f)) {
+                Button(
+                    onClick = onRun,
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 10.dp),
+                ) {
                     Icon(Icons.Filled.PlayArrow, contentDescription = null)
                     Spacer(Modifier.width(4.dp))
-                    Text("Start")
+                    Text("Start", maxLines = 1, softWrap = false)
                 }
+                CardIcon(
+                    if (favourite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                    if (favourite) "Remove ${p.name} from favourites" else "Add ${p.name} to favourites",
+                    tint = if (favourite) Color(0xFFFF6B8A) else null,
+                    onClick = onFavourite,
+                )
                 CardIcon(Icons.Filled.Edit, "Edit ${p.name}", onClick = onEdit)
+                CardIcon(Icons.Filled.ContentCopy, "Duplicate ${p.name}", onClick = onDuplicate)
                 CardIcon(Icons.Filled.Share, "Share ${p.name} with the community", onClick = onShare)
                 CardIcon(Icons.Filled.Delete, "Delete ${p.name}", danger = true, onClick = onDelete)
             }
@@ -303,16 +417,16 @@ private fun Badge(text: String, modifier: Modifier) {
 
 /** A square icon button for a workout card. */
 @Composable
-private fun CardIcon(icon: ImageVector, description: String, danger: Boolean = false, onClick: () -> Unit) {
+private fun CardIcon(icon: ImageVector, description: String, danger: Boolean = false, tint: Color? = null, onClick: () -> Unit) {
     Box(
         Modifier
-            .size(48.dp)
+            .size(44.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(Color(0x1AFFFFFF))
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Icon(icon, contentDescription = description, tint = if (danger) Danger else Color.White)
+        Icon(icon, contentDescription = description, tint = tint ?: if (danger) Danger else Color.White)
     }
 }
 
@@ -320,14 +434,8 @@ private fun CardIcon(icon: ImageVector, description: String, danger: Boolean = f
  * The bar at the top of a screen, with a way back.
  */
 @Composable
-fun HeaderBar(title: String, onBack: () -> Unit) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        MenuButton()
-        IconButton(onClick = onBack) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-        }
-        Text(text = title, style = MaterialTheme.typography.headlineSmall)
-    }
+fun HeaderBar(title: String, onBack: () -> Unit, subtitle: String? = null) {
+    com.ofit.app.ui.ScreenHeader(title, subtitle, onBack = onBack)
 }
 
 /** A duration as minutes and seconds. */

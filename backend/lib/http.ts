@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createHash } from "node:crypto";
+import { createHash, timingSafeEqual } from "node:crypto";
 
 export function clientIp(req: VercelRequest): string {
   const fwd = req.headers["x-forwarded-for"];
@@ -53,6 +53,19 @@ export function env(name: string): string {
  * the server's ("bring your own key"). Returned only when it looks like a Google API key; it is
  * never stored or logged.
  */
+/**
+ * The project owner's batch jobs (pre-scanning a library of videos, user 2026-11-24): a request
+ * with the secret ADMIN_TOKEN skips the rate limits and the daily cap. Unset, nobody is admin.
+ */
+export function isAdmin(req: VercelRequest): boolean {
+  const expected = process.env.ADMIN_TOKEN;
+  if (!expected || expected.length < 24) return false;
+  const raw = req.headers["x-admin-token"];
+  const given = (Array.isArray(raw) ? raw[0] : raw) ?? "";
+  if (given.length !== expected.length) return false;
+  return timingSafeEqual(Buffer.from(given), Buffer.from(expected));
+}
+
 export function userGeminiKey(req: VercelRequest): string | undefined {
   const raw = req.headers["x-gemini-key"];
   const key = (Array.isArray(raw) ? raw[0] : raw)?.trim();

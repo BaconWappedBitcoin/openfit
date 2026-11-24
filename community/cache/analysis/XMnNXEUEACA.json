@@ -1,0 +1,872 @@
+[
+ {
+  "index": 0,
+  "startSeconds": 0,
+  "durationSeconds": 30,
+  "speedKph": 7.5,
+  "inclinePercent": 10,
+  "confidence": 0.6,
+  "terrain": "trail",
+  "note": "Intro montage transitioning to a steady uphill trail run along the Roys Peak ridge."
+ },
+ {
+  "index": 1,
+  "startSeconds": 30,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 11,
+  "confidence": 0.7,
+  "terrain": "trail",
+  "note": "Intro contains scenic cuts before settling into an uphill trail run around 00:50. Speed estimated from footfall cadence on an uphill dirt path."
+ },
+ {
+  "index": 2,
+  "startSeconds": 60,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 1.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail jogging pace along a high-altitude dirt path, ascending slightly before cresting a ridge line."
+ },
+ {
+  "index": 3,
+  "startSeconds": 90,
+  "durationSeconds": 30,
+  "speedKph": 8,
+  "inclinePercent": 12,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging uphill along a dirt mountain trail at a steady cadence of roughly 162 steps per minute."
+ },
+ {
+  "index": 4,
+  "startSeconds": 120,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 2,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging along an unpaved mountain trail, reaching a ridge top viewpoint."
+ },
+ {
+  "index": 5,
+  "startSeconds": 150,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": -2,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging along a mountain ridge trail towards a scenic viewpoint at a steady pace."
+ },
+ {
+  "index": 6,
+  "startSeconds": 180,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": -2,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The clip shows trail running along a mountain ridge, starting with a slight incline towards a viewpoint before transitioning to a downhill descent overlooking a lake."
+ },
+ {
+  "index": 7,
+  "startSeconds": 210,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": -7.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is running downhill along a narrow mountain gravel trail overlooking a lake."
+ },
+ {
+  "index": 8,
+  "startSeconds": 240,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": -6,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Trail running downhill along a mountain path overlooking a lake, passing another hiker on the trail."
+ },
+ {
+  "index": 9,
+  "startSeconds": 270,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner is jogging uphill on a mountain dirt trail with a cadence of around 155-160 steps per minute."
+ },
+ {
+  "index": 10,
+  "startSeconds": 300,
+  "durationSeconds": 30,
+  "speedKph": 11,
+  "inclinePercent": -4,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner completes a crest and proceeds downhill along a narrow mountain dirt trail at a steady cadence of around 180 steps per minute."
+ },
+ {
+  "index": 11,
+  "startSeconds": 330,
+  "durationSeconds": 30,
+  "speedKph": 10.8,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a scenic mountain trail (Roys Peak Track) at a steady downhill jogging pace with moderate cadence."
+ },
+ {
+  "index": 12,
+  "startSeconds": 360,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": -14,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Trail running downhill on a rocky mountain path at a fast jogging pace."
+ },
+ {
+  "index": 13,
+  "startSeconds": 390,
+  "durationSeconds": 30,
+  "speedKph": 11,
+  "inclinePercent": -12,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Running downhill on a rocky mountain trail overlooking a lake with a steady cadence."
+ },
+ {
+  "index": 14,
+  "startSeconds": 420,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": -15,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a steep mountain trail with visible downhill slope overlooking a lake at a steady trail running cadence."
+ },
+ {
+  "index": 15,
+  "startSeconds": 450,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is running downhill along a mountain trail at a steady cadence."
+ },
+ {
+  "index": 16,
+  "startSeconds": 480,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner is descending a winding mountain dirt trail overlooking a lake with a steady downhill pace."
+ },
+ {
+  "index": 17,
+  "startSeconds": 510,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": -12,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a dirt mountain trail at a steady downhill jogging pace."
+ },
+ {
+  "index": 18,
+  "startSeconds": 540,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": -14,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The video shows trail running downhill along a mountain ridge path with Lake Wanaka in the background. Cadence is around 165 steps per minute, giving a speed of roughly 9.8 km/h on a steep descent of around -14% slope."
+ },
+ {
+  "index": 19,
+  "startSeconds": 570,
+  "durationSeconds": 30,
+  "speedKph": 6,
+  "inclinePercent": 8,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner jogs uphill along a rocky mountain trail for the first 18 seconds before slowing to a walk on the summit viewpoint."
+ },
+ {
+  "index": 20,
+  "startSeconds": 600,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": -5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging along a high-altitude mountain trail ridge before descending down a dirt path."
+ },
+ {
+  "index": 21,
+  "startSeconds": 630,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": -7.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging downhill along a wide mountain trail, passing several hikers walking in the opposite direction."
+ },
+ {
+  "index": 22,
+  "startSeconds": 660,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 4,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady jogging cadence along a unpaved mountain trail with a slight incline, passing other hikers along the way."
+ },
+ {
+  "index": 23,
+  "startSeconds": 690,
+  "durationSeconds": 30,
+  "speedKph": 8,
+  "inclinePercent": 10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging uphill on a gravel/dirt mountain trail, passing descending hikers."
+ },
+ {
+  "index": 24,
+  "startSeconds": 720,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The video shows a runner descending a dirt mountain trail at a steady downhill jog with a continuous slope towards the lake ahead."
+ },
+ {
+  "index": 25,
+  "startSeconds": 750,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": -10,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner is descending a rocky mountain dirt trail at a steady trail running cadence."
+ },
+ {
+  "index": 26,
+  "startSeconds": 780,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": -7.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a wide dirt mountain trail (Roys Peak Track style terrain) at a steady running pace, passing several hikers walking uphill."
+ },
+ {
+  "index": 27,
+  "startSeconds": 810,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Running at a steady pace up a wide mountain dirt trail with clear views of the valley and lake below."
+ },
+ {
+  "index": 28,
+  "startSeconds": 840,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 2,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner is jogging along a mountain dirt trail with scenic lake views. The cadence indicates a steady trail running speed around 8.5 km/h on a slightly uphill to rolling incline."
+ },
+ {
+  "index": 29,
+  "startSeconds": 870,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 4,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner is navigating an unpaved dirt trail along a mountain ridge with a slight incline."
+ },
+ {
+  "index": 30,
+  "startSeconds": 900,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": -1,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging on a dirt trail along a mountain ridge at around 9.2 km/h. The path ascends gently at first before cresting and sloping slightly downhill towards the scenic viewpoint."
+ },
+ {
+  "index": 31,
+  "startSeconds": 930,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": -8,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner is jogging downhill on a wide dirt trail with a consistent cadence of around 172 steps per minute. The slope is moderately steep downward, estimated at around -8% slope."
+ },
+ {
+  "index": 32,
+  "startSeconds": 960,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -4,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a dirt trail around a switchback with a steady running cadence."
+ },
+ {
+  "index": 33,
+  "startSeconds": 990,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -12,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is running downhill at a steady pace along a wide dirt mountain trail with a steep drop-off to Lake Wanaka."
+ },
+ {
+  "index": 34,
+  "startSeconds": 1020,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": -5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a dirt mountain trail at a steady pace of around 9.8 km/h on a moderate downhill slope of roughly -5%."
+ },
+ {
+  "index": 35,
+  "startSeconds": 1050,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": -2,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner travels along a dirt mountain trail, starting with a slight climb before rounding a ridge bend around 17:48 and descending down the opposite side overlooking the lake."
+ },
+ {
+  "index": 36,
+  "startSeconds": 1080,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": -3,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner is descending a dirt trail on a mountain contour, passing hikers with a steady running cadence."
+ },
+ {
+  "index": 37,
+  "startSeconds": 1110,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": -5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a wide dirt mountain trail at a steady jogging pace with a cadence of around 160 steps per minute."
+ },
+ {
+  "index": 38,
+  "startSeconds": 1140,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The video shows a runner descending a dirt mountain trail overlooking a lake at a steady pace."
+ },
+ {
+  "index": 39,
+  "startSeconds": 1170,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a wide dirt trail at a steady jog, passing hikers along the way with a clear view of the lake below."
+ },
+ {
+  "index": 40,
+  "startSeconds": 1200,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": -4,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a gentle dirt mountain trail at a moderate trail jogging pace."
+ },
+ {
+  "index": 41,
+  "startSeconds": 1230,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a mountain dirt trail overlooking a lake at a steady running pace."
+ },
+ {
+  "index": 42,
+  "startSeconds": 1260,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner maintains a steady trail jogging pace along a dirt mountain path overlooking a lake, passing several hikers along the way."
+ },
+ {
+  "index": 43,
+  "startSeconds": 1290,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The camera displays a steady downhill run along a dirt mountain trail with visible cadence of around 165-170 steps per minute."
+ },
+ {
+  "index": 44,
+  "startSeconds": 1320,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a dirt mountain trail at a steady jog/run with a visible negative slope towards the valley and lake."
+ },
+ {
+  "index": 45,
+  "startSeconds": 1350,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a dirt mountain trail at a steady running pace of around 180 steps per minute."
+ },
+ {
+  "index": 46,
+  "startSeconds": 1380,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": -3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Running downhill along a dirt path overlooking a lake with a steady cadence."
+ },
+ {
+  "index": 47,
+  "startSeconds": 1410,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -3.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging along a clear dirt mountain trail, maintaining a steady cadence of around 160 steps per minute on a gentle downhill gradient."
+ },
+ {
+  "index": 48,
+  "startSeconds": 1440,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 4,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner maintains a steady trail-jogging cadence along a wide dirt track with a slight uphill gradient."
+ },
+ {
+  "index": 49,
+  "startSeconds": 1470,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The camera is moving at a steady running pace along a dirt mountain trail with a moderate uphill gradient."
+ },
+ {
+  "index": 50,
+  "startSeconds": 1500,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": -3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging at a steady cadence along a dirt mountain trail with a slight downhill gradient while passing hikers."
+ },
+ {
+  "index": 51,
+  "startSeconds": 1530,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": -5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Running downhill on an unpaved dirt trail overlooking a lake and mountains with a step cadence around 162 spm."
+ },
+ {
+  "index": 52,
+  "startSeconds": 1560,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": -3,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner is descending a gentle dirt trail path along a hillside overlooking a lake."
+ },
+ {
+  "index": 53,
+  "startSeconds": 1590,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": -2,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail running pace on a wide dirt path along a hillside contour with a slight downhill gradient."
+ },
+ {
+  "index": 54,
+  "startSeconds": 1620,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -4,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner is descending along a dirt double-track trail overlooking a lake at a steady, moderate cadence."
+ },
+ {
+  "index": 55,
+  "startSeconds": 1650,
+  "durationSeconds": 30,
+  "speedKph": 11,
+  "inclinePercent": -8,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a dirt and grass trail along a hillside with scenic views of a lake."
+ },
+ {
+  "index": 56,
+  "startSeconds": 1680,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": -8,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner is descending a dirt trail overlooking a lake at a steady pace."
+ },
+ {
+  "index": 57,
+  "startSeconds": 1710,
+  "durationSeconds": 30,
+  "speedKph": 10.8,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner is jogging downhill on a wide dirt trail overlooking a lake with clear horizon markers and regular footfall bobs."
+ },
+ {
+  "index": 58,
+  "startSeconds": 1740,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -4.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner is trail running along a mountain ridge path with a slight downhill gradient overlooking a lake."
+ },
+ {
+  "index": 59,
+  "startSeconds": 1770,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -6,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is trail running downhill on a dirt path with scenic lake views at a steady pace."
+ },
+ {
+  "index": 60,
+  "startSeconds": 1800,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": -3.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail jogging pace downhill on a dirt track with clear step cadences of approximately 162 steps per minute."
+ },
+ {
+  "index": 61,
+  "startSeconds": 1830,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 3.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging at a steady pace of around 150 steps per minute along a dirt trail with a mild uphill gradient."
+ },
+ {
+  "index": 62,
+  "startSeconds": 1860,
+  "durationSeconds": 30,
+  "speedKph": 10.8,
+  "inclinePercent": -3.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending slightly on a wide dirt trail cut into a hillside overlooking a lake, running at a moderate cadence of ~160 SPM."
+ },
+ {
+  "index": 63,
+  "startSeconds": 1890,
+  "durationSeconds": 30,
+  "speedKph": 11.8,
+  "inclinePercent": -8,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The camera runner maintains a steady downhill running pace on a wide gravel dirt trail overlooking a lake."
+ },
+ {
+  "index": 64,
+  "startSeconds": 1920,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 4,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is maintaining a steady jogging pace on a dirt trail ascending moderately along a mountain side overlooking a lake."
+ },
+ {
+  "index": 65,
+  "startSeconds": 1950,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": -4,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The video shows trail running down a gentle dirt path with a scenic lake view."
+ },
+ {
+  "index": 66,
+  "startSeconds": 1980,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": -9,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a wide dirt trail overlooking a lake at a steady downhill running pace with a footfall cadence around 165 steps per minute."
+ },
+ {
+  "index": 67,
+  "startSeconds": 2010,
+  "durationSeconds": 30,
+  "speedKph": 10.8,
+  "inclinePercent": -6,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a dirt trail with loose rocks, passing hikers along the path."
+ },
+ {
+  "index": 68,
+  "startSeconds": 2040,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -7,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a dirt trail overlooking a lake at a steady, controlled pace."
+ },
+ {
+  "index": 69,
+  "startSeconds": 2070,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": -8,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Running downhill on a wide dirt trail at a steady cadence."
+ },
+ {
+  "index": 70,
+  "startSeconds": 2100,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": -9,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is running downhill on a dirt mountain trail with a lake and valley view ahead."
+ },
+ {
+  "index": 71,
+  "startSeconds": 2130,
+  "durationSeconds": 30,
+  "speedKph": 8.2,
+  "inclinePercent": 3,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "Runner is jogging along a dirt trail overlooking a lake and mountain landscape, pausing briefly around 35:55 to cross over a wooden fence stile."
+ },
+ {
+  "index": 72,
+  "startSeconds": 2160,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": -12,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner descending a dirt mountain trail at a steady downhill run with high cadence, passing a hiker along the way."
+ },
+ {
+  "index": 73,
+  "startSeconds": 2190,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner is descending a dirt trail switchback at a steady jogging pace."
+ },
+ {
+  "index": 74,
+  "startSeconds": 2220,
+  "durationSeconds": 30,
+  "speedKph": 10.8,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner descending a dirt trail on a hillside with clear view of the valley below at a steady running pace."
+ },
+ {
+  "index": 75,
+  "startSeconds": 2250,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a dirt trail overlooking a lake at a steady pace."
+ },
+ {
+  "index": 76,
+  "startSeconds": 2280,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The video shows a steady downhill run along a dirt trail with scenic mountain and lake views."
+ },
+ {
+  "index": 77,
+  "startSeconds": 2310,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging downhill on a wide, unpaved gravel/dirt trail with a clear view of the lake in the background."
+ },
+ {
+  "index": 78,
+  "startSeconds": 2340,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a wide dirt trail at a steady downhill jog, with a clear downward slope toward the valley and lake below."
+ },
+ {
+  "index": 79,
+  "startSeconds": 2370,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": -1.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging along a dirt hill trail with a very slight downhill slope overall."
+ },
+ {
+  "index": 80,
+  "startSeconds": 2400,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": -9,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging downhill along an unpaved dirt trail overlooking a lake and surrounding hills."
+ },
+ {
+  "index": 81,
+  "startSeconds": 2430,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a dirt trail towards a lake at a steady downhill running pace."
+ },
+ {
+  "index": 82,
+  "startSeconds": 2460,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -12,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Descending a dirt trail with scenic lake view, steady running pace."
+ },
+ {
+  "index": 83,
+  "startSeconds": 2490,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": -9,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The video shows a continuous downhill run along an unpaved dirt trail with clear visibility of the slope and horizon."
+ },
+ {
+  "index": 84,
+  "startSeconds": 2520,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": -10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a dirt trail downhill overlooking a valley at a steady running pace."
+ },
+ {
+  "index": 85,
+  "startSeconds": 2550,
+  "durationSeconds": 30,
+  "speedKph": 6.2,
+  "inclinePercent": -5,
+  "confidence": 0.75,
+  "terrain": "trail",
+  "note": "The clip begins with downhill trail running at around 8.5 km/h, which slows down as the run finishes and transitions into a outro screen and static landscape view."
+ },
+ {
+  "index": 86,
+  "startSeconds": 2580,
+  "durationSeconds": 7,
+  "speedKph": 0,
+  "inclinePercent": -15,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The camera is stationary on a high mountain trail, looking downhill at a panoramic lake view."
+ }
+]

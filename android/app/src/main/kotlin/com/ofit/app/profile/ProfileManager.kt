@@ -15,6 +15,8 @@ data class Profile(
     /** Avatar colour, ARGB. */
     val color: Long,
     val accent: OfitAccent,
+    /** An icon from ProfileIcons, or null for the initial. */
+    val icon: String? = null,
 ) {
     val initial: String get() = name.trim().firstOrNull()?.uppercase() ?: "?"
 }
@@ -54,9 +56,9 @@ class ProfileManager(context: Context) {
     }
 
     /** Add a profile; returns it. */
-    fun add(name: String, color: Long, accent: OfitAccent): Profile {
+    fun add(name: String, color: Long, accent: OfitAccent, icon: String? = null): Profile {
         val id = (_profiles.value.maxOfOrNull { it.id } ?: 0) + 1
-        val profile = Profile(id, name.trim().ifBlank { "Runner $id" }, color, accent)
+        val profile = Profile(id, name.trim().ifBlank { "Runner $id" }, color, accent, icon)
         save(_profiles.value + profile)
         return profile
     }
@@ -96,7 +98,8 @@ class ProfileManager(context: Context) {
                     .put("id", it.id)
                     .put("name", it.name)
                     .put("color", it.color)
-                    .put("accent", it.accent.name),
+                    .put("accent", it.accent.name)
+                    .put("icon", it.icon ?: ""),
             )
         }
         prefs.edit().putString(KEY_LIST, array.toString()).apply()
@@ -108,7 +111,13 @@ class ProfileManager(context: Context) {
             val array = JSONArray(prefs.getString(KEY_LIST, "[]"))
             (0 until array.length()).map { i ->
                 val o = array.getJSONObject(i)
-                Profile(o.getInt("id"), o.getString("name"), o.getLong("color"), OfitAccent.fromName(o.optString("accent")))
+                Profile(
+                    o.getInt("id"),
+                    o.getString("name"),
+                    o.getLong("color"),
+                    OfitAccent.fromName(o.optString("accent")),
+                    o.optString("icon").ifBlank { null },
+                )
             }
         }.getOrDefault(emptyList())
         return list.ifEmpty { listOf(Profile(1, "Me", AVATAR_COLORS.first(), OfitAccent.LAVENDER)) }

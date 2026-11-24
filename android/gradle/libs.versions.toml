@@ -31,6 +31,7 @@ androidx-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material-icons = { module = "androidx.compose.material:material-icons-extended" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version = "1.1.7" }
+androidx-health-connect = { module = "androidx.health.connect:connect-client", version = "1.1.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

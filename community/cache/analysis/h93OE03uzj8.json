@@ -1,0 +1,722 @@
+[
+ {
+  "index": 0,
+  "startSeconds": 0,
+  "durationSeconds": 30,
+  "speedKph": 0,
+  "inclinePercent": 0,
+  "confidence": 0.2,
+  "terrain": "flat",
+  "note": "Intro sequence showing channel logo and Relive map graphics transitioning to a flat paved coastal promenade."
+ },
+ {
+  "index": 1,
+  "startSeconds": 30,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jog on a level beachfront promenade."
+ },
+ {
+  "index": 2,
+  "startSeconds": 60,
+  "durationSeconds": 30,
+  "speedKph": 7.4,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner is jogging on a flat paved beach promenade at an average pace of around 13 minutes per mile (7.4 km/h)."
+ },
+ {
+  "index": 3,
+  "startSeconds": 90,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner is moving along a flat, paved oceanfront promenade at a steady running pace of around 9.5 km/h."
+ },
+ {
+  "index": 4,
+  "startSeconds": 120,
+  "durationSeconds": 30,
+  "speedKph": 11.3,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner is moving along a flat paved beachfront promenade at a steady jogging pace of around 11.3 km/h."
+ },
+ {
+  "index": 5,
+  "startSeconds": 150,
+  "durationSeconds": 30,
+  "speedKph": 12.1,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a steady pace of around 7:55 - 8:07 min/mi (approx. 12.1 km/h) along a flat paved beachfront promenade."
+ },
+ {
+  "index": 6,
+  "startSeconds": 180,
+  "durationSeconds": 30,
+  "speedKph": 11.7,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner is maintaining a steady jogging pace of around 8:14 min/mi (~11.7 km/h) along a completely flat paved beachfront promenade."
+ },
+ {
+  "index": 7,
+  "startSeconds": 210,
+  "durationSeconds": 30,
+  "speedKph": 11.6,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a flat paved beach promenade at a steady pace of ~8:20/mi (11.6 km/h)."
+ },
+ {
+  "index": 8,
+  "startSeconds": 240,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a flat paved beachfront promenade at a pace of roughly 8:25 min/mi (11.5 km/h)."
+ },
+ {
+  "index": 9,
+  "startSeconds": 270,
+  "durationSeconds": 30,
+  "speedKph": 11.36,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The telemetry overlay shows a steady pace of around 8:30 per mile (11.36 km/h) on a flat coastal promenade."
+ },
+ {
+  "index": 10,
+  "startSeconds": 300,
+  "durationSeconds": 30,
+  "speedKph": 11.4,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running on a flat paved promenade along the beach with visible telemetry indicating an average pace of 8:30 min/mi (11.4 km/h) and 0 degree incline."
+ },
+ {
+  "index": 11,
+  "startSeconds": 330,
+  "durationSeconds": 30,
+  "speedKph": 11.4,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running at a steady pace of ~8:28-8:30 min/mile (11.4 kph) on a flat oceanfront promenade."
+ },
+ {
+  "index": 12,
+  "startSeconds": 360,
+  "durationSeconds": 30,
+  "speedKph": 11.3,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a flat paved beach promenade at a consistent pace of ~8:33 min/mi (11.3 km/h)."
+ },
+ {
+  "index": 13,
+  "startSeconds": 390,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a steady pace of around 8:37-8:40 min/mi (approx. 11.2 km/h) on a flat beachfront promenade with 0% incline."
+ },
+ {
+  "index": 14,
+  "startSeconds": 420,
+  "durationSeconds": 30,
+  "speedKph": 11.45,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a flat paved beach boardwalk at roughly 8:25/mi pace (~11.45 km/h)."
+ },
+ {
+  "index": 15,
+  "startSeconds": 450,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a flat paved beach promenade at an average pace of around 8:21 min/mile (11.5 km/h)."
+ },
+ {
+  "index": 16,
+  "startSeconds": 480,
+  "durationSeconds": 30,
+  "speedKph": 11.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Running along a flat paved beachfront promenade at a steady pace of around 8:03-8:19 min/mile (11.8 km/h)."
+ },
+ {
+  "index": 17,
+  "startSeconds": 510,
+  "durationSeconds": 30,
+  "speedKph": 12.05,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The video shows a runner on a flat beachfront promenade moving at a steady pace of around 8:00 min/mi (approx. 12.05 km/h)."
+ },
+ {
+  "index": 18,
+  "startSeconds": 540,
+  "durationSeconds": 30,
+  "speedKph": 12.1,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a flat paved beachfront promenade at a steady pace of around 7:57 per mile (12.1 km/h)."
+ },
+ {
+  "index": 19,
+  "startSeconds": 570,
+  "durationSeconds": 30,
+  "speedKph": 11.9,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The video shows a runner on a flat coastal promenade/sidewalk with a visible pace of ~8:05 min/mile (approx. 11.9 km/h)."
+ },
+ {
+  "index": 20,
+  "startSeconds": 600,
+  "durationSeconds": 30,
+  "speedKph": 11.8,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains an average pace of around 8:09 per mile (11.8 km/h) along a flat paved beach promenade."
+ },
+ {
+  "index": 21,
+  "startSeconds": 630,
+  "durationSeconds": 30,
+  "speedKph": 11.7,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a steady pace of around 8:14 min/mi (11.7 kph) on a completely flat paved beachfront promenade."
+ },
+ {
+  "index": 22,
+  "startSeconds": 660,
+  "durationSeconds": 30,
+  "speedKph": 11.6,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner is moving along a paved beachfront promenade at a steady pace of around 8:20 min/mi (11.6 km/h) on completely flat terrain."
+ },
+ {
+  "index": 23,
+  "startSeconds": 690,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a steady pace of around 8:23 min/mile (11.5 km/h) on a flat, paved beachfront promenade with zero incline."
+ },
+ {
+  "index": 24,
+  "startSeconds": 720,
+  "durationSeconds": 30,
+  "speedKph": 11.45,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner is moving at a steady pace of around 8:25-8:27 per mile on a completely flat paved beachfront promenade."
+ },
+ {
+  "index": 25,
+  "startSeconds": 750,
+  "durationSeconds": 30,
+  "speedKph": 11.4,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a steady pace of around 8:27 to 8:31 min/mile (approx. 11.4 km/h) on a flat, paved beachfront promenade."
+ },
+ {
+  "index": 26,
+  "startSeconds": 780,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running at a steady pace of ~8:37 min/mi (11.2 km/h) along a flat beachside paved promenade."
+ },
+ {
+  "index": 27,
+  "startSeconds": 810,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a flat beachfront promenade at a pace of roughly 8:38-8:39 min/mi (11.2 km/h)."
+ },
+ {
+  "index": 28,
+  "startSeconds": 840,
+  "durationSeconds": 30,
+  "speedKph": 11.1,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a flat paved beachfront promenade at a pace around 8:42/mi (11.1 km/h)."
+ },
+ {
+  "index": 29,
+  "startSeconds": 870,
+  "durationSeconds": 30,
+  "speedKph": 11,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running at a steady pace of ~8:45/mi (11.0 km/h) on a flat beachfront promenade."
+ },
+ {
+  "index": 30,
+  "startSeconds": 900,
+  "durationSeconds": 30,
+  "speedKph": 11,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a consistent pace of around 8:46 min/mile (11.0 km/h) along a completely flat paved seaside promenade."
+ },
+ {
+  "index": 31,
+  "startSeconds": 930,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a flat paved beachside promenade at a steady pace of approximately 8:35/mi (11.2 km/h)."
+ },
+ {
+  "index": 32,
+  "startSeconds": 960,
+  "durationSeconds": 30,
+  "speedKph": 11.3,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a steady pace of around 8:30 min/mile (11.3 km/h) along a flat, paved beachfront promenade."
+ },
+ {
+  "index": 33,
+  "startSeconds": 990,
+  "durationSeconds": 30,
+  "speedKph": 10.9,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is moving at a steady pace of around 8:49-8:50 min/mi (10.9 km/h) along a flat paved beach promenade before turning onto the flat sandy shore."
+ },
+ {
+  "index": 34,
+  "startSeconds": 1020,
+  "durationSeconds": 30,
+  "speedKph": 6.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner moves across flat sandy beach terrain before turning onto a paved coastal walkway at a moderate jogging speed."
+ },
+ {
+  "index": 35,
+  "startSeconds": 1050,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner maintains a steady pace along a flat paved coastal promenade with a step cadence of around 165 steps per minute."
+ },
+ {
+  "index": 36,
+  "startSeconds": 1080,
+  "durationSeconds": 30,
+  "speedKph": 10.9,
+  "inclinePercent": 1,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains an average pace of around 8:52 min/mi (10.9 km/h) on a flat, paved beachfront promenade."
+ },
+ {
+  "index": 37,
+  "startSeconds": 1110,
+  "durationSeconds": 30,
+  "speedKph": 10.7,
+  "inclinePercent": 0.5,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains an average pace of around 9:00 min/mi (approx. 10.7 kph) on a flat, paved seaside promenade with a slight 0.3 to 0.5 degree incline."
+ },
+ {
+  "index": 38,
+  "startSeconds": 1140,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0.3,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running at a steady pace of around 9:12-9:15 min/mile (approx. 10.5 km/h) on a flat, paved seaside promenade."
+ },
+ {
+  "index": 39,
+  "startSeconds": 1170,
+  "durationSeconds": 30,
+  "speedKph": 10.7,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner is maintaining a steady pace of around 9:01-9:05 min/mi on a completely flat paved beachfront promenade."
+ },
+ {
+  "index": 40,
+  "startSeconds": 1200,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a flat paved beach promenade at a consistent pace of ~9:11/mi (10.5 km/h)."
+ },
+ {
+  "index": 41,
+  "startSeconds": 1230,
+  "durationSeconds": 30,
+  "speedKph": 10.4,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a steady pace of around 9:17 min/mi (10.4 km/h) along a flat paved beachfront promenade."
+ },
+ {
+  "index": 42,
+  "startSeconds": 1260,
+  "durationSeconds": 30,
+  "speedKph": 10.3,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jog on a flat, paved beachfront promenade with telemetry indicating a pace of approximately 9:24/mi (10.3 kph) and a 0.1 degree incline."
+ },
+ {
+  "index": 43,
+  "startSeconds": 1290,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a consistent pace of approximately 9:28 min/mile (10.2 km/h) along a flat paved beachfront sidewalk."
+ },
+ {
+  "index": 44,
+  "startSeconds": 1320,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0.1,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running at a steady pace of 9:27 min/mi (10.2 kph) along a flat paved beach promenade."
+ },
+ {
+  "index": 45,
+  "startSeconds": 1350,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a flat paved beach promenade at an average pace of approximately 9:25 min/mi (10.2 kph)."
+ },
+ {
+  "index": 46,
+  "startSeconds": 1380,
+  "durationSeconds": 30,
+  "speedKph": 10.3,
+  "inclinePercent": 0.2,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a flat beachfront sidewalk at a steady pace of around 9:23 min/mile (10.3 km/h)."
+ },
+ {
+  "index": 47,
+  "startSeconds": 1410,
+  "durationSeconds": 30,
+  "speedKph": 10.3,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a steady running pace around 9:23/mi (10.3 km/h) along a flat paved beach promenade."
+ },
+ {
+  "index": 48,
+  "startSeconds": 1440,
+  "durationSeconds": 30,
+  "speedKph": 10.3,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a flat paved beach promenade at a steady pace of around 9:23 min/mi (10.3 km/h)."
+ },
+ {
+  "index": 49,
+  "startSeconds": 1470,
+  "durationSeconds": 30,
+  "speedKph": 10.3,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running on a flat paved promenade along the beach at a steady pace of ~9:23/mi (10.3 km/h)."
+ },
+ {
+  "index": 50,
+  "startSeconds": 1500,
+  "durationSeconds": 30,
+  "speedKph": 10.4,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The video shows running along a flat paved beach promenade at a consistent pace around 9:20/mi (10.4 km/h)."
+ },
+ {
+  "index": 51,
+  "startSeconds": 1530,
+  "durationSeconds": 30,
+  "speedKph": 10.4,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running at a steady pace of approximately 9:19 min/mi (10.4 km/h) along a flat paved beachfront promenade."
+ },
+ {
+  "index": 52,
+  "startSeconds": 1560,
+  "durationSeconds": 30,
+  "speedKph": 10.4,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner is moving along a flat paved beach promenade at a steady pace of around 9:15 min/mi (10.4 kph)."
+ },
+ {
+  "index": 53,
+  "startSeconds": 1590,
+  "durationSeconds": 30,
+  "speedKph": 10.4,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner is moving along a flat, paved beachfront promenade at a steady pace of around 9:16 min/mi (~10.4 km/h)."
+ },
+ {
+  "index": 54,
+  "startSeconds": 1620,
+  "durationSeconds": 30,
+  "speedKph": 10.4,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a consistent pace of approximately 9:13 to 9:16 per mile (10.4 km/h) along a flat paved beach promenade."
+ },
+ {
+  "index": 55,
+  "startSeconds": 1650,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running at a steady pace of ~9:10 min/mi along a flat paved beachside promenade."
+ },
+ {
+  "index": 56,
+  "startSeconds": 1680,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a flat paved oceanfront broadwalk at a steady pace of around 9:08 min/mile (10.5 km/h)."
+ },
+ {
+  "index": 57,
+  "startSeconds": 1710,
+  "durationSeconds": 30,
+  "speedKph": 10.4,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner is moving along a flat beachfront promenade at a pace of approximately 9:12 per mile, which corresponds to roughly 10.4 km/h."
+ },
+ {
+  "index": 58,
+  "startSeconds": 1740,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a consistent pace around 9:11-9:13 min/mile (10.5 km/h) along a flat paved beachfront promenade."
+ },
+ {
+  "index": 59,
+  "startSeconds": 1770,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner is moving along a flat paved beach promenade at a steady pace of around 9:09 min/mile (10.5 km/h)."
+ },
+ {
+  "index": 60,
+  "startSeconds": 1800,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running along a paved beachfront promenade at a steady pace around 10.5 km/h (9:10/mi)."
+ },
+ {
+  "index": 61,
+  "startSeconds": 1830,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a steady pace of approximately 9:09 per mile (10.5 km/h) along a flat paved beachfront promenade."
+ },
+ {
+  "index": 62,
+  "startSeconds": 1860,
+  "durationSeconds": 30,
+  "speedKph": 10.6,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner is maintaining a steady pace of around 9:04/mi (10.6 km/h) along a flat paved beachside promenade."
+ },
+ {
+  "index": 63,
+  "startSeconds": 1890,
+  "durationSeconds": 30,
+  "speedKph": 10.6,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a consistent pace of approximately 9:02 min/mile (10.6 km/h) along a flat, paved beachfront promenade."
+ },
+ {
+  "index": 64,
+  "startSeconds": 1920,
+  "durationSeconds": 30,
+  "speedKph": 10.67,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner is moving at a steady pace of around 9:03 min/mile (10.67 km/h) along a flat beachfront paved promenade."
+ },
+ {
+  "index": 65,
+  "startSeconds": 1950,
+  "durationSeconds": 30,
+  "speedKph": 10.65,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a consistent pace of approximately 9:04 min/mile (10.65 km/h) on a flat paved beach promenade."
+ },
+ {
+  "index": 66,
+  "startSeconds": 1980,
+  "durationSeconds": 30,
+  "speedKph": 10.65,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "Running at a steady pace of around 9:03 min/mile (10.65 kph) on a flat paved promenade next to the beach."
+ },
+ {
+  "index": 67,
+  "startSeconds": 2010,
+  "durationSeconds": 30,
+  "speedKph": 10.6,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner is maintaining a steady pace of around 9:05 min/mi (10.6 km/h) along a flat beachfront promenade."
+ },
+ {
+  "index": 68,
+  "startSeconds": 2040,
+  "durationSeconds": 30,
+  "speedKph": 10.6,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The runner maintains a consistent pace of approximately 9:06 min/mi (10.6 kph) along a flat beachfront paved promenade."
+ },
+ {
+  "index": 69,
+  "startSeconds": 2070,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "trail",
+  "note": "Runner moves from a paved boardwalk onto a flat sandy beach. On-screen telemetry displays a pace of around 9:07 to 9:10 min/mile (approx. 10.5 km/h) and a near-zero incline (-0.2 degrees)."
+ },
+ {
+  "index": 70,
+  "startSeconds": 2100,
+  "durationSeconds": 30,
+  "speedKph": 9.3,
+  "inclinePercent": -0.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady jogging pace of around 9.3 km/h on loose sand toward the shore, on essentially flat ground."
+ },
+ {
+  "index": 71,
+  "startSeconds": 2130,
+  "durationSeconds": 25,
+  "speedKph": 0,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "other",
+  "note": "Static beach scene transitioning into channel outro logo; no runner movement."
+ }
+]

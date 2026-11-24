@@ -44,6 +44,12 @@ sealed interface AppScreen {
     /** Browse workouts and videos: hero banner and rows. */
     data object Browse : AppScreen
 
+    /** Training plans with a schedule and reminders (P11/P12). */
+    data object Plans : AppScreen
+
+    /** The coach designer: how the virtual coach looks. */
+    data object CoachDesigner : AppScreen
+
     /** Writing a new workout, or changing one that is already saved. */
     data class Editor(val saved: SavedWorkout?) : AppScreen
 
@@ -55,6 +61,9 @@ sealed interface AppScreen {
         val videoId: String?,
     ) : AppScreen
 
+    /** After a workout: its summary (the History entry saved for it, found by its start time). */
+    data class Summary(val startedAfterMillis: Long, val name: String) : AppScreen
+
     /** Running a workout. */
-    data class Run(val saved: SavedWorkout) : AppScreen
+    data class Run(val saved: SavedWorkout, val resumeAtMillis: Long = 0) : AppScreen
 }

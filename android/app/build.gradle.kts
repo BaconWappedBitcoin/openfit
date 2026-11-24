@@ -41,6 +41,7 @@ dependencies {
     implementation(project(":transport"))
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.health.connect)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

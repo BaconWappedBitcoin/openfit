@@ -39,11 +39,15 @@ import com.ofit.app.ui.MenuButton
 
 /**
  * Bring your own key: video-to-workout runs on the user's own Gemini account instead of the shared
- * one, so it is free for them and has no daily limit from OpenFit (spec 009).
+ * one (user decision 2026-11-24: new AI work needs the user's own key; no paid plan for now).
  */
 @Composable
 fun AiKeyScreen(secrets: SecretStore, onBack: () -> Unit) {
     val hasKey by secrets.hasGeminiKey.collectAsStateWithLifecycle()
+    val hasYouTube by secrets.hasYouTubeKey.collectAsStateWithLifecycle()
+    val useServer by secrets.useServer.collectAsStateWithLifecycle()
+    var youtubeInput by remember { mutableStateOf("") }
+    var youtubeError by remember { mutableStateOf<String?>(null) }
     var input by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
     val uri = LocalUriHandler.current
@@ -57,10 +61,58 @@ fun AiKeyScreen(secrets: SecretStore, onBack: () -> Unit) {
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MenuButton()
-            OutlinedButton(onClick = onBack) { Text("Back") }
-            Text("Your Gemini key", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+        com.ofit.app.ui.ScreenHeader("Keys & services", "Your own keys, and whether OpenFit's server is used", onBack = onBack)
+
+        // OpenFit needs no server: off, the tablet does everything with the keys below and reads the
+        // community library straight from the project's public repository (user 2026-11-24).
+        Card(Modifier.widthIn(max = 1000.dp).fillMaxWidth()) {
+            Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text("Use the OpenFit server", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        if (useServer) {
+                            "On: video search, video-to-workout and the coach's facts go through OpenFit's server, " +
+                                "with or without your own key. Sharing and rating workouts need it."
+                        } else {
+                            "Off: no server is used. Search, video-to-workout and the coach's facts run on this tablet " +
+                                "with your own keys below; the community library is read straight from the project's " +
+                                "public repository. Sharing and rating are not available."
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xCCFFFFFF),
+                    )
+                }
+                androidx.compose.material3.Switch(checked = useServer, onCheckedChange = { secrets.setUseServer(it) })
+            }
+            // Self-hosting: point OpenFit at your own copy of backend/ (everything in it is free to run yourself).
+            if (useServer) {
+                val serverUrl by secrets.serverUrl.collectAsStateWithLifecycle()
+                var draft by remember(serverUrl) { mutableStateOf(serverUrl) }
+                var bad by remember { mutableStateOf(false) }
+                Column(Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Server address", fontWeight = FontWeight.SemiBold)
+                    Text(
+                        "Running your own copy of OpenFit's server? Put its address here. HTTPS, or HTTP on your home network.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xB3FFFFFF),
+                    )
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        OutlinedTextField(
+                            value = draft,
+                            onValueChange = { draft = it; bad = false },
+                            singleLine = true,
+                            isError = bad,
+                            supportingText = if (bad) { { Text("That address cannot be used.") } } else null,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+                            modifier = Modifier.weight(1f),
+                        )
+                        Button(onClick = { bad = !secrets.setServerUrl(draft) }, enabled = draft.trim() != serverUrl) { Text("Save") }
+                        if (serverUrl != com.ofit.protocol.ServerUrl.DEFAULT) {
+                            TextButton(onClick = { secrets.setServerUrl(null) }) { Text("Use OpenFit's") }
+                        }
+                    }
+                }
+            }
         }
 
         Card(Modifier.widthIn(max = 1000.dp).fillMaxWidth()) {
@@ -68,13 +120,13 @@ fun AiKeyScreen(secrets: SecretStore, onBack: () -> Unit) {
                 Text("Turn videos into workouts on your own Google account", style = MaterialTheme.typography.titleMedium)
                 Text(
                     "OpenFit uses Google's Gemini to watch a YouTube video and work out the speed and incline. " +
-                        "With your own key, that runs on your account: Google's free tier covers normal use, and " +
-                        "OpenFit's shared daily limit no longer applies to you.",
+                        "Reading a new video needs your own key, on your own account: Google's free tier covers normal use. " +
+                        "Workouts, facts and landmarks others have already made are free without a key.",
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Text(
-                    "Your key stays encrypted on this tablet and is sent only with video-to-workout requests. " +
-                        "The server uses it for that request and never stores or logs it.",
+                    "Your key stays encrypted on this tablet and is sent only with requests for new AI work " +
+                        "(a workout, or the coach's facts and landmarks). The server uses it for that request and never stores or logs it.",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color(0xB3FFFFFF),
                 )
@@ -134,8 +186,47 @@ fun AiKeyScreen(secrets: SecretStore, onBack: () -> Unit) {
                 ) { Text("Save key") }
             }
         }
+
+        // YouTube, for search and video length without the server.
+        Card(Modifier.widthIn(max = 1000.dp).fillMaxWidth()) {
+            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text("YouTube key (optional, for use without the server)", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "Without the OpenFit server, searching for videos and reading a video's length use YouTube's API. " +
+                        "Your Gemini key works for this too once \"YouTube Data API v3\" is turned on for its Google Cloud " +
+                        "project; or add a separate YouTube key here.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Button(onClick = { uri.openUri(YOUTUBE_API_URL) }) { Text("Turn on YouTube Data API v3") }
+                if (hasYouTube) {
+                    val key = secrets.youtubeKey()
+                    Text(if (key != null) "Key saved: ${SecretStore.masked(key)}" else "A key is saved but could not be read; add it again.")
+                    OutlinedButton(onClick = { secrets.clearYouTubeKey() }) { Text("Remove YouTube key") }
+                }
+                OutlinedTextField(
+                    value = youtubeInput,
+                    onValueChange = { youtubeInput = it.trim(); youtubeError = null },
+                    label = { Text("YouTube API key (starts with AIza)") },
+                    singleLine = true,
+                    visualTransformation = PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    isError = youtubeError != null,
+                    supportingText = { youtubeError?.let { Text(it) } },
+                    modifier = Modifier.widthIn(max = 700.dp).fillMaxWidth(),
+                )
+                Button(
+                    onClick = {
+                        if (secrets.setYouTubeKey(youtubeInput)) youtubeInput = ""
+                        else youtubeError = "That doesn't look like a Google API key: it should start with AIza and be 39 characters."
+                    },
+                    enabled = youtubeInput.isNotBlank(),
+                ) { Text("Save YouTube key") }
+            }
+        }
     }
 }
+
+private const val YOUTUBE_API_URL = "https://console.cloud.google.com/apis/library/youtube.googleapis.com"
 
 private const val AI_STUDIO_URL = "https://aistudio.google.com/app/apikey"
 

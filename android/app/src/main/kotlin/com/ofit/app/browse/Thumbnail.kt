@@ -38,24 +38,28 @@ private object ThumbnailCache {
 
     fun get(id: String): Bitmap? = cache.get(id)
 
-    suspend fun load(id: String): Bitmap? = withContext(Dispatchers.IO) {
-        cache.get(id)?.let { return@withContext it }
-        runCatching {
-            val connection = URL("https://i.ytimg.com/vi/$id/hqdefault.jpg").openConnection() as HttpURLConnection
+    /** [hiRes]: the 1280-wide image for a full-width banner, falling back to the 480-wide one. */
+    suspend fun load(id: String, hiRes: Boolean = false): Bitmap? = withContext(Dispatchers.IO) {
+        val key = if (hiRes) "$id@hi" else id
+        cache.get(key)?.let { return@withContext it }
+        fun fetch(name: String): Bitmap? = runCatching {
+            val connection = URL("https://i.ytimg.com/vi/$id/$name.jpg").openConnection() as HttpURLConnection
             connection.connectTimeout = 8_000
             connection.readTimeout = 8_000
+            if (connection.responseCode != 200) return@runCatching null
             connection.inputStream.use { BitmapFactory.decodeStream(it) }
                 .also { connection.disconnect() }
-        }.getOrNull()?.also { cache.put(id, it) }
+        }.getOrNull()
+        (if (hiRes) fetch("maxresdefault") ?: fetch("hqdefault") else fetch("hqdefault"))?.also { cache.put(key, it) }
     }
 }
 
 /** A workout's picture: its video's thumbnail, or a drawing of its incline profile. */
 @Composable
-fun WorkoutArt(videoId: String?, steps: List<WorkoutStep>, accent: Color, modifier: Modifier = Modifier) {
-    var bitmap by remember(videoId) { mutableStateOf(videoId?.let { ThumbnailCache.get(it) }) }
-    LaunchedEffect(videoId) {
-        if (videoId != null && bitmap == null) bitmap = ThumbnailCache.load(videoId)
+fun WorkoutArt(videoId: String?, steps: List<WorkoutStep>, accent: Color, modifier: Modifier = Modifier, hiRes: Boolean = false) {
+    var bitmap by remember(videoId, hiRes) { mutableStateOf(videoId?.let { ThumbnailCache.get(if (hiRes) "$it@hi" else it) }) }
+    LaunchedEffect(videoId, hiRes) {
+        if (videoId != null && bitmap == null) bitmap = ThumbnailCache.load(videoId, hiRes)
     }
     Box(modifier) {
         val image = bitmap
@@ -69,7 +73,7 @@ fun WorkoutArt(videoId: String?, steps: List<WorkoutStep>, accent: Color, modifi
 
 /** The incline profile as a filled mountain over a dark gradient. */
 @Composable
-private fun ProfileArt(steps: List<WorkoutStep>, accent: Color, modifier: Modifier) {
+internal fun ProfileArt(steps: List<WorkoutStep>, accent: Color, modifier: Modifier) {
     Canvas(
         modifier
             .clipToBounds()
@@ -77,9 +81,13 @@ private fun ProfileArt(steps: List<WorkoutStep>, accent: Color, modifier: Modifi
     ) {
         if (steps.isEmpty()) return@Canvas
         val total = steps.sumOf { it.durationSeconds }.coerceAtLeast(1)
+        // The shape is the incline, unless the incline hardly changes: then it is the speed, so an
+        // interval or pyramid workout on the flat does not draw as a plain box.
+        val inclineVaries = steps.maxOf { it.inclinePercent } - steps.minOf { it.inclinePercent } > 1.5
+        val level: (WorkoutStep) -> Double = if (inclineVaries) { s -> s.inclinePercent } else { s -> s.speedKph }
         // Downhill steps (negative incline) are scaled in too, so the drawing never leaves its frame.
-        val maxIncline = (steps.maxOf { it.inclinePercent }).coerceAtLeast(1.0)
-        val minIncline = (steps.minOf { it.inclinePercent }).coerceAtMost(0.0)
+        val maxIncline = (steps.maxOf(level)).coerceAtLeast(1.0)
+        val minIncline = (steps.minOf(level)).coerceAtMost(0.0)
         val top = size.height * 0.25f
         val bottom = size.height * 0.92f
         fun y(p: Double) = (bottom - (bottom - top) * ((p - minIncline) / (maxIncline - minIncline))).toFloat()
@@ -89,8 +97,8 @@ private fun ProfileArt(steps: List<WorkoutStep>, accent: Color, modifier: Modifi
             val x0 = size.width * t / total
             t += step.durationSeconds
             val x1 = size.width * t / total
-            path.lineTo(x0, y(step.inclinePercent))
-            path.lineTo(x1, y(step.inclinePercent))
+            path.lineTo(x0, y(level(step)))
+            path.lineTo(x1, y(level(step)))
         }
         path.lineTo(size.width, bottom)
         path.close()

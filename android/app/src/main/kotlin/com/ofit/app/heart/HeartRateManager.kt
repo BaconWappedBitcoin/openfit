@@ -27,7 +27,14 @@ data class ShownHeartRate(
 )
 
 /** Average and max over the current (or last) workout (H6). */
-data class HeartRateSummary(val averageBpm: Int?, val maxBpm: Int?)
+data class HeartRateSummary(
+    val averageBpm: Int?,
+    val maxBpm: Int?,
+    /** OpenFit's calorie estimate for the workout so far (see CalorieEstimator), for the HUD. */
+    val calories: Double? = null,
+    /** Seconds in each zone so far, index 0 (below zone 1) to 5 (see ZoneTimer). */
+    val zoneSeconds: List<Long>? = null,
+)
 
 /**
  * The heart-rate strap: choosing it, remembering it, reconnecting to it, and blending its reading
@@ -52,7 +59,12 @@ class HeartRateManager(
         _maxHr.value = prefs.getInt(KEY_MAX_HR, 0).takeIf { it > 0 }
         _age.value = prefs.getInt(KEY_AGE, 0).takeIf { it > 0 }
         _coachLevel.value = com.ofit.protocol.HeartRateCoach.Aggressiveness.fromName(prefs.getString(KEY_COACH_LEVEL, null))
+        _weightKg.value = prefs.getFloat(KEY_WEIGHT_KG, 0f).toDouble().takeIf { it > 0 }
+        _sex.value = prefs.getString(KEY_SEX, null)?.let { runCatching { com.ofit.protocol.Sex.valueOf(it) }.getOrNull() }
         record.clear()
+        calorieCounter.reset()
+        zoneTimer.reset()
+        _calories.value = null
         lastRecordedElapsed = -1
         _summary.value = HeartRateSummary(null, null)
         runCatching { connectToSaved() }
@@ -75,6 +87,44 @@ class HeartRateManager(
 
     private val _age = MutableStateFlow(prefs.getInt(KEY_AGE, 0).takeIf { it > 0 })
     val age: StateFlow<Int?> = _age.asStateFlow()
+
+    private val _weightKg = MutableStateFlow(prefs.getFloat(KEY_WEIGHT_KG, 0f).toDouble().takeIf { it > 0 })
+
+    /** Body weight in kg, for the calorie estimate (per profile). */
+    val weightKg: StateFlow<Double?> = _weightKg.asStateFlow()
+
+    private val _sex = MutableStateFlow(
+        prefs.getString(KEY_SEX, null)?.let { runCatching { com.ofit.protocol.Sex.valueOf(it) }.getOrNull() },
+    )
+
+    /** Sex, for the calorie estimate (per profile); null is "not given". */
+    val sex: StateFlow<com.ofit.protocol.Sex?> = _sex.asStateFlow()
+
+    fun setWeightKg(value: Double?) {
+        val v = value?.takeIf { it in 25.0..300.0 }
+        prefs.edit().putFloat(KEY_WEIGHT_KG, (v ?: 0.0).toFloat()).apply()
+        _weightKg.value = v
+    }
+
+    fun setSex(value: com.ofit.protocol.Sex?) {
+        prefs.edit().putString(KEY_SEX, value?.name).apply()
+        _sex.value = value
+    }
+
+    /** What the calorie estimate knows about this runner. */
+    val body: com.ofit.protocol.BodyProfile
+        get() = com.ofit.protocol.BodyProfile(_age.value, _sex.value, _weightKg.value)
+
+    private val calorieCounter = com.ofit.protocol.CalorieCounter()
+    private val zoneTimer = com.ofit.protocol.ZoneTimer()
+    private var lastCalorieElapsed = -1L
+    private val _calories = MutableStateFlow<Double?>(null)
+
+    /**
+     * OpenFit's own calorie estimate for the workout so far (see CalorieEstimator): from speed,
+     * incline, heart rate, age, sex and weight. Null before a workout starts.
+     */
+    val calories: StateFlow<Double?> = _calories.asStateFlow()
 
     private val _coachLevel = MutableStateFlow(
         com.ofit.protocol.HeartRateCoach.Aggressiveness.fromName(prefs.getString(KEY_COACH_LEVEL, null)),
@@ -120,6 +170,7 @@ class HeartRateManager(
         _shown.value = ShownHeartRate(bpm, source, if (bpm != null) zones?.zoneOf(bpm) else null)
 
         val snapshot = workout.value
+        countCalories(snapshot, bpm, zones)
         if (snapshot.totalElapsedMillis < lastRecordedElapsed) {
             // A new workout started.
             record.clear()
@@ -127,13 +178,39 @@ class HeartRateManager(
         if (snapshot.isRunning && bpm != null) {
             record.add(snapshot.totalElapsedMillis, bpm)
             lastRecordedElapsed = snapshot.totalElapsedMillis
-            _summary.value = HeartRateSummary(record.average, record.max)
+            _summary.value = _summary.value.copy(averageBpm = record.average, maxBpm = record.max)
         } else if (!snapshot.isActive && !snapshot.isFinished && record.count > 0 &&
             snapshot.totalElapsedMillis == 0L
         ) {
             record.clear()
             lastRecordedElapsed = -1
             _summary.value = HeartRateSummary(null, null)
+        }
+    }
+
+    private fun countCalories(snapshot: WorkoutEngineSnapshot, bpm: Int?, zones: com.ofit.protocol.HeartRateZones?) {
+        val elapsed = snapshot.totalElapsedMillis
+        if (snapshot.isRunning) {
+            // A new workout (the clock went back) starts from nothing.
+            if (lastCalorieElapsed < 0 || elapsed + 2_000 < lastCalorieElapsed) {
+                calorieCounter.reset()
+                zoneTimer.reset()
+                lastCalorieElapsed = elapsed
+            }
+            // Only the program's own time counts, so a pause or a video hold adds nothing.
+            val step = (elapsed - lastCalorieElapsed).coerceIn(0, 5_000)
+            calorieCounter.add(step, snapshot.speedKph, snapshot.inclinePercent, bpm, body)
+            zoneTimer.add(step, bpm, zones)
+            lastCalorieElapsed = elapsed
+            _calories.value = calorieCounter.total
+            _summary.value = _summary.value.copy(zoneSeconds = zoneTimer.seconds())
+        } else if (snapshot.isActive) {
+            lastCalorieElapsed = elapsed
+        } else if (!snapshot.isFinished && elapsed == 0L) {
+            calorieCounter.reset()
+            zoneTimer.reset()
+            lastCalorieElapsed = -1
+            _calories.value = null
         }
     }
 
@@ -215,6 +292,8 @@ class HeartRateManager(
         private const val KEY_MAX_HR = "max_hr"
         private const val KEY_AGE = "age"
         private const val KEY_COACH_LEVEL = "coach_level"
+        private const val KEY_WEIGHT_KG = "weight_kg"
+        private const val KEY_SEX = "sex"
         private const val TICK_MILLIS = 1_000L
         private const val SCAN_MILLIS = 20_000L
     }

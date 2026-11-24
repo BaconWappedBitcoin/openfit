@@ -11,6 +11,11 @@ export interface Step {
 export interface Program {
   name: string;
   steps: Step[];
+  /**
+   * The walker's or runner's own average ground speed in the video (km/h), before any limits:
+   * the app's "Match my speed" plays the video at belt speed / this pace.
+   */
+  videoPaceKph?: number;
 }
 
 export const LIMITS = {
@@ -55,11 +60,41 @@ export function sanitize(input: unknown): Program {
     };
   });
   if (total > LIMITS.maxTotalSeconds) throw new ProgramError("programme is too long");
+  // The video's own pace, when given: kept only if it is a plausible walking or running speed.
+  const pace = (raw as { videoPaceKph?: unknown }).videoPaceKph;
+  if (typeof pace === "number" && Number.isFinite(pace) && pace >= 0.5 && pace <= 30) {
+    return { name, steps, videoPaceKph: Math.round(pace * 100) / 100 };
+  }
   return { name, steps };
 }
 
 export function totalSeconds(p: Program): number {
   return p.steps.reduce((n, s) => n + s.durationSeconds, 0);
+}
+
+/**
+ * How hard a workout is, for the app's Easy/Medium/Hard and Walk/Run labels: the time-weighted
+ * average METs from the ACSM walking (below 6.4 km/h) and running equations, uphill grade only,
+ * and the share of time spent at running speed. The app turns these into labels (WorkoutRating).
+ */
+export function effort(p: Program): { mets: number; runShare: number } {
+  const steps = p.steps.filter((s) => s.durationSeconds > 0);
+  const total = Math.max(1, steps.reduce((n, s) => n + s.durationSeconds, 0));
+  let mets = 0;
+  let run = 0;
+  for (const s of steps) {
+    mets += stepMets(s.speedKph, s.inclinePercent) * s.durationSeconds;
+    if (s.speedKph >= 6.4) run += s.durationSeconds;
+  }
+  return { mets: Math.round((mets / total) * 100) / 100, runShare: Math.round((run / total) * 100) / 100 };
+}
+
+function stepMets(speedKph: number, inclinePercent: number): number {
+  if (speedKph <= 0) return 1;
+  const v = (speedKph * 1000) / 60;
+  const grade = Math.max(0, inclinePercent) / 100;
+  const vo2 = speedKph < 6.4 ? 0.1 * v + 1.8 * v * grade + 3.5 : 0.2 * v + 0.9 * v * grade + 3.5;
+  return vo2 / 3.5;
 }
 
 /** A video title shortened for a workout name: cut at a word, never mid-word, with no trailing dash. */

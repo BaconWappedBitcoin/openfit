@@ -50,6 +50,8 @@ fun OfitDropdownMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
+    /** See-through, with no shadow: for adjusting something the menu would otherwise cover. */
+    seeThrough: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     DropdownMenu(
@@ -57,10 +59,11 @@ fun OfitDropdownMenu(
         onDismissRequest = onDismissRequest,
         modifier = modifier.widthIn(min = 240.dp).padding(vertical = 4.dp),
         offset = DpOffset(0.dp, 6.dp),
-        containerColor = OfitMenuColors.container,
-        border = BorderStroke(1.dp, OfitMenuColors.border),
+        containerColor = if (seeThrough) OfitMenuColors.container.copy(alpha = 0.12f) else OfitMenuColors.container,
+        border = BorderStroke(1.dp, if (seeThrough) androidx.compose.ui.graphics.Color.Transparent else OfitMenuColors.border),
         shape = RoundedCornerShape(18.dp),
-        shadowElevation = 16.dp,
+        shadowElevation = if (seeThrough) 0.dp else 16.dp,
+        tonalElevation = 0.dp,
         content = content,
     )
 }

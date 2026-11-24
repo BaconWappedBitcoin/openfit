@@ -109,6 +109,9 @@ class TreadmillController(context: Context) {
         onMessage = { message -> _message.value = message },
     )
 
+    /** Health Connect (P17): finished workouts written there when turned on. */
+    val health = com.ofit.app.history.HealthConnectSync(appContext, scope)
+
     /** Every finished workout, for the history screen. */
     val history = com.ofit.app.history.HistoryManager(
         context = appContext,
@@ -118,7 +121,15 @@ class TreadmillController(context: Context) {
         heartSummary = heart.summary,
         preview = workouts.preview,
         fileName = profiles.fileName("history", "json"),
+        program = workouts.runningProgram,
+        estimatedCalories = heart.calories,
+        currentHeartRate = { heart.shown.value.bpm },
     )
+
+    init {
+        // New History entries go to Health Connect when that is turned on (P17).
+        scope.launch { history.entries.collect { health.onHistory(it) } }
+    }
 
     /** Small user settings: the unit system, and this install's anonymous id. */
     val settings: com.ofit.app.settings.AppSettings = com.ofit.app.settings.AppSettings(
@@ -137,7 +148,13 @@ class TreadmillController(context: Context) {
 
     /** Video search, video-to-workout, and the community library. */
     val library = com.ofit.app.library.LibraryManager(
-        api = com.ofit.app.library.LibraryApi(installId = { settings.installId }, geminiKey = { secrets.geminiKey() }),
+        api = com.ofit.app.library.LibraryApi(
+            installId = { settings.installId },
+            geminiKey = { secrets.geminiKey() },
+            useServer = { secrets.useServer.value },
+            baseUrl = { secrets.serverUrl.value },
+            youtubeKey = { secrets.youtubeKey() },
+        ).also { com.ofit.app.library.LibraryApi.shared = it },
         workouts = workouts,
         onMessage = { message -> _message.value = message },
     )
@@ -189,7 +206,11 @@ class TreadmillController(context: Context) {
                 val now = SystemClock.elapsedRealtime()
                 val elapsed = now - last
                 last = now
-                runCatching { workouts.engine.tick(elapsed) }
+                // While the video is held (an ad), the program's clock stands still: no step changes.
+                // Playback speed runs the program's clock faster or slower, with the video.
+                workouts.updateEffectiveRate(holder.state.value.displayedSpeedKph)
+                val scaled = (elapsed * workouts.effectiveRate.value).toLong()
+                runCatching { workouts.engine.tick(if (workouts.videoHeld.value) 0 else scaled) }
             }
         }
         scope.launch {
@@ -219,7 +240,10 @@ class TreadmillController(context: Context) {
             // A machine that is connected is a machine that must be driven, not previewed. The
             // preview is turned off so that the next program started is a real one.
             holder.state.collect { state ->
-                if (state.connectionState == ConnectionState.CONNECTED && workouts.preview.value) {
+                // Never while a no-treadmill workout is running, and never against the runner's choice.
+                if (state.connectionState == ConnectionState.CONNECTED && workouts.preview.value &&
+                    !workouts.noTreadmill.value && !workouts.snapshot.value.isActive
+                ) {
                     workouts.setPreview(false)
                 }
             }
@@ -227,6 +251,8 @@ class TreadmillController(context: Context) {
     }
 
     private companion object {
+        /** Messages from trying to reach the treadmill, cleared when they no longer apply. */
+        private val CONNECT_NOISE = listOf("Could not connect", "Could not reach", "Still trying", "Reconnecting", "Connecting to")
         /** The machine's own poll cadence is about 200 ms. */
         const val POLL_INTERVAL_MILLIS = 250L
 
@@ -242,6 +268,7 @@ class TreadmillController(context: Context) {
 
         /** The remembered treadmill. */
         const val DEVICE_PREFS = "ofit_device"
+        const val KEY_WORKOUT_RUNNING = "workout_running"
         const val SAVED_ADDRESS = "address"
         const val SAVED_NAME = "name"
 
@@ -250,7 +277,9 @@ class TreadmillController(context: Context) {
         const val AUTO_CONNECT_WAIT_MILLIS = 15_000L
 
         /** Spec 007: idle time before OpenFit lets go of the treadmill. */
-        const val IDLE_DISCONNECT_MILLIS = 60_000L
+        // 5 min (user request, 2026-11-24): connecting from Devices outside a workout is useful, so
+        // the link is kept as long as on the workout screen.
+        const val IDLE_DISCONNECT_MILLIS = 5 * 60_000L
         const val IDLE_KEEPALIVE_MILLIS = 5 * 60_000L
         const val HANDS_OFF_CHECK_MILLIS = 2_000L
 
@@ -311,7 +340,49 @@ class TreadmillController(context: Context) {
             android.util.Log.i("ofit-ble", "limits from the machine: $next")
             _limits.value = next
         }
+        // Remember the range, so the editor and No treadmill mode know this treadmill's real top
+        // speed even when it is off (user report: the editor stopped at 7.5 mph on a 10 mph machine).
+        if (maxKph != null || maxGrade != null) {
+            machinePrefs.edit().apply {
+                maxKph?.let { putFloat("maxKph", it.toFloat()) }
+                minKph?.let { putFloat("minKph", it.toFloat()) }
+                maxGrade?.let { putFloat("maxGrade", it.toFloat()) }
+                minGrade?.let { putFloat("minGrade", it.toFloat()) }
+            }.apply()
+        }
     }
+
+    private val machinePrefs by lazy { appContext.getSharedPreferences("ofit_machine", android.content.Context.MODE_PRIVATE) }
+
+    /** The last treadmill's range, from a previous connection, until this one reports its own. */
+    private fun restoreMachineRange() {
+        fun f(key: String) = machinePrefs.getFloat(key, Float.NaN).takeIf { !it.isNaN() }?.toDouble()
+        // Nothing stored yet but a treadmill was set up before (this app's first machine is a T 6.5:
+        // 10 mph, 0-10 %). Only a stand-in: its own report replaces it on connection, and a workout
+        // outside the real range is still refused at Start.
+        val maxKph = f("maxKph") ?: if (savedDevice() != null) {
+            _limits.value = _limits.value.copy(
+                machineMaxSpeedKph = 16.09,
+                machineMinSpeedKph = 0.8,
+                machineMaxInclinePercent = 10.0,
+                machineMinInclinePercent = 0.0,
+                maxSpeedKph = 16.09,
+            )
+            return
+        } else {
+            return
+        }
+        val maxGrade = f("maxGrade")
+        _limits.value = _limits.value.copy(
+            machineMaxSpeedKph = maxKph,
+            machineMinSpeedKph = f("minKph"),
+            machineMaxInclinePercent = maxGrade,
+            machineMinInclinePercent = f("minGrade"),
+            maxSpeedKph = maxKph,
+            maxInclinePercent = maxGrade ?: _limits.value.maxInclinePercent,
+        )
+    }
+
 
     /** Show a message at the top of the screen. */
     fun showMessage(message: String?) {
@@ -391,10 +462,12 @@ class TreadmillController(context: Context) {
             // No pairing: an HCI capture of the vendor application on this console (2026-11-23)
             // shows it never pairs. It connects, subscribes, and talks. Asking Android to pair
             // made the console hang up.
-            _message.value = "Connecting to ${device.name}."
+            if (!workouts.preview.value) _message.value = "Connecting to ${device.name}."
             runCatching { transport.connect(device.address) }
                 .onFailure { error ->
-                    _message.value = "Could not connect: ${error.message}"
+                    // In No treadmill mode a failed background try is not news (the treadmill is
+                    // likely off); say nothing rather than leave an error on Home.
+                    _message.value = if (workouts.preview.value) null else "Could not connect: ${error.message}"
                     holder.update { it.copy(connectionState = ConnectionState.FAILED) }
                 }
                 .onSuccess {
@@ -438,6 +511,85 @@ class TreadmillController(context: Context) {
 
     private val devicePrefs = appContext.getSharedPreferences(DEVICE_PREFS, android.content.Context.MODE_PRIVATE)
 
+    init {
+        // After devicePrefs exists: the stand-in range needs to know whether a treadmill was set up.
+        runCatching { restoreMachineRange() }.onFailure { android.util.Log.w("ofit-ble", "machine range", it) }
+    }
+
+    // ------------------------------------------------------------------ closed mid-workout
+
+    private val _leftRunning = MutableStateFlow(false)
+
+    /**
+     * OpenFit was closed (killed, updated, crashed) during a workout on the treadmill. The console
+     * has no time-out for a vanished app, so the belt keeps going at its last speed (user report,
+     * 2026-11-24). On the next start OpenFit reconnects and, if the belt is moving, asks whether to
+     * stop it.
+     */
+    val leftRunning: StateFlow<Boolean> = _leftRunning.asStateFlow()
+
+    init {
+        if (devicePrefs.getBoolean(KEY_WORKOUT_RUNNING, false)) {
+            android.util.Log.i("ofit-ble", "closed during a workout last time: checking the belt")
+            _leftRunning.value = true
+            scope.launch {
+                delay(1_500)
+                connectToSaved()
+                // Nothing to ask if the treadmill cannot be reached in a minute, or the belt is still.
+                delay(60_000)
+                if (_leftRunning.value && holder.state.value.connectionState != ConnectionState.CONNECTED) clearLeftRunning()
+            }
+        }
+        // Note while a workout runs on the treadmill, so a restart can tell it was cut short.
+        scope.launch {
+            workouts.snapshot.collect { snapshot ->
+                val onTreadmill = snapshot.isActive && !workouts.preview.value
+                if (devicePrefs.getBoolean(KEY_WORKOUT_RUNNING, false) != onTreadmill) {
+                    devicePrefs.edit().putBoolean(KEY_WORKOUT_RUNNING, onTreadmill).commit()
+                }
+            }
+        }
+        // Once connected: a belt that is not moving needs no question.
+        scope.launch {
+            holder.state.collect { state ->
+                if (_leftRunning.value && state.connectionState == ConnectionState.CONNECTED &&
+                    state.deviceInfo != null && !beltMoving(state)
+                ) {
+                    clearLeftRunning()
+                }
+            }
+        }
+    }
+
+    /** Whether the belt is moving (or the console says a workout is running). */
+    fun beltMoving(state: TreadmillState = holder.state.value): Boolean =
+        (state.displayedSpeedKph ?: 0.0) > 0.3 ||
+            state.workoutMode == com.ofit.protocol.WorkoutMode.RUNNING
+
+    /** The runner chose to stop the belt left running. */
+    fun stopLeftRunning() {
+        scope.launch {
+            var stopped = false
+            repeat(STOP_ATTEMPTS) {
+                if (!stopped) stopped = runCatching { session.stop() }.getOrDefault(false)
+            }
+            clearLeftRunning()
+            _message.value = if (stopped) {
+                "Stopped the treadmill."
+            } else {
+                "The treadmill did not confirm the stop. Use the treadmill's own STOP button or pull the safety key."
+            }
+            delay(3_000)
+            runCatching { session.releaseControl() }
+        }
+    }
+
+    /** The runner chose to leave the belt as it is (they are using it by hand). */
+    fun clearLeftRunning() {
+        _leftRunning.value = false
+        devicePrefs.edit().putBoolean(KEY_WORKOUT_RUNNING, false).apply()
+    }
+
     /** The treadmill last connected to, if any. */
     fun savedDevice(): Scanner.Device? {
         val address = devicePrefs.getString(SAVED_ADDRESS, null) ?: return null
@@ -467,7 +619,12 @@ class TreadmillController(context: Context) {
                 repeat(AUTO_CONNECT_ATTEMPTS) { attempt ->
                     val state = holder.state.value.connectionState
                     if (state == ConnectionState.CONNECTED || _scanning.value) return@launch
-                    _message.value = if (attempt == 0) {
+                    // A workout already running with no treadmill: stop trying, quietly.
+                    if (workouts.preview.value && workouts.snapshot.value.isActive) {
+                        _message.value = null
+                        return@launch
+                    }
+                    _message.value = if (workouts.preview.value) null else if (attempt == 0) {
                         "Reconnecting to ${device.name}."
                     } else {
                         "Still trying to reach ${device.name}. Is the treadmill switched on?"
@@ -477,7 +634,9 @@ class TreadmillController(context: Context) {
                     delay(AUTO_CONNECT_WAIT_MILLIS)
                     if (holder.state.value.connectionState == ConnectionState.CONNECTED) return@launch
                 }
-                _message.value = "Could not reach ${device.name}. Switch the treadmill on, then look for it."
+                if (!workouts.preview.value) {
+                    _message.value = "Could not reach ${device.name}. Switch the treadmill on, then look for it."
+                }
             } finally {
                 autoConnecting = false
             }
@@ -493,7 +652,31 @@ class TreadmillController(context: Context) {
     /** The workout screen opened or closed. Opening it connects to the remembered treadmill. */
     fun setWorkoutScreenOpen(open: Boolean) {
         keepAlive = open
-        if (open && holder.state.value.connectionState != ConnectionState.CONNECTED) connectToSaved()
+        // Leaving the workout screen: a connect message from trying while it was open is stale.
+        if (!open && holder.state.value.connectionState != ConnectionState.CONNECTED &&
+            _message.value?.let { m -> CONNECT_NOISE.any { m.startsWith(it) } } == true
+        ) {
+            _message.value = null
+        }
+        if (open && !workouts.noTreadmill.value && holder.state.value.connectionState != ConnectionState.CONNECTED) {
+            connectToSaved()
+        }
+    }
+
+    /**
+     * Work out without a treadmill (on screen only), or go back to driving one. Choosing it lets go
+     * of a connected treadmill, so nothing can be sent to it.
+     */
+    fun setNoTreadmill(on: Boolean) {
+        workouts.setPreview(on, byUser = true)
+        if (on && holder.state.value.connectionState == ConnectionState.CONNECTED && !workouts.snapshot.value.isActive) {
+            scope.launch {
+                runCatching { session.releaseControl() }
+                runCatching { session.disconnect() }
+                TreadmillService.stop(appContext)
+            }
+        }
+        if (!on) connectToSaved()
     }
 
     /**
@@ -525,11 +708,16 @@ class TreadmillController(context: Context) {
      * that stayed connected and sent commands while someone used the machine by hand
      * would be a safety problem; OpenFit drops the link instead.
      *  - Someone starts the belt by hand (the app did not start it): disconnect at once.
-     *  - No workout for 60 s (5 min while the workout screen is open): give control back, disconnect.
+     *  - No workout for 5 min (connected from Devices, or on the workout screen): give control back, disconnect.
      */
     private suspend fun handsOffCheck() {
         val state = holder.state.value
         if (state.connectionState != ConnectionState.CONNECTED) {
+            idleSinceMillis = null
+            return
+        }
+        // While asking about a belt left running from before, stay connected to be able to stop it.
+        if (_leftRunning.value) {
             idleSinceMillis = null
             return
         }
@@ -557,7 +745,7 @@ class TreadmillController(context: Context) {
             runCatching { session.releaseControl() }
             runCatching { session.disconnect() }
             TreadmillService.stop(appContext)
-            _message.value = "No workout running, so OpenFit let go of the treadmill. It reconnects when you start one."
+            _message.value = "No workout for 5 minutes, so OpenFit let go of the treadmill. It reconnects when you start one."
             idleSinceMillis = null
         }
     }

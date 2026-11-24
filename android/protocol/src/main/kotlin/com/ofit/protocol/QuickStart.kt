@@ -60,4 +60,28 @@ object QuickStart {
     }
 
     private fun round1(v: Double) = (v * 10).roundToInt() / 10.0
+
+    /** A one-tap starting point: a pace and a slope with a name. */
+    data class Preset(val name: String, val detail: String, val speedKph: Double, val inclinePercent: Double)
+
+    val PRESETS = listOf(
+        Preset("Easy walk", "Gentle and flat", 4.0, 0.0),
+        Preset("Brisk walk", "Quick steps, slight rise", 5.6, 1.0),
+        Preset("Hill walk", "Steady climb", 5.0, 6.0),
+        Preset("Jog", "Comfortable running", 8.0, 1.0),
+        Preset("Run", "Strong pace", 10.0, 1.0),
+    )
+
+    /** What a program adds up to: distance and an estimate of calories (no heart rate). */
+    data class Estimate(val meters: Double, val kcal: Double)
+
+    fun estimate(program: WorkoutProgram, body: BodyProfile): Estimate {
+        var meters = 0.0
+        var kcal = 0.0
+        program.steps.forEach { step ->
+            meters += step.speedKph / 3.6 * step.durationSeconds
+            kcal += CalorieEstimator.kcalPerMinute(step.speedKph, step.inclinePercent, null, body) * step.durationSeconds / 60.0
+        }
+        return Estimate(meters, kcal)
+    }
 }

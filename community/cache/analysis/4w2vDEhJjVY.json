@@ -1,0 +1,592 @@
+[
+ {
+  "index": 0,
+  "startSeconds": 0,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": -0.5,
+  "confidence": 0.7,
+  "terrain": "flat",
+  "note": "The clip shows a walk/light jog across a flat grassy park area onto a sandy beach, coming to a stop near the water line."
+ },
+ {
+  "index": 1,
+  "startSeconds": 30,
+  "durationSeconds": 30,
+  "speedKph": 4,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a sandy beach shoreline at a steady pace."
+ },
+ {
+  "index": 2,
+  "startSeconds": 60,
+  "durationSeconds": 30,
+  "speedKph": 3.8,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "flat",
+  "note": "Walking along a flat sandy beach shoreline near the water edge."
+ },
+ {
+  "index": 3,
+  "startSeconds": 90,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Walking briskly along a flat sandy beach shoreline."
+ },
+ {
+  "index": 4,
+  "startSeconds": 120,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking at a normal pace along a sandy beach shoreline."
+ },
+ {
+  "index": 5,
+  "startSeconds": 150,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat sandy beach shoreline at a steady pace."
+ },
+ {
+  "index": 6,
+  "startSeconds": 180,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera wearer is walking at a steady pace along a flat sandy beach shoreline."
+ },
+ {
+  "index": 7,
+  "startSeconds": 210,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a sandy beach shore at a steady pace on flat terrain."
+ },
+ {
+  "index": 8,
+  "startSeconds": 240,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat sandy beach shoreline."
+ },
+ {
+  "index": 9,
+  "startSeconds": 270,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking along a flat sandy beach shoreline at a steady pace."
+ },
+ {
+  "index": 10,
+  "startSeconds": 300,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking along a sandy beach shore at a steady normal walking pace."
+ },
+ {
+  "index": 11,
+  "startSeconds": 330,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "flat",
+  "note": "Walking along a flat sandy beach shoreline at a steady pace."
+ },
+ {
+  "index": 12,
+  "startSeconds": 360,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The camera operator is walking at a steady pace along a flat sandy beach."
+ },
+ {
+  "index": 13,
+  "startSeconds": 390,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera is moving at a steady walking pace along a flat sandy beach shoreline."
+ },
+ {
+  "index": 14,
+  "startSeconds": 420,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along the wet sand at the shoreline on a flat beach at a steady walking cadence."
+ },
+ {
+  "index": 15,
+  "startSeconds": 450,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking along a flat sandy beach shoreline at a steady pace."
+ },
+ {
+  "index": 16,
+  "startSeconds": 480,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking along a sandy beach shore at a steady pace on flat terrain."
+ },
+ {
+  "index": 17,
+  "startSeconds": 510,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "flat",
+  "note": "The camera moves at a steady walking pace along a flat sandy beach shoreline."
+ },
+ {
+  "index": 18,
+  "startSeconds": 540,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "other",
+  "note": "Walking along a flat sandy beach at a steady, natural pace."
+ },
+ {
+  "index": 19,
+  "startSeconds": 570,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace along a flat sandy beach."
+ },
+ {
+  "index": 20,
+  "startSeconds": 600,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a sandy beach shoreline at a normal walking speed on flat terrain."
+ },
+ {
+  "index": 21,
+  "startSeconds": 630,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat sandy beach shoreline."
+ },
+ {
+  "index": 22,
+  "startSeconds": 660,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a sandy beach shoreline."
+ },
+ {
+  "index": 23,
+  "startSeconds": 690,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking along a sandy beach shore at a steady walking pace on flat ground."
+ },
+ {
+  "index": 24,
+  "startSeconds": 720,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking at a steady pace along a flat sandy beach shoreline."
+ },
+ {
+  "index": 25,
+  "startSeconds": 750,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking along a sandy beach shoreline at a steady pace."
+ },
+ {
+  "index": 26,
+  "startSeconds": 780,
+  "durationSeconds": 30,
+  "speedKph": 3.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace along a flat sandy beach shoreline."
+ },
+ {
+  "index": 27,
+  "startSeconds": 810,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking at a steady casual pace along a sandy beach shore."
+ },
+ {
+  "index": 28,
+  "startSeconds": 840,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking along a flat sandy beach shoreline at a steady pace."
+ },
+ {
+  "index": 29,
+  "startSeconds": 870,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The camera is walking at a steady pace along a sandy beach near the shoreline."
+ },
+ {
+  "index": 30,
+  "startSeconds": 900,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat sandy beach shoreline at a steady walking pace."
+ },
+ {
+  "index": 31,
+  "startSeconds": 930,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a sandy beach shore at a steady walking pace."
+ },
+ {
+  "index": 32,
+  "startSeconds": 960,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking on a sandy beach shore at a steady pace."
+ },
+ {
+  "index": 33,
+  "startSeconds": 990,
+  "durationSeconds": 30,
+  "speedKph": 4,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking along a sandy beach shore at a steady normal pace on flat ground."
+ },
+ {
+  "index": 34,
+  "startSeconds": 1020,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Walking along a flat sandy beach shoreline at a steady pace."
+ },
+ {
+  "index": 35,
+  "startSeconds": 1050,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "other",
+  "note": "Walking along a sandy beach near the water at a steady pace."
+ },
+ {
+  "index": 36,
+  "startSeconds": 1080,
+  "durationSeconds": 30,
+  "speedKph": 3.8,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "flat",
+  "note": "Walking along a flat sandy beach near the water."
+ },
+ {
+  "index": 37,
+  "startSeconds": 1110,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.7,
+  "terrain": "flat",
+  "note": "The video starts with the runner stationary looking at buildings before jogging along a flat sandy beach shoreline."
+ },
+ {
+  "index": 38,
+  "startSeconds": 1140,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The video shows a steady walk along a flat sandy beach shoreline at a normal walking speed of approximately 4.5 km/h."
+ },
+ {
+  "index": 39,
+  "startSeconds": 1170,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat sandy beach shoreline."
+ },
+ {
+  "index": 40,
+  "startSeconds": 1200,
+  "durationSeconds": 30,
+  "speedKph": 4,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "other",
+  "note": "The camera moves at a steady walking pace along a flat sandy beach shoreline."
+ },
+ {
+  "index": 41,
+  "startSeconds": 1230,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "flat",
+  "note": "Walking along a sandy beach shoreline at a steady pace."
+ },
+ {
+  "index": 42,
+  "startSeconds": 1260,
+  "durationSeconds": 30,
+  "speedKph": 4,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady, leisurely pace along a flat sandy beach shoreline."
+ },
+ {
+  "index": 43,
+  "startSeconds": 1290,
+  "durationSeconds": 30,
+  "speedKph": 4,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a sandy beach shore at a steady, relaxed pace."
+ },
+ {
+  "index": 44,
+  "startSeconds": 1320,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a sandy beach shoreline."
+ },
+ {
+  "index": 45,
+  "startSeconds": 1350,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat sandy beach coastline."
+ },
+ {
+  "index": 46,
+  "startSeconds": 1380,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking at a steady pace along a sandy beach shore."
+ },
+ {
+  "index": 47,
+  "startSeconds": 1410,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking along a sandy beach shore at a steady normal pace."
+ },
+ {
+  "index": 48,
+  "startSeconds": 1440,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat sandy beach coastline."
+ },
+ {
+  "index": 49,
+  "startSeconds": 1470,
+  "durationSeconds": 30,
+  "speedKph": 3.6,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking along a flat sandy beach shoreline."
+ },
+ {
+  "index": 50,
+  "startSeconds": 1500,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat sandy beach shoreline at a steady pace."
+ },
+ {
+  "index": 51,
+  "startSeconds": 1530,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat sandy beach coastline."
+ },
+ {
+  "index": 52,
+  "startSeconds": 1560,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The camera moves at a normal walking speed along a sandy beach shoreline."
+ },
+ {
+  "index": 53,
+  "startSeconds": 1590,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 2,
+  "confidence": 0.8,
+  "terrain": "other",
+  "note": "Walking on a sandy beach shore at a moderate pace."
+ },
+ {
+  "index": 54,
+  "startSeconds": 1620,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 2,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "Walking at a steady pace through loose beach sand and stepping up onto a flat grassy park area."
+ },
+ {
+  "index": 55,
+  "startSeconds": 1650,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.6,
+  "terrain": "flat",
+  "note": "The clip begins with walking on a flat paved resort walkway at a steady pace before cutting to static beach and water footage."
+ },
+ {
+  "index": 56,
+  "startSeconds": 1680,
+  "durationSeconds": 30,
+  "speedKph": 2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "water",
+  "note": "The video shows snorkeling in ocean water followed by swimming in a pool."
+ },
+ {
+  "index": 57,
+  "startSeconds": 1710,
+  "durationSeconds": 30,
+  "speedKph": 0,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "flat",
+  "note": "Montage of resort scenes including pool swimming, beach setup, juggling on grass, and outdoor shower areas with no continuous forward walking or running motion."
+ },
+ {
+  "index": 58,
+  "startSeconds": 1740,
+  "durationSeconds": 13,
+  "speedKph": 0,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video clip features a static beach view followed by an end screen logo."
+ }
+]

@@ -1,0 +1,842 @@
+[
+ {
+  "index": 0,
+  "startSeconds": 0,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.6,
+  "terrain": "road",
+  "note": "Intro montage featuring coastal road running clips and scenic views of Portofino."
+ },
+ {
+  "index": 1,
+  "startSeconds": 30,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.6,
+  "terrain": "road",
+  "note": "Montage intro showing walking around a coastal town with flat paved roads and promenades."
+ },
+ {
+  "index": 2,
+  "startSeconds": 60,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video shows a steady walk along a flat coastal promenade next to the sea."
+ },
+ {
+  "index": 3,
+  "startSeconds": 90,
+  "durationSeconds": 30,
+  "speedKph": 6.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera transitions from walking along a flat waterfront promenade to jogging along a paved sidewalk alongside an urban street."
+ },
+ {
+  "index": 4,
+  "startSeconds": 120,
+  "durationSeconds": 30,
+  "speedKph": 5.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat paved harbor promenade."
+ },
+ {
+  "index": 5,
+  "startSeconds": 150,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady, relaxed jogging pace along a paved urban coastal street and sidewalk on mostly flat ground."
+ },
+ {
+  "index": 6,
+  "startSeconds": 180,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0.5,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jogging pace along a flat paved coastal road/sidewalk."
+ },
+ {
+  "index": 7,
+  "startSeconds": 210,
+  "durationSeconds": 30,
+  "speedKph": 10.4,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is jogging on a flat paved coastal sidewalk next to a road at a steady pace of around 160 steps per minute."
+ },
+ {
+  "index": 8,
+  "startSeconds": 240,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.88,
+  "terrain": "road",
+  "note": "The runner is jogging at a steady pace along a flat paved coastal promenade next to a road."
+ },
+ {
+  "index": 9,
+  "startSeconds": 270,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 1,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady jogging pace on a paved coastal sidewalk with a slight uphill grade."
+ },
+ {
+  "index": 10,
+  "startSeconds": 300,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is maintaining a steady jogging pace on a flat paved coastal walkway alongside a road."
+ },
+ {
+  "index": 11,
+  "startSeconds": 330,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady running cadence on a flat coastal pedestrian path along the water."
+ },
+ {
+  "index": 12,
+  "startSeconds": 360,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 1,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady jogging pace on a flat, paved sidewalk along a coastal road."
+ },
+ {
+  "index": 13,
+  "startSeconds": 390,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 1,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is jogging along a paved sidewalk next to a coastal road at a steady pace."
+ },
+ {
+  "index": 14,
+  "startSeconds": 420,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is maintaining a steady jogging pace on a paved roadside path with flat terrain."
+ },
+ {
+  "index": 15,
+  "startSeconds": 450,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "road",
+  "note": "The runner maintains a steady jog on a flat, paved coastal sidewalk alongside a road next to the sea."
+ },
+ {
+  "index": 16,
+  "startSeconds": 480,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The video shows a steady jog on a flat, paved seaside sidewalk at around 168 steps per minute."
+ },
+ {
+  "index": 17,
+  "startSeconds": 510,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner moves along a paved coastal sidewalk next to a road at a steady jogging pace of around 9.8 km/h. The path runs parallel to the sea horizon, indicating a virtually flat gradient."
+ },
+ {
+  "index": 18,
+  "startSeconds": 540,
+  "durationSeconds": 30,
+  "speedKph": 9.6,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady jogging pace along a flat coastal paved sidewalk alongside a road."
+ },
+ {
+  "index": 19,
+  "startSeconds": 570,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady jogging pace along a flat coastal road next to the sea wall."
+ },
+ {
+  "index": 20,
+  "startSeconds": 600,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "road",
+  "note": "The runner maintains a steady jogging cadence of around 156 steps per minute on a flat paved coastal road."
+ },
+ {
+  "index": 21,
+  "startSeconds": 630,
+  "durationSeconds": 30,
+  "speedKph": 10.3,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "road",
+  "note": "The runner is jogging at a steady pace along a flat coastal paved promenade/sidewalk."
+ },
+ {
+  "index": 22,
+  "startSeconds": 660,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady running pace on a flat paved coastal road sidewalk."
+ },
+ {
+  "index": 23,
+  "startSeconds": 690,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": 1,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "The runner maintains a steady running pace along a paved coastal sidewalk with a flat to minimal grade."
+ },
+ {
+  "index": 24,
+  "startSeconds": 720,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is maintaining a steady jogging pace along a flat coastal boardwalk and walkway beside a sea horizon."
+ },
+ {
+  "index": 25,
+  "startSeconds": 750,
+  "durationSeconds": 30,
+  "speedKph": 5.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady brisk walk along a flat coastal boardwalk."
+ },
+ {
+  "index": 26,
+  "startSeconds": 780,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat coastal paved pedestrian path next to a road."
+ },
+ {
+  "index": 27,
+  "startSeconds": 810,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jogging pace on a flat wooden coastal promenade next to a road, covering approximately 70 meters in 30 seconds."
+ },
+ {
+  "index": 28,
+  "startSeconds": 840,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": 1.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is jogging on a paved asphalt coastal road alongside parked vehicles at a steady pace of around 11.5 km/h with a very slight uphill incline."
+ },
+ {
+  "index": 29,
+  "startSeconds": 870,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.88,
+  "terrain": "road",
+  "note": "The runner jogs at a steady pace along a flat coastal road before stepping onto a flat wooden seaside boardwalk."
+ },
+ {
+  "index": 30,
+  "startSeconds": 900,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The camera is moving at a steady walking pace along a flat coastal pedestrian promenade."
+ },
+ {
+  "index": 31,
+  "startSeconds": 930,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": 1,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is jogging on a paved coastal sidewalk next to a road with a cadence of ~156-160 steps per minute, resulting in an estimated speed of around 10.0 km/h on a nearly flat surface."
+ },
+ {
+  "index": 32,
+  "startSeconds": 960,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 1.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady jogging cadence on a paved sidewalk beside a road with a very slight upward slope."
+ },
+ {
+  "index": 33,
+  "startSeconds": 990,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 2,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The video shows a walking pace along a paved coastal sidewalk in Portofino, with a slight uphill slope, before slowing down near the end to view the bay."
+ },
+ {
+  "index": 34,
+  "startSeconds": 1020,
+  "durationSeconds": 30,
+  "speedKph": 9.3,
+  "inclinePercent": 2.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady jog along a paved coastal road with a slight uphill grade. Cadence and lamp post spacing indicate a speed of around 9.3 km/h."
+ },
+ {
+  "index": 35,
+  "startSeconds": 1050,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 2,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The video shows a steady jog along a paved coastal road. Footfall cadence is around 155 steps per minute, giving a speed of approximately 9.2 km/h. The road follows a mild uphill gradient of about 2%."
+ },
+ {
+  "index": 36,
+  "startSeconds": 1080,
+  "durationSeconds": 30,
+  "speedKph": 11.5,
+  "inclinePercent": -2,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "Running along a paved coastal road with a slight downhill incline."
+ },
+ {
+  "index": 37,
+  "startSeconds": 1110,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is jogging uphill along a paved road with a steady cadence of approximately 168 steps per minute."
+ },
+ {
+  "index": 38,
+  "startSeconds": 1140,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is jogging uphill along a paved mountain road with a steady step cadence around 148-152 steps per minute."
+ },
+ {
+  "index": 39,
+  "startSeconds": 1170,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 3.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Jogging on a paved winding mountain road with a slight uphill gradient."
+ },
+ {
+  "index": 40,
+  "startSeconds": 1200,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a consistent jogging pace of around 10.5 km/h along a smooth asphalt coastal road. The sea horizon indicates the road is virtually flat."
+ },
+ {
+  "index": 41,
+  "startSeconds": 1230,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is jogging at a steady pace along a flat, paved coastal road (lungomare) with sea level horizon clearly visible."
+ },
+ {
+  "index": 42,
+  "startSeconds": 1260,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is maintaining a steady jogging pace along a flat coastal asphalt road."
+ },
+ {
+  "index": 43,
+  "startSeconds": 1290,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 2.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady jogging cadence of approximately 150-155 steps per minute along a paved coastal road with a slight uphill gradient."
+ },
+ {
+  "index": 44,
+  "startSeconds": 1320,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 3.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady jogging cadence of around 150 steps per minute along a paved road with a gentle uphill incline."
+ },
+ {
+  "index": 45,
+  "startSeconds": 1350,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is jogging at a steady cadence of around 155 steps per minute along an asphalt road with a moderate uphill gradient."
+ },
+ {
+  "index": 46,
+  "startSeconds": 1380,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": -1,
+  "confidence": 0.8,
+  "terrain": "road",
+  "note": "The runner is moving along a paved coastal road at a steady jog of around 8.5 km/h on a nearly flat to very slight downhill gradient."
+ },
+ {
+  "index": 47,
+  "startSeconds": 1410,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 1.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The video shows running along a paved coastal road leading into a town street with a steady jogging cadence of around 162 steps per minute on a slightly uphill gradient."
+ },
+ {
+  "index": 48,
+  "startSeconds": 1440,
+  "durationSeconds": 30,
+  "speedKph": 9.3,
+  "inclinePercent": 2.5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Jogging along a paved road through a coastal Italian village next to a rock wall with a slight uphill grade."
+ },
+ {
+  "index": 49,
+  "startSeconds": 1470,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 5,
+  "confidence": 0.88,
+  "terrain": "road",
+  "note": "The runner moves along an asphalt road with a steady uphill gradient of around 5% past a historic church building, maintaining a cadence of ~150 steps per minute."
+ },
+ {
+  "index": 50,
+  "startSeconds": 1500,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": -3,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is descending a gentle paved road along a wall towards a coastal town at a steady jogging pace."
+ },
+ {
+  "index": 51,
+  "startSeconds": 1530,
+  "durationSeconds": 30,
+  "speedKph": 11.2,
+  "inclinePercent": -3,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is descending a gentle downhill asphalt road that flattens out near a town square."
+ },
+ {
+  "index": 52,
+  "startSeconds": 1560,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": -1,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Walking at a steady pace across a cobblestone square and into a narrow paved pedestrian alley, passing a short set of down steps."
+ },
+ {
+  "index": 53,
+  "startSeconds": 1590,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "road",
+  "note": "Walking through a narrow cobblestone pedestrian alley at a steady pace on flat terrain."
+ },
+ {
+  "index": 54,
+  "startSeconds": 1620,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Walking at a steady pace of around 4.3 km/h along a flat cobblestone alleyway emerging into an open harbor square."
+ },
+ {
+  "index": 55,
+  "startSeconds": 1650,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera operator is walking at a steady normal pace across a flat cobblestone plaza near the harbor."
+ },
+ {
+  "index": 56,
+  "startSeconds": 1680,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is walking at a steady pace along a flat paved harbor promenade."
+ },
+ {
+  "index": 57,
+  "startSeconds": 1710,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera displays a steady walking cadence along a flat harbor quay and cobblestone plaza in Portofino."
+ },
+ {
+  "index": 58,
+  "startSeconds": 1740,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking along a flat paved waterfront promenade and square."
+ },
+ {
+  "index": 59,
+  "startSeconds": 1770,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat harbor quay."
+ },
+ {
+  "index": 60,
+  "startSeconds": 1800,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a person walking at a steady pace along a flat harbor promenade with stone paving."
+ },
+ {
+  "index": 61,
+  "startSeconds": 1830,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat stone-paved harbor dock."
+ },
+ {
+  "index": 62,
+  "startSeconds": 1860,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat paved marina promenade in Portofino."
+ },
+ {
+  "index": 63,
+  "startSeconds": 1890,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat paved harbour promenade in a coastal town."
+ },
+ {
+  "index": 64,
+  "startSeconds": 1920,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat paved waterfront promenade in Portofino."
+ },
+ {
+  "index": 65,
+  "startSeconds": 1950,
+  "durationSeconds": 30,
+  "speedKph": 4,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "flat",
+  "note": "Walking along a flat paved waterfront promenade by the harbor."
+ },
+ {
+  "index": 66,
+  "startSeconds": 1980,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 4,
+  "confidence": 0.85,
+  "terrain": "uphill",
+  "note": "The video shows a steady walk uphill along a narrow paved village path at a brisk walking pace of around 4.5 km/h."
+ },
+ {
+  "index": 67,
+  "startSeconds": 2010,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 6.5,
+  "confidence": 0.85,
+  "terrain": "uphill",
+  "note": "The runner/walker moves along a paved cobblestone alley that transitions into a steady uphill grade past stone walls and fences."
+ },
+ {
+  "index": 68,
+  "startSeconds": 2040,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 9,
+  "confidence": 0.8,
+  "terrain": "uphill",
+  "note": "Walking at a steady pace up a steep cobblestone path alongside a wall and fence overlooking the water."
+ },
+ {
+  "index": 69,
+  "startSeconds": 2070,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 4.5,
+  "confidence": 0.8,
+  "terrain": "uphill",
+  "note": "The video shows a person briskly walking on a cobblestone street and narrow paved path going slightly uphill."
+ },
+ {
+  "index": 70,
+  "startSeconds": 2100,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 3.5,
+  "confidence": 0.8,
+  "terrain": "uphill",
+  "note": "Walking at a steady pace along a narrow paved stone alleyway with a mild continuous incline."
+ },
+ {
+  "index": 71,
+  "startSeconds": 2130,
+  "durationSeconds": 30,
+  "speedKph": 5.2,
+  "inclinePercent": 8,
+  "confidence": 0.85,
+  "terrain": "uphill",
+  "note": "Walking briskly uphill through a narrow paved stone alleyway."
+ },
+ {
+  "index": 72,
+  "startSeconds": 2160,
+  "durationSeconds": 30,
+  "speedKph": 3.8,
+  "inclinePercent": 16,
+  "confidence": 0.85,
+  "terrain": "stairs",
+  "note": "Walking up a set of wide stone stairs flanked by stone walls."
+ },
+ {
+  "index": 73,
+  "startSeconds": 2190,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 7,
+  "confidence": 0.85,
+  "terrain": "uphill",
+  "note": "Walking uphill along a paved stone pathway with a stone retaining wall."
+ },
+ {
+  "index": 74,
+  "startSeconds": 2220,
+  "durationSeconds": 30,
+  "speedKph": 3.6,
+  "inclinePercent": 20,
+  "confidence": 0.85,
+  "terrain": "stairs",
+  "note": "The video shows a person walking up a narrow paved path that transitions into a long flight of outdoor stone stairs."
+ },
+ {
+  "index": 75,
+  "startSeconds": 2250,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 3,
+  "confidence": 0.85,
+  "terrain": "uphill",
+  "note": "Walking along a narrow, paved stone-walled pathway at a steady pace with a slight uphill gradient."
+ },
+ {
+  "index": 76,
+  "startSeconds": 2280,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 4,
+  "confidence": 0.85,
+  "terrain": "uphill",
+  "note": "The runner/walker is navigating a narrow paved stone pathway ascending slightly uphill at a steady walking cadence."
+ },
+ {
+  "index": 77,
+  "startSeconds": 2310,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 3,
+  "confidence": 0.85,
+  "terrain": "uphill",
+  "note": "The runner is jogging at a steady cadence of around 152 steps per minute along a narrow, paved uphill path."
+ },
+ {
+  "index": 78,
+  "startSeconds": 2340,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 7,
+  "confidence": 0.85,
+  "terrain": "uphill",
+  "note": "The video shows a person walking uphill along a narrow paved stone path bounded by walls and hedges. The walking cadence indicates a speed of around 4.2 km/h on a moderate incline."
+ },
+ {
+  "index": 79,
+  "startSeconds": 2370,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": -5,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Walking down a narrow stone-paved path toward the water at a steady pace."
+ },
+ {
+  "index": 80,
+  "startSeconds": 2400,
+  "durationSeconds": 30,
+  "speedKph": 3.6,
+  "inclinePercent": -1,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Walking along a paved stone coastal path at a comfortable leisure pace with a brief pause to view the sea."
+ },
+ {
+  "index": 81,
+  "startSeconds": 2430,
+  "durationSeconds": 30,
+  "speedKph": 0,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "other",
+  "note": "The camera is stationary at a scenic viewpoint overlooking a bay and harbour with boats."
+ },
+ {
+  "index": 82,
+  "startSeconds": 2460,
+  "durationSeconds": 30,
+  "speedKph": 0,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "other",
+  "note": "Stationary scenic shot overlooking a harbor with docked yachts."
+ },
+ {
+  "index": 83,
+  "startSeconds": 2490,
+  "durationSeconds": 3,
+  "speedKph": 0,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "other",
+  "note": "The camera is stationary, providing a static view of a harbor."
+ }
+]

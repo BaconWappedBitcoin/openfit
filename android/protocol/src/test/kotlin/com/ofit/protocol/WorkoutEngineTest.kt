@@ -36,23 +36,28 @@ class WorkoutEngineTest {
     // ------------------------------------------------------------- validation
 
     @Test
-    fun `a program with a step above the speed ceiling is rejected before anything is sent`() = runTest {
+    fun `a step above the speed ceiling is brought down to it, not refused`() = runTest {
         val result = engine().start(program(WorkoutStep(speedKph = 14.0, inclinePercent = 0.0, durationSeconds = 60)))
 
-        assertTrue(result is StartOutcome.Rejected)
-        assertEquals(ProgramProblemReason.LIMIT_EXCEEDED, (result as StartOutcome.Rejected).problems.first().reason)
-        assertEquals(Refusal.ABOVE_SPEED_CEILING, result.problems.first().refusal)
-        assertEquals(0, result.problems.first().stepIndex)
-        assertTrue(sink.calls.isEmpty())
+        assertTrue(result is StartOutcome.Started)
+        assertEquals(SinkCall.Start(12.0, 0.0), sink.calls.first())
     }
 
     @Test
-    fun `a program with a step above the incline ceiling is rejected before anything is sent`() = runTest {
+    fun `a step above the incline ceiling is brought down to it, not refused`() = runTest {
         val result = engine().start(program(WorkoutStep(speedKph = 5.0, inclinePercent = 12.0, durationSeconds = 60)))
 
-        assertTrue(result is StartOutcome.Rejected)
-        assertEquals(Refusal.ABOVE_INCLINE_CEILING, (result as StartOutcome.Rejected).problems.first().refusal)
-        assertTrue(sink.calls.isEmpty())
+        assertTrue(result is StartOutcome.Started)
+        assertEquals(SinkCall.Start(5.0, 10.0), sink.calls.first())
+    }
+
+    @Test
+    fun `a step below the machine minimum is raised to it, not refused`() = runTest {
+        val floor = limits.copy(machineMinSpeedKph = 0.8, machineMinInclinePercent = -3.0)
+        val result = engine(floor).start(program(WorkoutStep(speedKph = 0.5, inclinePercent = -6.0, durationSeconds = 60)))
+
+        assertTrue(result is StartOutcome.Started)
+        assertEquals(SinkCall.Start(0.8, -3.0), sink.calls.first())
     }
 
     @Test
@@ -77,28 +82,27 @@ class WorkoutEngineTest {
     }
 
     @Test
-    fun `a program is rejected when the machine cannot reach the requested speed`() = runTest {
+    fun `a speed the machine cannot reach is fitted to its maximum`() = runTest {
         val narrow = limits.copy(machineMaxSpeedKph = 8.0)
 
         val result = engine(narrow).start(program(WorkoutStep(speedKph = 9.0, inclinePercent = 0.0, durationSeconds = 60)))
 
-        assertTrue(result is StartOutcome.Rejected)
-        assertEquals(Refusal.ABOVE_MACHINE_MAXIMUM, (result as StartOutcome.Rejected).problems.first().refusal)
-        assertTrue(sink.calls.isEmpty())
+        assertTrue(result is StartOutcome.Started)
+        assertEquals(SinkCall.Start(8.0, 0.0), sink.calls.first())
     }
 
     @Test
-    fun `every offending step is reported, not just the first`() = runTest {
-        val result = engine().start(
+    fun `later steps are fitted too`() = runTest {
+        val e = engine()
+        e.start(
             program(
-                WorkoutStep(speedKph = 14.0, inclinePercent = 0.0, durationSeconds = 60),
                 WorkoutStep(speedKph = 5.0, inclinePercent = 0.0, durationSeconds = 60),
-                WorkoutStep(speedKph = 5.0, inclinePercent = 20.0, durationSeconds = 60),
+                WorkoutStep(speedKph = 14.0, inclinePercent = 20.0, durationSeconds = 60),
             ),
         )
+        e.skip()
 
-        assertEquals(2, (result as StartOutcome.Rejected).problems.size)
-        assertEquals(listOf(0, 2), result.problems.map { it.stepIndex })
+        assertEquals(SinkCall.Apply(12.0, 10.0), sink.calls.last())
     }
 
     // -------------------------------------------------------------- starting
@@ -418,7 +422,7 @@ class WorkoutEngineTest {
     }
 
     @Test
-    fun `manual incline override sends a command within ceilings and clears on next step`() = runTest {
+    fun `manual incline override sends a command within ceilings and holds until the runner rejoins`() = runTest {
         val engine = engine()
         engine.start(
             program(
@@ -436,10 +440,39 @@ class WorkoutEngineTest {
 
         engine.tick(10_000)
 
+        // The next step brings its speed, but the runner's incline stays (user request 2026-11-24).
         assertEquals(1, engine.snapshot.value.stepIndex)
         assertEquals(6.0, engine.snapshot.value.speedKph)
+        assertEquals(4.5, engine.snapshot.value.inclinePercent)
+        assertTrue(engine.snapshot.value.manualOverride)
+        assertEquals(SinkCall.Apply(6.0, 4.5), sink.calls.last())
+
+        // Rejoining the program takes the step's own values.
+        assertTrue(engine.resetToProgram())
         assertEquals(3.0, engine.snapshot.value.inclinePercent)
         assertFalse(engine.snapshot.value.manualOverride)
+    }
+
+    @Test
+    fun `a manual speed holds across steps and a seek until the runner rejoins`() = runTest {
+        val engine = engine()
+        engine.start(
+            program(
+                WorkoutStep(speedKph = 8.0, inclinePercent = 0.0, durationSeconds = 10),
+                WorkoutStep(speedKph = 12.0, inclinePercent = 1.0, durationSeconds = 10),
+                WorkoutStep(speedKph = 10.0, inclinePercent = 2.0, durationSeconds = 10),
+            ),
+        )
+        assertTrue(engine.overrideSpeed(7.0).isAccepted)
+        engine.tick(10_000)
+        assertEquals(7.0, engine.snapshot.value.speedKph)
+        assertEquals(1.0, engine.snapshot.value.inclinePercent)
+        engine.seekTo(25_000)
+        assertEquals(2, engine.snapshot.value.stepIndex)
+        assertEquals(7.0, engine.snapshot.value.speedKph)
+        assertEquals(SinkCall.Apply(7.0, 2.0), sink.calls.last())
+        assertTrue(engine.resetToProgram())
+        assertEquals(10.0, engine.snapshot.value.speedKph)
     }
 
     @Test

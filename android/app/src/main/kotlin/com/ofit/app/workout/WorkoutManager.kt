@@ -43,6 +43,9 @@ class WorkoutManager(
     /** The YouTube video remembered for a saved workout, if there is one. */
     fun youtubeIdFor(workoutId: String): String? = videoPrefs.getString("yt:$workoutId", null)
 
+    /** The video file (a content URI) chosen for a workout, if it has one instead of a YouTube video. */
+    fun videoFileFor(workoutId: String): String? = videoPrefs.getString(workoutId, null)
+
     /**
      * Save a program that came with a YouTube video, and remember the video for it, so the
      * workout opens with its scenery. Only the video's id is kept: the video itself is never
@@ -112,7 +115,22 @@ class WorkoutManager(
     }
 
     /** The engine that runs a program. */
-    val engine = WorkoutEngine(limitsProvider, switchingSink)
+    // With no treadmill there is no machine to protect, so the treadmill's own range does not apply
+    // (a workout with downhill steps runs on screen as it is). With a treadmill, every limit applies.
+    val engine = WorkoutEngine(
+        { if (previewMode) NO_TREADMILL_LIMITS else limitsProvider() },
+        switchingSink,
+        // A treadmill slows down over a 10-minute cool-down when a workout ends; with no
+        // treadmill there is no belt to slow, so it just ends.
+        coolDownFor = { snapshot ->
+            if (previewMode) null else com.ofit.protocol.CoolDown.build(snapshot.speedKph, limitsProvider())
+        },
+    )
+
+    private val _startProblem = MutableStateFlow<String?>(null)
+
+    /** Why the last Start was refused, shown on the workout screen (it used to show only on Home). */
+    val startProblem: StateFlow<String?> = _startProblem.asStateFlow()
 
     /** The engine's state, for the user interface. */
     val snapshot: StateFlow<WorkoutEngineSnapshot> = engine.snapshot
@@ -151,13 +169,36 @@ class WorkoutManager(
      * Save from the visual editor: overwrite [existingId] when editing, or save a new workout, and
      * remember its YouTube video.
      */
-    fun saveEdited(existingId: String?, program: WorkoutProgram, videoId: String?, onSaved: (SavedWorkout) -> Unit = {}) {
+    fun saveEdited(
+        existingId: String?,
+        program: WorkoutProgram,
+        videoId: String?,
+        videoFile: String? = null,
+        onSaved: (SavedWorkout) -> Unit = {},
+    ) {
         scope.launch {
             val saved = if (existingId != null) repository.replace(existingId, program) else repository.save(program)
-            if (videoId != null) videoPrefs.edit().putString("yt:${saved.id}", videoId).apply()
+            // One video per workout: a file replaces a YouTube video and the other way round.
+            when {
+                videoFile != null -> videoPrefs.edit().putString(saved.id, videoFile).remove("yt:${saved.id}").apply()
+                videoId != null -> videoPrefs.edit().putString("yt:${saved.id}", videoId).remove(saved.id).apply()
+            }
             refresh()
             onMessage("Saved ${program.name}.")
             onSaved(saved)
+        }
+    }
+
+    /** Save a copy of a workout, with the same video, named "… (copy)". */
+    fun duplicate(original: SavedWorkout) {
+        scope.launch {
+            val copy = repository.save(original.program.copy(name = "${original.program.name} (copy)".take(80)))
+            val edit = videoPrefs.edit()
+            videoPrefs.getString("yt:${original.id}", null)?.let { edit.putString("yt:${copy.id}", it) }
+            videoPrefs.getString(original.id, null)?.let { edit.putString(copy.id, it) }
+            edit.apply()
+            refresh()
+            onMessage("Copied ${original.program.name}.")
         }
     }
 
@@ -173,21 +214,39 @@ class WorkoutManager(
     /**
      * Start a program.
      *
-     * A program that is out of bounds is rejected before anything is sent to the machine.
+     * Steps outside the treadmill's range are fitted into it by the engine; only an empty program
+     * or a step with no duration is rejected.
      */
     fun start(program: WorkoutProgram) {
         scope.launch {
-            when (val outcome = engine.start(program)) {
+            android.util.Log.i("ofit-ble", "start: preview=$previewMode steps=${program.steps.size}")
+            val outcome = try {
+                engine.start(program)
+            } catch (e: Exception) {
+                android.util.Log.e("ofit-ble", "start failed", e)
+                StartOutcome.Failed("Couldn't start: ${e.message ?: e.javaClass.simpleName}")
+            }
+            android.util.Log.i("ofit-ble", "start outcome: ${outcome.javaClass.simpleName}")
+            when (outcome) {
                 is StartOutcome.Started -> {
-                    _runningProgram.value = program
+                    // The program as fitted to this treadmill, so the screen shows what is sent.
+                    _runningProgram.value = outcome.program
+                    _startProblem.value = null
                     onMessage(null)
                 }
 
                 is StartOutcome.Rejected -> {
-                    onMessage(outcome.problems.joinToString("\n") { problem -> problem.message })
+                    val reason = "Can't start on this treadmill: " +
+                        outcome.problems.map { problem -> problem.message }.distinct().take(3).joinToString(" ") +
+                        " Edit the workout, or choose No treadmill."
+                    _startProblem.value = reason
+                    onMessage(reason)
                 }
 
-                is StartOutcome.Failed -> onMessage(outcome.reason)
+                is StartOutcome.Failed -> {
+                    _startProblem.value = outcome.reason
+                    onMessage(outcome.reason)
+                }
             }
         }
     }
@@ -199,7 +258,9 @@ class WorkoutManager(
      * was being previewed has nothing to stop, and one that was driving a machine has to be
      * stopped while the machine is still the one being talked to.
      */
-    fun setPreview(enabled: Boolean) {
+    fun setPreview(enabled: Boolean, byUser: Boolean = false) {
+        // A choice the runner made ("No treadmill") sticks: nothing switches it back on its own.
+        if (byUser) _noTreadmill.value = enabled
         scope.launch {
             if (enabled == previewMode) return@launch
 
@@ -212,11 +273,31 @@ class WorkoutManager(
             _preview.value = enabled
             onMessage(
                 if (enabled) {
-                    "Preview: the program runs without a treadmill, and nothing is sent to a machine."
+                    "No treadmill: the workout runs on screen only, and nothing is sent to a machine."
                 } else {
                     null
                 },
             )
+        }
+    }
+
+    private val _noTreadmill = MutableStateFlow(false)
+
+    /** The runner chose to work out without a treadmill; OpenFit then neither connects nor switches it back. */
+    val noTreadmill: StateFlow<Boolean> = _noTreadmill.asStateFlow()
+
+    private val _videoHeld = MutableStateFlow(false)
+
+    /**
+     * The workout's video is stuck (an ad, buffering): the program's clock stops, so speed and incline
+     * stay as they are and no step changes until the video moves again (see VideoHold).
+     */
+    val videoHeld: StateFlow<Boolean> = _videoHeld.asStateFlow()
+
+    fun setVideoHeld(held: Boolean) {
+        if (_videoHeld.value != held) {
+            _videoHeld.value = held
+            android.util.Log.i("ofit-ble", "video hold: $held")
         }
     }
 
@@ -233,6 +314,58 @@ class WorkoutManager(
     /** Move to the next step. */
     fun skip() {
         scope.launch { engine.skip() }
+    }
+
+    /** Jump to a point in the workout (progress bar, rewind, fast forward). */
+    fun seekTo(millis: Long) {
+        scope.launch { engine.seekTo(millis) }
+    }
+
+    private val _playbackRate = MutableStateFlow(1f)
+
+    /** How fast the workout and its video play (1 = normal). The program's clock runs at this rate too. */
+    val playbackRate: StateFlow<Float> = _playbackRate.asStateFlow()
+
+    fun setPlaybackRate(rate: Float) {
+        _playbackRate.value = rate.coerceIn(0.5f, 2f)
+    }
+
+    private val _matchSpeed = MutableStateFlow(true) // on by default (user request 2026-11-24)
+
+    /**
+     * "Match my speed": with a treadmill, the video (and the program's clock) run at belt speed ÷ the
+     * step's programmed speed, so going faster or slower than the plan moves the scenery to match.
+     */
+    val matchSpeed: StateFlow<Boolean> = _matchSpeed.asStateFlow()
+
+    fun setMatchSpeed(on: Boolean) {
+        _matchSpeed.value = on
+    }
+
+    private val _effectiveRate = MutableStateFlow(1f)
+
+    /** The rate actually in use: the chosen speed, or the matched one. */
+    val effectiveRate: StateFlow<Float> = _effectiveRate.asStateFlow()
+
+    /** Set by the controller once a second. */
+    fun updateEffectiveRate(beltKph: Double?) {
+        val snapshot = engine.snapshot.value
+        // Against the workout's pace (the video's own pace, or the workout's average), not the
+        // current step, so a fast step plays the video fast.
+        val programmed = runningProgram.value?.let { com.ofit.protocol.MatchSpeed.referenceKph(it) }
+        // The cool-down's clock runs at real time (its video is paused), so its ten minutes are ten real minutes.
+        if (snapshot.isCoolingDown) {
+            _effectiveRate.value = 1f
+            return
+        }
+        val matched = if (_matchSpeed.value && !previewMode && snapshot.isRunning &&
+            programmed != null && programmed > 0.3 && beltKph != null && beltKph > 0.3
+        ) {
+            com.ofit.protocol.MatchSpeed.rate(beltKph, programmed)
+        } else {
+            null
+        }
+        _effectiveRate.value = matched ?: _playbackRate.value
     }
 
     /** Override the current step's speed, subject to safety ceilings. */
@@ -281,7 +414,18 @@ class WorkoutManager(
         scope.launch { engine.resetInclineToProgram() }
     }
 
-    /** Stop the program and the machine. */
+    /**
+     * The runner ended the workout (End, then Quit): with a treadmill this starts the cool-down;
+     * in the cool-down it stops the belt. No treadmill, or paused: it just ends.
+     */
+    fun end() {
+        scope.launch {
+            engine.end()
+            if (!engine.snapshot.value.isActive) _runningProgram.value = null
+        }
+    }
+
+    /** Stop the program and the machine at once (E-STOP). */
     fun abandon() {
         scope.launch {
             engine.abandon()
@@ -297,3 +441,6 @@ class WorkoutManager(
         }
     }
 }
+
+/** Limits for a workout run with no treadmill: only sanity bounds, nothing machine-specific. */
+private val NO_TREADMILL_LIMITS = SafetyLimits(maxSpeedKph = 30.0, maxInclinePercent = 40.0)

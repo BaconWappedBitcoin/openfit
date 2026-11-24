@@ -29,6 +29,12 @@ class HistoryManager(
     private val heartSummary: StateFlow<HeartRateSummary>,
     private val preview: StateFlow<Boolean>,
     fileName: String = "history.json",
+    /** The program running, for working out distance in a no-treadmill workout. */
+    private val program: StateFlow<com.ofit.protocol.WorkoutProgram?> = MutableStateFlow(null),
+    /** OpenFit's own calorie estimate (age, sex, weight, heart rate); preferred over the console's. */
+    private val estimatedCalories: StateFlow<Double?> = MutableStateFlow(null),
+    /** The heart rate shown now, for the workout's chart. */
+    private val currentHeartRate: () -> Int? = { null },
 ) {
     private val dir = context.applicationContext.filesDir
     private var file = File(dir, fileName)
@@ -51,6 +57,13 @@ class HistoryManager(
     private var vertical = 0.0
     private var lastDistance: Long? = null
     private var lastElapsed = 0L
+    private var noTreadmill = false
+    private var lastWall = 0L
+    /** Time actually spent running (wall clock, pauses excluded), so seeking does not add minutes. */
+    private var activeMillis = 0L
+    private var lastActiveWall = 0L
+    private val samples = mutableListOf<com.ofit.protocol.HistorySample>()
+    private val heartWindow = com.ofit.protocol.HeartRateWindow()
 
     init {
         scope.launch {
@@ -63,20 +76,56 @@ class HistoryManager(
 
     private fun tick() {
         val snapshot = workout.value
-        val state = consoleState.value
-        if (snapshot.isActive && !preview.value) {
+        // A no-treadmill workout is recorded too, from the program's own numbers.
+        val running = program.value
+        val state = if (preview.value && running != null) {
+            com.ofit.app.workout.previewMachineState(running, snapshot).copy(
+                actualInclinePercent = snapshot.inclinePercent,
+                targetInclinePercent = snapshot.inclinePercent,
+            )
+        } else {
+            consoleState.value
+        }
+        if (snapshot.isActive) {
             if (!active || snapshot.totalElapsedMillis + 2_000 < lastElapsed) begin(snapshot)
+            noTreadmill = preview.value
+            val wall = System.currentTimeMillis()
+            if (snapshot.isRunning && lastActiveWall > 0) activeMillis += (wall - lastActiveWall).coerceIn(0, 5_000)
+            lastActiveWall = wall
             lastElapsed = snapshot.totalElapsedMillis
             // The console zeroes distance and calories on its results screen, so the last good values
             // are kept.
-            state.distanceMeters?.takeIf { it > 0 }?.let { now ->
+            if (preview.value) {
+                // No treadmill: distance is built up from the suggested speed over the time actually
+                // spent (wall clock while running), so seeking or fast-forwarding does not add miles.
+                val now = System.currentTimeMillis()
+                if (snapshot.isRunning && lastWall > 0) {
+                    val dt = ((now - lastWall).coerceIn(0, 5_000)) / 1000.0
+                    val step = snapshot.speedKph / 3.6 * dt
+                    distance += step
+                    if (snapshot.inclinePercent > 0) vertical += step * snapshot.inclinePercent / 100.0
+                }
+                lastWall = now
+            } else state.distanceMeters?.takeIf { it > 0 }?.let { now ->
                 val before = lastDistance
                 val incline = state.displayedInclinePercent ?: 0.0
                 if (before != null && now > before && incline > 0) vertical += (now - before) * incline / 100.0
                 lastDistance = now
                 distance = now.toDouble()
             }
-            state.calories?.takeIf { it > 0 }?.let { calories = it }
+            (estimatedCalories.value ?: state.calories)?.takeIf { it > 0 }?.let { calories = it }
+            // A sample for the charts every 10 s of workout time (pauses add none).
+            val seconds = (snapshot.totalElapsedMillis / 1000).toInt()
+            if (snapshot.isRunning) heartWindow.add(currentHeartRate())
+            val due = samples.lastOrNull()?.let { seconds >= it.seconds + HistoryCodec.SAMPLE_SECONDS } ?: true
+            if (snapshot.isRunning && due && samples.size < MAX_SAMPLES) {
+                samples += com.ofit.protocol.HistorySample(
+                    seconds = seconds,
+                    speedKph = state.displayedSpeedKph ?: snapshot.speedKph,
+                    inclinePercent = state.displayedInclinePercent ?: snapshot.inclinePercent,
+                    heartRate = heartWindow.take(),
+                )
+            }
         } else if (active) {
             active = false
             if (snapshot.isFinished) finish(snapshot)
@@ -91,10 +140,15 @@ class HistoryManager(
         calories = null
         vertical = 0.0
         lastDistance = null
+        samples.clear()
+        lastWall = 0L
+        activeMillis = 0L
+        lastActiveWall = 0L
     }
 
     private fun finish(snapshot: WorkoutEngineSnapshot) {
-        val seconds = snapshot.totalElapsedMillis / 1000
+        // Time actually spent; the program position would count skipped or fast-forwarded time.
+        val seconds = (if (activeMillis > 0) activeMillis else snapshot.totalElapsedMillis) / 1000
         if (seconds < HistoryCodec.MIN_DURATION_SECONDS) return
         val hr = heartSummary.value
         val entry = HistoryEntry(
@@ -107,8 +161,16 @@ class HistoryManager(
             averageHeartRate = hr.averageBpm,
             maxHeartRate = hr.maxBpm,
             outcome = snapshot.state.name,
+            noTreadmill = noTreadmill,
+            zoneSeconds = hr.zoneSeconds,
+            samples = samples.toList(),
         )
         save(listOf(entry) + _entries.value)
+    }
+
+    /** The runner's rating of a workout after it (P15): stars 1-5 and how it felt. */
+    fun rate(startedAtMillis: Long, stars: Int?, feel: String?) {
+        save(_entries.value.map { if (it.startedAtMillis == startedAtMillis) it.copy(stars = stars, feel = feel) else it })
     }
 
     /** Delete one entry. */
@@ -136,5 +198,8 @@ class HistoryManager(
 
     private companion object {
         const val TICK_MILLIS = 1_000L
+
+        /** Ten hours at one sample per 10 s: enough for any workout, small enough for the file. */
+        const val MAX_SAMPLES = 3_600
     }
 }

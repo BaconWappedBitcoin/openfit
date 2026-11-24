@@ -75,7 +75,7 @@ class LibraryManager(
         _analysis.value = AnalysisState.Working(video)
         scope.launch {
             _analysis.value = try {
-                AnalysisState.Done(video, api.analyze(video.id))
+                AnalysisState.Done(video, api.analyze(video.id, video.durationSeconds))
             } catch (e: LibraryException) {
                 AnalysisState.Failed(video, e.message ?: "The analysis failed.")
             }
@@ -133,6 +133,21 @@ class LibraryManager(
             try {
                 val updated = api.rate(entry.id, stars)
                 _entries.value = _entries.value.map { if (it.id == updated.id) updated else it }
+            } catch (e: LibraryException) {
+                onMessage(e.message)
+            }
+        }
+    }
+
+    fun report(entry: LibraryEntry, reason: String) {
+        scope.launch {
+            try {
+                if (api.report(entry.id, reason)) {
+                    _entries.value = _entries.value.filterNot { it.id == entry.id }
+                    onMessage("Thanks. ${entry.name} is hidden from the community library now.")
+                } else {
+                    onMessage("Thanks. It is hidden once a few people report it.")
+                }
             } catch (e: LibraryException) {
                 onMessage(e.message)
             }

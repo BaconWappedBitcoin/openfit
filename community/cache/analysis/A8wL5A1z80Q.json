@@ -1,0 +1,312 @@
+[
+ {
+  "index": 0,
+  "startSeconds": 0,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat city sidewalk in winter past outdoor seating structures."
+ },
+ {
+  "index": 1,
+  "startSeconds": 30,
+  "durationSeconds": 30,
+  "speedKph": 4.7,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace along a flat urban sidewalk with an estimated speed of around 4.7 km/h."
+ },
+ {
+  "index": 2,
+  "startSeconds": 60,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera moves at a steady walking speed along a flat, paved urban sidewalk."
+ },
+ {
+  "index": 3,
+  "startSeconds": 90,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace along a flat city sidewalk in winter."
+ },
+ {
+  "index": 4,
+  "startSeconds": 120,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking along a flat urban sidewalk towards Washington Square Arch at a steady, normal walking speed."
+ },
+ {
+  "index": 5,
+  "startSeconds": 150,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace across a flat paved city park plaza past Washington Square Arch."
+ },
+ {
+  "index": 6,
+  "startSeconds": 180,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace across a flat paved plaza in Washington Square Park."
+ },
+ {
+  "index": 7,
+  "startSeconds": 210,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera moves at a steady walking pace along a flat paved park pathway."
+ },
+ {
+  "index": 8,
+  "startSeconds": 240,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat paved park pathway at a steady pace."
+ },
+ {
+  "index": 9,
+  "startSeconds": 270,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.88,
+  "terrain": "flat",
+  "note": "The camera is moving at a steady walking pace along a flat paved park walkway exiting onto a city street."
+ },
+ {
+  "index": 10,
+  "startSeconds": 300,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat city sidewalk at a steady, normal walking pace of around 5 km/h."
+ },
+ {
+  "index": 11,
+  "startSeconds": 330,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video shows smooth walking forward along a flat city sidewalk at a standard walking speed of around 4.5 km/h."
+ },
+ {
+  "index": 12,
+  "startSeconds": 360,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat city sidewalk at a steady pace."
+ },
+ {
+  "index": 13,
+  "startSeconds": 390,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.95,
+  "terrain": "flat",
+  "note": "The video shows a person walking at a steady pace along a flat city sidewalk."
+ },
+ {
+  "index": 14,
+  "startSeconds": 420,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat city sidewalk under scaffolding."
+ },
+ {
+  "index": 15,
+  "startSeconds": 450,
+  "durationSeconds": 30,
+  "speedKph": 4.1,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat urban sidewalk under scaffolding, slowing down briefly at a street crossing."
+ },
+ {
+  "index": 16,
+  "startSeconds": 480,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace along a flat city sidewalk."
+ },
+ {
+  "index": 17,
+  "startSeconds": 510,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace along a flat city sidewalk."
+ },
+ {
+  "index": 18,
+  "startSeconds": 540,
+  "durationSeconds": 30,
+  "speedKph": 3.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking on a flat city sidewalk, slowing down near the end at the street corner."
+ },
+ {
+  "index": 19,
+  "startSeconds": 570,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera moves at a steady walking pace along a flat city sidewalk."
+ },
+ {
+  "index": 20,
+  "startSeconds": 600,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera operator is walking at a steady normal pace along a flat city sidewalk."
+ },
+ {
+  "index": 21,
+  "startSeconds": 630,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace along a flat city sidewalk."
+ },
+ {
+  "index": 22,
+  "startSeconds": 660,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera is held by a person walking across a street crosswalk onto a public plaza at Union Square, NYC on flat urban paved ground."
+ },
+ {
+  "index": 23,
+  "startSeconds": 690,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace through a crowded outdoor market in a city plaza on flat paved ground."
+ },
+ {
+  "index": 24,
+  "startSeconds": 720,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a person walking through Union Square Plaza on flat paved ground at a steady walking speed."
+ },
+ {
+  "index": 25,
+  "startSeconds": 750,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking through Union Square market on flat paved pedestrian ground at a standard walking speed."
+ },
+ {
+  "index": 26,
+  "startSeconds": 780,
+  "durationSeconds": 30,
+  "speedKph": 3.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking through a busy outdoor market on flat paved ground."
+ },
+ {
+  "index": 27,
+  "startSeconds": 810,
+  "durationSeconds": 30,
+  "speedKph": 3.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking through a crowded outdoor market plaza at a steady pace on flat pavement."
+ },
+ {
+  "index": 28,
+  "startSeconds": 840,
+  "durationSeconds": 30,
+  "speedKph": 4,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a leisurely pace through a crowded outdoor pedestrian plaza and market."
+ },
+ {
+  "index": 29,
+  "startSeconds": 870,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pedestrian pace through an outdoor market plaza on flat pavement."
+ },
+ {
+  "index": 30,
+  "startSeconds": 900,
+  "durationSeconds": 19,
+  "speedKph": 3.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking through a crowded outdoor market on a flat paved plaza."
+ }
+]

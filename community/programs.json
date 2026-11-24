@@ -1,0 +1,435 @@
+[
+ {
+  "id": "0vif3dSo",
+  "program": {
+   "name": "Virtual Run 4k - Interlaken - Scenery Lake Switzerland",
+   "steps": [
+    {
+     "speedKph": 1.6,
+     "inclinePercent": 0,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 3.1,
+     "inclinePercent": -0.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 4.6,
+     "inclinePercent": -0.5,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 5.95,
+     "inclinePercent": 0,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 7.65,
+     "inclinePercent": 0,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 9.25,
+     "inclinePercent": 1.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 9.6,
+     "inclinePercent": 3.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 9.55,
+     "inclinePercent": 2.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 9.45,
+     "inclinePercent": 1.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 9.55,
+     "inclinePercent": 0.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 9.05,
+     "inclinePercent": 3,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 8.35,
+     "inclinePercent": 2.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 8.35,
+     "inclinePercent": 1.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 9.05,
+     "inclinePercent": 0,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 9.8,
+     "inclinePercent": 0,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 9.8,
+     "inclinePercent": 1.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 9.55,
+     "inclinePercent": 2.5,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 9.05,
+     "inclinePercent": 2.5,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 9.65,
+     "inclinePercent": 1.5,
+     "durationSeconds": 90
+    },
+    {
+     "speedKph": 9.6,
+     "inclinePercent": 0.5,
+     "durationSeconds": 150
+    },
+    {
+     "speedKph": 9.05,
+     "inclinePercent": -0.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 8.9,
+     "inclinePercent": 2.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 8.1,
+     "inclinePercent": 3.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 7.25,
+     "inclinePercent": 5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 6.3,
+     "inclinePercent": 2,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 6.25,
+     "inclinePercent": 0.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 7.2,
+     "inclinePercent": -1.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 8.65,
+     "inclinePercent": -0.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 9.4,
+     "inclinePercent": 0.5,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 9.15,
+     "inclinePercent": 1.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 9.15,
+     "inclinePercent": 2.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 9.15,
+     "inclinePercent": 3.5,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 8.7,
+     "inclinePercent": 3.5,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 9,
+     "inclinePercent": 4.5,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 9.35,
+     "inclinePercent": 3,
+     "durationSeconds": 90
+    },
+    {
+     "speedKph": 8.95,
+     "inclinePercent": 4,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 9.5,
+     "inclinePercent": 3,
+     "durationSeconds": 150
+    },
+    {
+     "speedKph": 9.2,
+     "inclinePercent": 4,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 9.3,
+     "inclinePercent": 3,
+     "durationSeconds": 90
+    },
+    {
+     "speedKph": 8.85,
+     "inclinePercent": 3.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 7.4,
+     "inclinePercent": 4.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 6.65,
+     "inclinePercent": 4,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 5.35,
+     "inclinePercent": 4,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 5.1,
+     "inclinePercent": 1.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 4.5,
+     "inclinePercent": 0.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 4.35,
+     "inclinePercent": 2.5,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 3.85,
+     "inclinePercent": 2.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 3.75,
+     "inclinePercent": -2,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 2.75,
+     "inclinePercent": -2,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 2.65,
+     "inclinePercent": 0,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 1.6,
+     "inclinePercent": 0,
+     "durationSeconds": 81
+    }
+   ]
+  },
+  "videoId": "86bVEtj8W1c",
+  "note": "",
+  "createdAt": 1795459097907,
+  "ratingSum": 4,
+  "ratingCount": 1,
+  "origin": "analysis"
+ },
+ {
+  "id": "8l4z7cJa",
+  "program": {
+   "name": "Treadmill Workout Scenery | 1 Hour Virtual Run in Dallas",
+   "steps": [
+    {
+     "speedKph": 12,
+     "inclinePercent": -0.5,
+     "durationSeconds": 120
+    },
+    {
+     "speedKph": 12,
+     "inclinePercent": 0.5,
+     "durationSeconds": 420
+    },
+    {
+     "speedKph": 12,
+     "inclinePercent": -0.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 12,
+     "inclinePercent": 0.5,
+     "durationSeconds": 210
+    },
+    {
+     "speedKph": 12,
+     "inclinePercent": -0.5,
+     "durationSeconds": 150
+    },
+    {
+     "speedKph": 12,
+     "inclinePercent": 0.5,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 11.8,
+     "inclinePercent": -0.5,
+     "durationSeconds": 90
+    },
+    {
+     "speedKph": 11.05,
+     "inclinePercent": 0.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 10.65,
+     "inclinePercent": 1,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 11.2,
+     "inclinePercent": 0,
+     "durationSeconds": 180
+    },
+    {
+     "speedKph": 11.6,
+     "inclinePercent": 0.5,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 10.6,
+     "inclinePercent": 0,
+     "durationSeconds": 90
+    },
+    {
+     "speedKph": 11.15,
+     "inclinePercent": 0,
+     "durationSeconds": 150
+    },
+    {
+     "speedKph": 10.05,
+     "inclinePercent": 0,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 10.75,
+     "inclinePercent": 0,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 12,
+     "inclinePercent": -0.5,
+     "durationSeconds": 210
+    },
+    {
+     "speedKph": 12,
+     "inclinePercent": 0.5,
+     "durationSeconds": 60
+    },
+    {
+     "speedKph": 10.7,
+     "inclinePercent": 0,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 10.05,
+     "inclinePercent": 0,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 10.3,
+     "inclinePercent": -1,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 12,
+     "inclinePercent": -0.5,
+     "durationSeconds": 180
+    },
+    {
+     "speedKph": 11.4,
+     "inclinePercent": 0,
+     "durationSeconds": 90
+    },
+    {
+     "speedKph": 12,
+     "inclinePercent": 0,
+     "durationSeconds": 420
+    },
+    {
+     "speedKph": 11.6,
+     "inclinePercent": 0,
+     "durationSeconds": 180
+    },
+    {
+     "speedKph": 12,
+     "inclinePercent": 0,
+     "durationSeconds": 90
+    },
+    {
+     "speedKph": 11.25,
+     "inclinePercent": 0,
+     "durationSeconds": 90
+    },
+    {
+     "speedKph": 11.85,
+     "inclinePercent": 0,
+     "durationSeconds": 300
+    },
+    {
+     "speedKph": 11.45,
+     "inclinePercent": 0,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 10.65,
+     "inclinePercent": 0,
+     "durationSeconds": 30
+    },
+    {
+     "speedKph": 10.15,
+     "inclinePercent": 0,
+     "durationSeconds": 21
+    }
+   ]
+  },
+  "videoId": "D870xNwuSAM",
+  "note": "",
+  "createdAt": 1795522307751,
+  "ratingSum": 0,
+  "ratingCount": 0,
+  "origin": "analysis"
+ }
+]

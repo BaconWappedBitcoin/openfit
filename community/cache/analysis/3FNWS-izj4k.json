@@ -1,0 +1,972 @@
+[
+ {
+  "index": 0,
+  "startSeconds": 0,
+  "durationSeconds": 30,
+  "speedKph": 6,
+  "inclinePercent": 0,
+  "confidence": 0.5,
+  "terrain": "road",
+  "note": "Intro montage featuring various scenes of running and walking along flat paved paths, riverwalks, and city sidewalks in Chicago."
+ },
+ {
+  "index": 1,
+  "startSeconds": 30,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.88,
+  "terrain": "flat",
+  "note": "The camera moves at a steady brisk walking pace along a flat concrete riverwalk."
+ },
+ {
+  "index": 2,
+  "startSeconds": 60,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat, paved waterfront promenade (Chicago RiverWalk)."
+ },
+ {
+  "index": 3,
+  "startSeconds": 90,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video shows a steady jog along a flat concrete riverwalk at around 155-160 steps per minute, corresponding to a speed of approximately 9 km/h."
+ },
+ {
+  "index": 4,
+  "startSeconds": 120,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Jogging along the Chicago Riverwalk on a flat paved and boardwalk path at a steady pace."
+ },
+ {
+  "index": 5,
+  "startSeconds": 150,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady jog along the Chicago Riverwalk. The path is completely flat with consistent footsteps."
+ },
+ {
+  "index": 6,
+  "startSeconds": 180,
+  "durationSeconds": 30,
+  "speedKph": 6.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is moving at a steady light jog/brisk walk along a flat paved pedestrian riverwalk."
+ },
+ {
+  "index": 7,
+  "startSeconds": 210,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat, paved urban riverwalk."
+ },
+ {
+  "index": 8,
+  "startSeconds": 240,
+  "durationSeconds": 30,
+  "speedKph": 9.3,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat, paved pedestrian riverwalk."
+ },
+ {
+  "index": 9,
+  "startSeconds": 270,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat, paved riverwalk promenade."
+ },
+ {
+  "index": 10,
+  "startSeconds": 300,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along the Chicago Riverwalk on a flat paved path."
+ },
+ {
+  "index": 11,
+  "startSeconds": 330,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.88,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady cadence on a flat urban sidewalk along a river bridge."
+ },
+ {
+  "index": 12,
+  "startSeconds": 360,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": -4.5,
+  "confidence": 0.88,
+  "terrain": "downhill",
+  "note": "The runner crosses a street and jogs down a sloping pedestrian ramp leading to a lower urban plaza."
+ },
+ {
+  "index": 13,
+  "startSeconds": 390,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady, relaxed pace along a flat paved urban riverwalk."
+ },
+ {
+  "index": 14,
+  "startSeconds": 420,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady, moderate pace along a flat, paved waterfront promenade."
+ },
+ {
+  "index": 15,
+  "startSeconds": 450,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace on a flat, paved pedestrian riverwalk."
+ },
+ {
+  "index": 16,
+  "startSeconds": 480,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat paved riverwalk path."
+ },
+ {
+  "index": 17,
+  "startSeconds": 510,
+  "durationSeconds": 30,
+  "speedKph": 9.3,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Jogging at a steady pace along a flat, paved waterfront promenade."
+ },
+ {
+  "index": 18,
+  "startSeconds": 540,
+  "durationSeconds": 30,
+  "speedKph": 9.4,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a consistent jogging pace on a flat, paved urban riverwalk."
+ },
+ {
+  "index": 19,
+  "startSeconds": 570,
+  "durationSeconds": 30,
+  "speedKph": 9.4,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video shows a steady jog along a flat, paved urban riverwalk path at a consistent cadence."
+ },
+ {
+  "index": 20,
+  "startSeconds": 600,
+  "durationSeconds": 30,
+  "speedKph": 9.3,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Jogging at a steady pace along a flat paved riverwalk promenade."
+ },
+ {
+  "index": 21,
+  "startSeconds": 630,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady jog along a flat, paved waterfront path (Chicago Lakefront Trail). The cadence is approximately 168 steps per minute, indicating a standard jogging speed around 9.5 km/h on flat ground."
+ },
+ {
+  "index": 22,
+  "startSeconds": 660,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat, paved waterfront path next to a marina."
+ },
+ {
+  "index": 23,
+  "startSeconds": 690,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a completely flat paved harbour promenade at around 170-175 steps per minute."
+ },
+ {
+  "index": 24,
+  "startSeconds": 720,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace of approximately 10.2 km/h along a flat paved waterfront path."
+ },
+ {
+  "index": 25,
+  "startSeconds": 750,
+  "durationSeconds": 30,
+  "speedKph": 11,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is moving at a steady jogging pace along a completely flat paved waterfront path (Chicago Lakefront Trail)."
+ },
+ {
+  "index": 26,
+  "startSeconds": 780,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "road",
+  "note": "The runner is jogging at a steady pace along a flat paved lakefront trail."
+ },
+ {
+  "index": 27,
+  "startSeconds": 810,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "road",
+  "note": "The runner is jogging at a steady pace of around 10.5 km/h along a flat, paved waterfront path."
+ },
+ {
+  "index": 28,
+  "startSeconds": 840,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jog on a completely flat, paved lakefront path with clear visibility of landmarks."
+ },
+ {
+  "index": 29,
+  "startSeconds": 870,
+  "durationSeconds": 30,
+  "speedKph": 9.3,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat paved waterfront path."
+ },
+ {
+  "index": 30,
+  "startSeconds": 900,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a consistent jogging pace along a flat, paved waterfront path."
+ },
+ {
+  "index": 31,
+  "startSeconds": 930,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jogging pace of approximately 9.8 km/h on flat paved urban paths and sidewalks."
+ },
+ {
+  "index": 32,
+  "startSeconds": 960,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a person walking at a steady brisk pace along a flat urban sidewalk."
+ },
+ {
+  "index": 33,
+  "startSeconds": 990,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.88,
+  "terrain": "flat",
+  "note": "The runner is jogging on a flat urban sidewalk at a steady pace of around 9.2 km/h."
+ },
+ {
+  "index": 34,
+  "startSeconds": 1020,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The camera moves along a flat city sidewalk in downtown Chicago at a steady jogging cadence of ~150-160 steps per minute."
+ },
+ {
+  "index": 35,
+  "startSeconds": 1050,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jog along a flat city sidewalk with clear visibility and consistent pace."
+ },
+ {
+  "index": 36,
+  "startSeconds": 1080,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Jogging along a flat city sidewalk in an urban downtown area at a steady pace of approximately 8.5 km/h."
+ },
+ {
+  "index": 37,
+  "startSeconds": 1110,
+  "durationSeconds": 30,
+  "speedKph": 6.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady brisk walk or light jog along a flat urban city sidewalk."
+ },
+ {
+  "index": 38,
+  "startSeconds": 1140,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat city sidewalk."
+ },
+ {
+  "index": 39,
+  "startSeconds": 1170,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady jog along a flat city sidewalk in an urban environment at a moderate, consistent pace."
+ },
+ {
+  "index": 40,
+  "startSeconds": 1200,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video shows a steady jog along a flat city sidewalk (State Street, Chicago) at around 8.8 km/h with no noticeable incline."
+ },
+ {
+  "index": 41,
+  "startSeconds": 1230,
+  "durationSeconds": 30,
+  "speedKph": 7.6,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The camera moves at a steady light jogging pace along a flat city sidewalk."
+ },
+ {
+  "index": 42,
+  "startSeconds": 1260,
+  "durationSeconds": 30,
+  "speedKph": 5.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner/walker is moving at a steady brisk walking pace along a flat city sidewalk."
+ },
+ {
+  "index": 43,
+  "startSeconds": 1290,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat city sidewalk past the Chicago Theatre."
+ },
+ {
+  "index": 44,
+  "startSeconds": 1320,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Jogging on a flat city sidewalk at a steady pace."
+ },
+ {
+  "index": 45,
+  "startSeconds": 1350,
+  "durationSeconds": 30,
+  "speedKph": 9.6,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat city sidewalk in downtown Chicago."
+ },
+ {
+  "index": 46,
+  "startSeconds": 1380,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walk/jog along a flat urban sidewalk in a city center."
+ },
+ {
+  "index": 47,
+  "startSeconds": 1410,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat urban sidewalk at a steady pace of around 4.5 km/h."
+ },
+ {
+  "index": 48,
+  "startSeconds": 1440,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady, moderate jogging pace of approximately 9.5 km/h on a flat paved city plaza."
+ },
+ {
+  "index": 49,
+  "startSeconds": 1470,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "road",
+  "note": "The runner is jogging at a steady cadence on a flat city sidewalk."
+ },
+ {
+  "index": 50,
+  "startSeconds": 1500,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a consistent jogging pace on a flat city sidewalk."
+ },
+ {
+  "index": 51,
+  "startSeconds": 1530,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a consistent jogging pace along a flat city sidewalk."
+ },
+ {
+  "index": 52,
+  "startSeconds": 1560,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace on a flat, paved city sidewalk."
+ },
+ {
+  "index": 53,
+  "startSeconds": 1590,
+  "durationSeconds": 30,
+  "speedKph": 9.6,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat city sidewalk."
+ },
+ {
+  "index": 54,
+  "startSeconds": 1620,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Jogging along a flat city sidewalk at a steady pace."
+ },
+ {
+  "index": 55,
+  "startSeconds": 1650,
+  "durationSeconds": 30,
+  "speedKph": 6.2,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "flat",
+  "note": "The video shows movement along a flat city sidewalk at a steady brisk walking/jogging pace before a cut to a park path."
+ },
+ {
+  "index": 56,
+  "startSeconds": 1680,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace of around 5 km/h on a flat concrete park path."
+ },
+ {
+  "index": 57,
+  "startSeconds": 1710,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady, relaxed jogging pace along a flat paved park path."
+ },
+ {
+  "index": 58,
+  "startSeconds": 1740,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is jogging at a steady pace of around 9.5 kph on a completely flat paved park path and sidewalk."
+ },
+ {
+  "index": 59,
+  "startSeconds": 1770,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jog along a flat, paved park pathway."
+ },
+ {
+  "index": 60,
+  "startSeconds": 1800,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "road",
+  "note": "The runner maintains a steady jogging pace of around 9.2 km/h on a flat, paved park path in Chicago's North Rose Garden area."
+ },
+ {
+  "index": 61,
+  "startSeconds": 1830,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner jogs across a flat paved park plaza, briefly running up a small flight of stairs around 30:41-30:44."
+ },
+ {
+  "index": 62,
+  "startSeconds": 1860,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady jog on a flat, paved plaza around Buckingham Fountain in Chicago."
+ },
+ {
+  "index": 63,
+  "startSeconds": 1890,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner moves along a flat, paved park path at a steady jogging pace."
+ },
+ {
+  "index": 64,
+  "startSeconds": 1920,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging on a flat paved path in Grant Park, Chicago, at a steady pace of around 9.5 kph."
+ },
+ {
+  "index": 65,
+  "startSeconds": 1950,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 0,
+  "confidence": 0.88,
+  "terrain": "flat",
+  "note": "The runner maintains a steady light jogging pace on a flat park pathway with clear footfall cadence visible in the camera movement and shadow."
+ },
+ {
+  "index": 66,
+  "startSeconds": 1980,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner jogs along a flat park trail before crossing a wide paved city street, maintaining a steady jogging pace of around 9.5 km/h."
+ },
+ {
+  "index": 67,
+  "startSeconds": 2010,
+  "durationSeconds": 30,
+  "speedKph": 9.6,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace of around 160 steps per minute on a flat paved park path with a view of the Chicago skyline."
+ },
+ {
+  "index": 68,
+  "startSeconds": 2040,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jogging pace along a flat paved park path with a clear view of the city skyline."
+ },
+ {
+  "index": 69,
+  "startSeconds": 2070,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a runner jogging along a flat paved urban pedestrian path flanked by stone balustrades with Chicago skyline in the background."
+ },
+ {
+  "index": 70,
+  "startSeconds": 2100,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady, moderate pace along a flat city sidewalk."
+ },
+ {
+  "index": 71,
+  "startSeconds": 2130,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video shows running along a flat city sidewalk (Michigan Avenue in Chicago) at a steady jogging pace of around 10.5 km/h."
+ },
+ {
+  "index": 72,
+  "startSeconds": 2160,
+  "durationSeconds": 30,
+  "speedKph": 6.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady forward movement along a flat city sidewalk in Chicago (Michigan Avenue). The camera motion indicates a steady walking or light jogging pace."
+ },
+ {
+  "index": 73,
+  "startSeconds": 2190,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady jog on a flat city sidewalk along Michigan Avenue in Chicago at around 9.8 km/h."
+ },
+ {
+  "index": 74,
+  "startSeconds": 2220,
+  "durationSeconds": 30,
+  "speedKph": 5.1,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat city sidewalk."
+ },
+ {
+  "index": 75,
+  "startSeconds": 2250,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat city sidewalk."
+ },
+ {
+  "index": 76,
+  "startSeconds": 2280,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is moving at a steady jogging pace of around 10.2 km/h (cadence ~180 steps/min) along a flat urban sidewalk."
+ },
+ {
+  "index": 77,
+  "startSeconds": 2310,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video shows a steady jog along a flat city sidewalk at approximately 9.2 km/h."
+ },
+ {
+  "index": 78,
+  "startSeconds": 2340,
+  "durationSeconds": 30,
+  "speedKph": 9.3,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat city sidewalk."
+ },
+ {
+  "index": 79,
+  "startSeconds": 2370,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat city sidewalk."
+ },
+ {
+  "index": 80,
+  "startSeconds": 2400,
+  "durationSeconds": 30,
+  "speedKph": 9.6,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat city sidewalk."
+ },
+ {
+  "index": 81,
+  "startSeconds": 2430,
+  "durationSeconds": 30,
+  "speedKph": 7.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging on a flat urban sidewalk at a steady pace of around 7.2 km/h with a cadence of about 120 steps per minute."
+ },
+ {
+  "index": 82,
+  "startSeconds": 2460,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady light jog on a flat urban sidewalk at around 150 steps per minute."
+ },
+ {
+  "index": 83,
+  "startSeconds": 2490,
+  "durationSeconds": 30,
+  "speedKph": 7.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady jog along a flat city sidewalk in Chicago."
+ },
+ {
+  "index": 84,
+  "startSeconds": 2520,
+  "durationSeconds": 30,
+  "speedKph": 8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady jog along a flat city sidewalk."
+ },
+ {
+  "index": 85,
+  "startSeconds": 2550,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat city sidewalk and riverwalk."
+ },
+ {
+  "index": 86,
+  "startSeconds": 2580,
+  "durationSeconds": 30,
+  "speedKph": 7.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is maintaining a steady light jog along a flat, paved waterfront promenade."
+ },
+ {
+  "index": 87,
+  "startSeconds": 2610,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Jogging along a completely flat paved urban riverwalk."
+ },
+ {
+  "index": 88,
+  "startSeconds": 2640,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jogging pace on a smooth, flat paved riverwalk promenade."
+ },
+ {
+  "index": 89,
+  "startSeconds": 2670,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady jog along a flat, paved urban riverwalk path with a consistent footfall cadence."
+ },
+ {
+  "index": 90,
+  "startSeconds": 2700,
+  "durationSeconds": 30,
+  "speedKph": 5.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video shows a steady brisk walk along a flat paved riverwalk."
+ },
+ {
+  "index": 91,
+  "startSeconds": 2730,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat paved waterfront riverwalk."
+ },
+ {
+  "index": 92,
+  "startSeconds": 2760,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat, paved waterfront walkway entering a covered pedestrian underpass."
+ },
+ {
+  "index": 93,
+  "startSeconds": 2790,
+  "durationSeconds": 30,
+  "speedKph": 5.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat, paved waterfront promenade past docked boats."
+ },
+ {
+  "index": 94,
+  "startSeconds": 2820,
+  "durationSeconds": 30,
+  "speedKph": 9.3,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat concrete waterfront promenade. Cadence is approximately 150 steps per minute."
+ },
+ {
+  "index": 95,
+  "startSeconds": 2850,
+  "durationSeconds": 30,
+  "speedKph": 11,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jogging pace of around 11 km/h (cadence ~174 spm) along a flat paved waterfront path."
+ },
+ {
+  "index": 96,
+  "startSeconds": 2880,
+  "durationSeconds": 23,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat waterfront promenade past a marina."
+ }
+]

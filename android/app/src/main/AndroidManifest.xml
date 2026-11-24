@@ -33,10 +33,36 @@
       network at all.
     -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Health Connect (P17): write finished workouts only; nothing is read. -->
+    <uses-permission android:name="android.permission.health.WRITE_EXERCISE" />
+    <uses-permission android:name="android.permission.health.WRITE_DISTANCE" />
+    <uses-permission android:name="android.permission.health.WRITE_TOTAL_CALORIES_BURNED" />
+    <uses-permission android:name="android.permission.health.WRITE_ELEVATION_GAINED" />
+    <uses-permission android:name="android.permission.health.WRITE_HEART_RATE" />
+    <uses-permission android:name="android.permission.health.WRITE_SPEED" />
+
+    <!-- Music from other apps during a workout: see which music apps are installed to open them. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.APP_MUSIC" />
+        </intent>
+        <package android:name="com.spotify.music" />
+        <package android:name="com.google.android.apps.youtube.music" />
+        <package android:name="com.amazon.mp3" />
+        <package android:name="com.pandora.android" />
+        <package android:name="com.apple.android.music" />
+        <package android:name="deezer.android.app" />
+        <package android:name="com.aspiro.tidal" />
+        <package android:name="com.soundcloud.android" />
+        <package android:name="com.audible.application" />
+    </queries>
 
     <application
         android:name=".TreadmillApplication"
         android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -57,11 +83,46 @@
             </intent-filter>
         </activity>
 
+        <!-- Health Connect asks the app why it wants access; OpenFit's About screen explains it. -->
+        <activity
+            android:name=".HealthRationaleActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ofit">
+            <intent-filter>
+                <action android:name="androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE" />
+            </intent-filter>
+        </activity>
+        <activity-alias
+            android:name="ViewPermissionUsageActivity"
+            android:exported="true"
+            android:targetActivity=".HealthRationaleActivity"
+            android:permission="android.permission.START_VIEW_PERMISSION_USAGE">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW_PERMISSION_USAGE" />
+                <category android:name="android.intent.category.HEALTH_PERMISSIONS" />
+            </intent-filter>
+        </activity-alias>
+
+        <!-- The training plan's daily reminder (P11/P12); only the app's own alarm sends it. -->
+        <receiver
+            android:name=".workout.PlanReminderReceiver"
+            android:exported="false" />
+
         <service
             android:name=".service.TreadmillService"
             android:exported="false"
             android:foregroundServiceType="connectedDevice" />
 
+        <!-- Shows the song playing in another app and controls it; the runner allows it in Android settings. -->
+        <service
+            android:name=".workout.MusicListenerService"
+            android:exported="false"
+            android:label="OpenFit music"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

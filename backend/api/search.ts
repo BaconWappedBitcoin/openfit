@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { allow, db } from "../lib/store.js";
+import { allow, getCache, setCache } from "../lib/store.js";
 import { clientIp, env, fail, method, serverError } from "../lib/http.js";
 import { search } from "../lib/youtube.js";
 
@@ -11,11 +11,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // YouTube's search costs 100 quota units a call, so this is limited more tightly than the rest.
     if (!(await allow("search", clientIp(req), 30, 600))) return fail(res, 429, "too many searches, try again later");
-    const cacheKey = `search:${q.toLowerCase()}`;
-    const cached = await db().get<unknown>(cacheKey);
+    const cacheKey = q.toLowerCase();
+    const cached = await getCache<unknown>("search", cacheKey);
     if (cached) return res.status(200).json({ videos: cached });
     const videos = await search(`${q} running`, env("YOUTUBE_API_KEY"));
-    await db().set(cacheKey, videos, { ex: 6 * 3600 });
+    await setCache("search", cacheKey, videos, 6 * 3600);
     res.setHeader("Cache-Control", "public, s-maxage=3600");
     res.status(200).json({ videos });
   } catch (e) {

@@ -1,0 +1,24 @@
+{
+ "landmarks": [
+  {
+   "seconds": 35,
+   "name": "Fort Lauderdale Beach Promenade",
+   "fact": "This iconic beachfront promenade features a signature white wave wall, coconut palms, and scenic views of the Atlantic Ocean."
+  },
+  {
+   "seconds": 300,
+   "name": "International Swimming Hall of Fame",
+   "fact": "This historic aquatic museum and complex honors world-class swimmers, divers, and water polo legends from around the globe."
+  },
+  {
+   "seconds": 390,
+   "name": "Las Olas Boulevard",
+   "fact": "This famous Fort Lauderdale thoroughfare runs from downtown to the ocean, renowned for its vibrant dining, art galleries, and boutiques."
+  },
+  {
+   "seconds": 649,
+   "name": "Westin Fort Lauderdale Beach Skywalk",
+   "fact": "This pedestrian skywalk spans across Highway A1A, conveniently connecting hotel guests directly to the sandy Fort Lauderdale shoreline."
+  }
+ ]
+}

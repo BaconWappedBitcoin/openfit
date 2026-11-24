@@ -21,7 +21,7 @@ class WorkoutHistoryTest {
 
     @Test
     fun `entries survive a round trip, newest first`() {
-        val older = run.copy(startedAtMillis = 1_000, calories = null, averageHeartRate = null, maxHeartRate = null)
+        val older = run.copy(startedAtMillis = 1_000, calories = null, averageHeartRate = null, maxHeartRate = null, noTreadmill = true)
         val back = HistoryCodec.decode(HistoryCodec.encode(listOf(older, run)))
         assertEquals(listOf(run, older), back)
     }
@@ -42,5 +42,15 @@ class WorkoutHistoryTest {
         assertEquals(3_600, totals.durationSeconds)
         assertEquals(8_000.0, totals.distanceMeters)
         assertEquals(250.5, totals.calories)
+    }
+
+    @Test
+    fun `the runner's rating and feel are kept, and nonsense is dropped`() {
+        val rated = run.copy(stars = 4, feel = HistoryEntry.FEEL_HARD)
+        assertEquals(listOf(rated), HistoryCodec.decode(HistoryCodec.encode(listOf(rated))))
+        val odd = HistoryCodec.encode(listOf(run)).replace("\"outcome\"", "\"stars\":9,\"feel\":\"meh\",\"outcome\"")
+        val back = HistoryCodec.decode(odd).single()
+        assertNull(back.stars)
+        assertNull(back.feel)
     }
 }

@@ -1,0 +1,49 @@
+{
+ "landmarks": [
+  {
+   "seconds": 70,
+   "name": "Chicago Riverwalk Trail",
+   "fact": "The Chicago Riverwalk is an open waterfront path running along the south bank of the Chicago River."
+  },
+  {
+   "seconds": 640,
+   "name": "Chicago Lakefront Trail",
+   "fact": "The Chicago Lakefront Trail is a scenic 18.5-mile path stretching along the shores of Lake Michigan."
+  },
+  {
+   "seconds": 955,
+   "name": "Michigan Avenue",
+   "fact": "Michigan Avenue is a famous street in Chicago, home to historic architecture and the Magnificent Mile shopping area."
+  },
+  {
+   "seconds": 1025,
+   "name": "Wabash Avenue",
+   "fact": "Wabash Avenue is a major street in downtown Chicago, famously running beneath the iconic elevated train tracks."
+  },
+  {
+   "seconds": 1295,
+   "name": "Chicago Theatre",
+   "fact": "The Chicago Theatre is an iconic landmark built in 1921, famous for its legendary marquee sign on State Street."
+  },
+  {
+   "seconds": 1740,
+   "name": "Butler Field",
+   "fact": "Butler Field is a spacious green lawn in Grant Park used for outdoor sports, festivals, and community gatherings."
+  },
+  {
+   "seconds": 1815,
+   "name": "North Rose Garden",
+   "fact": "The North Rose Garden in Grant Park features manicured flower beds and scenic views of the Chicago skyline."
+  },
+  {
+   "seconds": 1860,
+   "name": "Buckingham Fountain",
+   "fact": "Buckingham Fountain is a landmark in Grant Park, recognized as one of the largest fountains in the world."
+  },
+  {
+   "seconds": 1945,
+   "name": "Grant Park",
+   "fact": "Grant Park is a prominent 319-acre urban park located in the heart of downtown Chicago along Lake Michigan."
+  }
+ ]
+}

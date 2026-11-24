@@ -24,6 +24,11 @@ class TreadmillApplication : Application() {
         CrashLog.install(this)
         controller = TreadmillController(this)
         createNotificationChannel()
+        // Alarms do not survive a reboot or an update: re-arm the training plan reminder.
+        runCatching {
+            com.ofit.app.workout.PlanStore.load(this, controller.profiles.fileName("plan", "json"))
+                ?.let { com.ofit.app.workout.PlanReminder.arm(this, it.reminderMinuteOfDay) }
+        }
         // The foreground service is deliberately not started here. A foreground service of type
         // "connectedDevice" needs the runtime Bluetooth permission, which has not been asked for
         // yet when the application object is created, and starting one without it throws and takes

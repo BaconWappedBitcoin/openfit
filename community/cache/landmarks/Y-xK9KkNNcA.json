@@ -1,0 +1,24 @@
+{
+ "landmarks": [
+  {
+   "seconds": 5,
+   "name": "Palm Cove Beach",
+   "fact": "Palm Cove Beach is famous for its idyllic palm-lined shoreline and relaxed tropical atmosphere near Cairns, Queensland."
+  },
+  {
+   "seconds": 270,
+   "name": "Palm Cove Esplanade",
+   "fact": "This seaside street is famous for its ancient Melaleuca paperbark trees shading beachfront cafes and resorts."
+  },
+  {
+   "seconds": 415,
+   "name": "Palm Cove Jetty",
+   "fact": "This iconic pier is a popular local fishing spot offering scenic views across the Coral Sea."
+  },
+  {
+   "seconds": 440,
+   "name": "Double Island",
+   "fact": "Located just off Palm Cove, this private island is a historic retreat visible along the tropical horizon."
+  }
+ ]
+}

@@ -1,6 +1,12 @@
 package com.ofit.app.workout
 
 import androidx.compose.foundation.background
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Terrain
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
+import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,7 +54,12 @@ import kotlin.math.roundToInt
 /** Pick a speed, incline and goal and go (BACKLOG lane 7, P3). */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun QuickStartScreen(limits: SafetyLimits, onGo: (WorkoutProgram) -> Unit, onBack: () -> Unit) {
+fun QuickStartScreen(
+    limits: SafetyLimits,
+    onGo: (WorkoutProgram) -> Unit,
+    onBack: () -> Unit,
+    body: com.ofit.protocol.BodyProfile = com.ofit.protocol.BodyProfile(),
+) {
     val units = LocalUnits.current
     val imperial = units == UnitSystem.IMPERIAL
     val minKph = limits.machineMinSpeedKph ?: 0.8
@@ -75,11 +86,83 @@ fun QuickStartScreen(limits: SafetyLimits, onGo: (WorkoutProgram) -> Unit, onBac
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            MenuButton()
-            OutlinedButton(onClick = onBack) { Text("Back") }
-            Spacer(Modifier.width(12.dp))
-            Text("Quick start", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+        com.ofit.app.ui.ScreenHeader("Quick start", "Pick a pace and go", onBack = onBack)
+
+        // One-tap presets: picture tiles that set speed and incline.
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            QuickStart.PRESETS.forEachIndexed { i, preset ->
+                val presetSpeed = units.speedFromKph(preset.speedKph).toHalf()
+                val presetIncline = preset.inclinePercent.coerceIn(minIncline, maxIncline)
+                val on = kotlin.math.abs(speedShown - presetSpeed) < 0.01 && kotlin.math.abs(incline - presetIncline) < 0.01
+                PresetTile(
+                    preset = preset,
+                    speedText = "%.1f %s".format(presetSpeed, units.speedUnit) + (if (presetIncline > 0) " · %.0f %%".format(presetIncline) else ""),
+                    colors = PRESET_COLORS[i % PRESET_COLORS.size],
+                    icon = PRESET_ICONS[i % PRESET_ICONS.size],
+                    selected = on,
+                    onClick = {
+                        speedShown = presetSpeed
+                        incline = presetIncline
+                    },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
+
+        // The workout as it will run: its shape, what it adds up to, and the white Go pill.
+        val total = program.totalDurationSeconds
+        val estimate = QuickStart.estimate(program, body)
+        val accent = MaterialTheme.colorScheme.primary
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .background(Color(0xFF1A1A1A)),
+        ) {
+            com.ofit.app.browse.WorkoutArt(null, program.steps, accent, Modifier.fillMaxSize())
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(
+                        androidx.compose.ui.graphics.Brush.horizontalGradient(
+                            0f to Color(0xF00D0D0D), 0.55f to Color(0x990D0D0D), 1f to Color(0x000D0D0D),
+                        ),
+                    ),
+            )
+            Row(
+                Modifier.fillMaxSize().padding(horizontal = 28.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text("YOUR WORKOUT", style = MaterialTheme.typography.labelLarge, color = accent, letterSpacing = 2.sp)
+                    Text(program.name, fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                    Row(horizontalArrangement = Arrangement.spacedBy(28.dp)) {
+                        BigFigure("${total / 60}", "min")
+                        BigFigure("%.1f".format(units.distanceFromMeters(estimate.meters)), units.distanceUnit)
+                        BigFigure("${estimate.kcal.roundToInt()}", "cals (est)")
+                        BigFigure("${program.steps.size}", if (program.steps.size == 1) "step" else "steps")
+                    }
+                }
+                Row(
+                    Modifier
+                        .height(64.dp)
+                        .clip(RoundedCornerShape(32.dp))
+                        .background(Color(0xFFF5F7F8))
+                        .clickable { onGo(program) }
+                        .padding(horizontal = 32.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.Filled.PlayArrow,
+                        contentDescription = null,
+                        tint = Color(0xFF0D0D0D),
+                        modifier = Modifier.size(30.dp),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text("Open workout", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color(0xFF0D0D0D))
+                }
+            }
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -150,17 +233,6 @@ fun QuickStartScreen(limits: SafetyLimits, onGo: (WorkoutProgram) -> Unit, onBac
             }
         }
 
-        val total = program.totalDurationSeconds
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                "${total / 60} min in all · ${program.steps.size} step${if (program.steps.size == 1) "" else "s"}",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.weight(1f),
-            )
-            Button(onClick = { onGo(program) }, modifier = Modifier.height(56.dp)) {
-                Text("Open workout", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-            }
-        }
     }
 }
 
@@ -220,3 +292,58 @@ private fun Toggle(title: String, detail: String, checked: Boolean, onChange: (B
 
 /** Round to the nearest 0.5. */
 internal fun Double.toHalf(): Double = (this * 2).roundToInt() / 2.0
+
+private val PRESET_COLORS = listOf(
+    Color(0xFF2E7D6B) to Color(0xFF123B33),
+    Color(0xFF3A6FB0) to Color(0xFF16294A),
+    Color(0xFF9A6B2F) to Color(0xFF3D2810),
+    Color(0xFF7B4FB5) to Color(0xFF2C1A47),
+    Color(0xFFB5475A) to Color(0xFF461821),
+)
+
+private val PRESET_ICONS = listOf(
+    androidx.compose.material.icons.Icons.AutoMirrored.Filled.DirectionsWalk,
+    androidx.compose.material.icons.Icons.AutoMirrored.Filled.DirectionsWalk,
+    androidx.compose.material.icons.Icons.Filled.Terrain,
+    androidx.compose.material.icons.Icons.AutoMirrored.Filled.DirectionsRun,
+    androidx.compose.material.icons.Icons.Filled.Bolt,
+)
+
+@Composable
+private fun PresetTile(
+    preset: QuickStart.Preset,
+    speedText: String,
+    colors: Pair<Color, Color>,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier,
+) {
+    Column(
+        modifier
+            .height(150.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(androidx.compose.ui.graphics.Brush.linearGradient(listOf(colors.first, colors.second)))
+            .then(
+                if (selected) Modifier.border(3.dp, Color.White, RoundedCornerShape(20.dp))
+                else Modifier.border(1.dp, Color(0x33FFFFFF), RoundedCornerShape(20.dp)),
+            )
+            .clickable(onClick = onClick)
+            .padding(18.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
+    ) {
+        androidx.compose.material3.Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(36.dp))
+        Column {
+            Text(preset.name, fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text(speedText, fontSize = 14.sp, color = Color(0xD9FFFFFF))
+        }
+    }
+}
+
+@Composable
+private fun BigFigure(value: String, label: String) {
+    Column {
+        Text(value, fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        Text(label, fontSize = 14.sp, color = Color(0xB3FFFFFF))
+    }
+}

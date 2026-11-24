@@ -1,0 +1,74 @@
+{
+ "landmarks": [
+  {
+   "seconds": 0,
+   "name": "Zion National Park",
+   "fact": "A prominent national park in southwestern Utah known for its steep sandstone cliffs and scenic canyons."
+  },
+  {
+   "seconds": 21,
+   "name": "Pa'rus Trailhead",
+   "fact": "The starting point for a paved multi-use trail following the Virgin River in Zion National Park."
+  },
+  {
+   "seconds": 55,
+   "name": "First Virgin River Bridge",
+   "fact": "One of several pedestrian bridges along the Pa'rus Trail crossing the scenic Virgin River in Zion National Park."
+  },
+  {
+   "seconds": 132,
+   "name": "Second Virgin River Bridge",
+   "fact": "A footbridge providing views of surrounding red sandstone cliffs and lush riparian vegetation in Zion National Park."
+  },
+  {
+   "seconds": 202,
+   "name": "Third Virgin River Bridge",
+   "fact": "A scenic pedestrian bridge spanning the Virgin River along the paved Pa'rus Trail."
+  },
+  {
+   "seconds": 258,
+   "name": "The Watchman",
+   "fact": "A famous 6,578-foot sandstone peak towering above the southern entrance of Zion National Park."
+  },
+  {
+   "seconds": 723,
+   "name": "Fourth Virgin River Bridge",
+   "fact": "A footbridge offering panoramic views of Zion Canyon's towering red rock walls and riverbed."
+  },
+  {
+   "seconds": 928,
+   "name": "Fifth Virgin River Bridge",
+   "fact": "A steel pedestrian bridge linking trail sections along the river corridor in Zion National Park."
+  },
+  {
+   "seconds": 1485,
+   "name": "South Campground Bridge",
+   "fact": "A bridge located near Zion's South Campground, connecting trail sections across the main park road."
+  },
+  {
+   "seconds": 2082,
+   "name": "Sixth Virgin River Bridge",
+   "fact": "A footbridge offering cyclists and hikers a safe crossing over the Virgin River with mountain backdrops."
+  },
+  {
+   "seconds": 2293,
+   "name": "Seventh Virgin River Bridge",
+   "fact": "A pedestrian bridge providing scenic views of the Virgin River and surrounding rock formations."
+  },
+  {
+   "seconds": 2541,
+   "name": "Eighth Virgin River Bridge",
+   "fact": "A footbridge located near the Canyon Junction area of Zion National Park."
+  },
+  {
+   "seconds": 2878,
+   "name": "Ninth Virgin River Bridge",
+   "fact": "A scenic footbridge near Canyon Junction where the Pa'rus Trail meets the Zion Canyon Scenic Drive."
+  },
+  {
+   "seconds": 3042,
+   "name": "Canyon Junction Shuttle Stop",
+   "fact": "Shuttle Stop 3 in Zion National Park, where visitors board park shuttles up Zion Canyon Scenic Drive."
+  }
+ ]
+}

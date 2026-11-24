@@ -1,5 +1,11 @@
 package com.ofit.app.library
 
+import androidx.compose.material.icons.filled.PlayArrow
+
+import androidx.compose.foundation.layout.aspectRatio
+
+import androidx.compose.foundation.clickable
+
 import androidx.compose.foundation.background
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.width
@@ -67,6 +73,16 @@ fun VideoSearchScreen(
     onMakeManual: (VideoHit) -> Unit = {},
 ) {
     var query by rememberSaveable(initialQuery) { mutableStateOf(initialQuery) }
+    // The video being previewed in the popup, if any.
+    var previewing by androidx.compose.runtime.remember { mutableStateOf<VideoHit?>(null) }
+    previewing?.let { video ->
+        VideoPreviewDialog(
+            video = video,
+            onClose = { previewing = null },
+            onMakeWorkout = { previewing = null; onMakeWorkout(video) },
+            onMakeManual = { previewing = null; onMakeManual(video) },
+        )
+    }
 
     Column(
         modifier = modifier
@@ -74,7 +90,7 @@ fun VideoSearchScreen(
             .statusBarsPadding()
             .padding(16.dp),
     ) {
-        HeaderBar(title = "Find a running video", onBack = onBack)
+        HeaderBar(title = "Find a running video", onBack = onBack, subtitle = "Any running video can become a workout")
         // Bring your own key: where people need it, a one-tap way to set it up.
         androidx.compose.foundation.layout.Row(
             modifier = Modifier
@@ -87,7 +103,7 @@ fun VideoSearchScreen(
         ) {
             Text(
                 if (hasOwnKey) "Making workouts uses your own Gemini key."
-                else "Making a workout uses Google Gemini. Add your own free key for no daily limit.",
+                else "Making a workout from a new video needs your own free Gemini key. Videos others have made are free.",
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.weight(1f),
             )
@@ -164,7 +180,8 @@ fun VideoSearchScreen(
                             modifier = Modifier
                                 .width(213.dp)
                                 .height(120.dp)
-                                .clip(androidx.compose.foundation.shape.RoundedCornerShape(10.dp)),
+                                .clip(androidx.compose.foundation.shape.RoundedCornerShape(10.dp))
+                                .clickable { previewing = video },
                         )
                         Spacer(Modifier.width(16.dp))
                         Column {
@@ -183,6 +200,11 @@ fun VideoSearchScreen(
                                 androidx.compose.material3.OutlinedButton(onClick = { onMakeManual(video) }) {
                                     Text("Make it myself")
                                 }
+                                androidx.compose.material3.OutlinedButton(onClick = { previewing = video }) {
+                                    Icon(androidx.compose.material.icons.Icons.Filled.PlayArrow, contentDescription = null)
+                                    Spacer(Modifier.width(4.dp))
+                                    Text("Preview")
+                                }
                             }
                         }
                     }
@@ -196,12 +218,35 @@ fun VideoSearchScreen(
 private fun WorkingCard(video: VideoHit) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Watching the video", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            // There is no progress report from the server, so this is an estimate from the video's
+            // length (about a minute for 40 minutes of video); it waits at 95 % until the answer comes.
+            val expectedMillis = (video.durationSeconds * 1500L / 60).coerceIn(20_000L, 180_000L)
+            var elapsed by androidx.compose.runtime.remember { mutableStateOf(0L) }
+            androidx.compose.runtime.LaunchedEffect(video.id) {
+                val start = System.currentTimeMillis()
+                while (true) {
+                    elapsed = System.currentTimeMillis() - start
+                    kotlinx.coroutines.delay(250)
+                }
+            }
+            val share = com.ofit.protocol.AnalysisProgress.estimate(elapsed, expectedMillis)
+            Text("Making your workout", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             Text(video.title, style = MaterialTheme.typography.bodyMedium, maxLines = 2)
-            CircularProgressIndicator()
+            androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically) {
+                androidx.compose.material3.LinearProgressIndicator(
+                    progress = { share },
+                    modifier = Modifier.weight(1f).height(10.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(5.dp)),
+                )
+                Spacer(Modifier.width(14.dp))
+                Text("${(share * 100).toInt()} %", fontWeight = FontWeight.Bold)
+            }
             Text(
-                "A video model is working out the speed and slope of each half minute. " +
-                    "This takes about a minute for a 40 minute video. Keep this screen open.",
+                com.ofit.protocol.AnalysisProgress.stage(share) + " · about ${expectedMillis / 1000} s in all (estimated)",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+            Text(
+                "A video model works out the speed and slope of each half minute. Keep this screen open.",
                 style = MaterialTheme.typography.bodySmall,
             )
         }
@@ -247,3 +292,52 @@ private fun DoneCard(done: AnalysisState.Done, onKeep: (AnalysisState.Done, Bool
 }
 
 private fun Double.fmt() = "%.1f".format(java.util.Locale.ROOT, this)
+
+/** A preview of a search result: the video playing, its details, and the two ways to make a workout. */
+@Composable
+private fun VideoPreviewDialog(video: VideoHit, onClose: () -> Unit, onMakeWorkout: () -> Unit, onMakeManual: () -> Unit) {
+    // Start a quarter of the way in, where the scenery usually is, and let it play from there.
+    val startMillis = (video.durationSeconds * 1000L / 4).toInt()
+    val openedAt = androidx.compose.runtime.remember { System.currentTimeMillis() }
+    androidx.compose.ui.window.Dialog(
+        onDismissRequest = onClose,
+        properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false),
+    ) {
+        Column(
+            Modifier
+                .fillMaxWidth(0.75f)
+                .clip(androidx.compose.foundation.shape.RoundedCornerShape(24.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            androidx.compose.foundation.layout.Box(
+                Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(16f / 9f)
+                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp))
+                    .background(androidx.compose.ui.graphics.Color.Black),
+            ) {
+                com.ofit.app.workout.YouTubePlayer(
+                    videoId = video.id,
+                    playing = true,
+                    positionMillis = { startMillis + (System.currentTimeMillis() - openedAt).toInt() },
+                    seekRequest = 1,
+                    volume = 60,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+            Text(video.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, maxLines = 2)
+            Text("${video.channel}  ·  ${formatClock(video.durationSeconds)}", style = MaterialTheme.typography.bodyMedium)
+            androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                val tooShortOrLong = video.durationSeconds < 120 || video.durationSeconds > 3600
+                Button(onClick = onMakeWorkout, enabled = !tooShortOrLong) {
+                    Text(if (tooShortOrLong) "Needs 2 to 60 minutes" else "Make a workout (AI)")
+                }
+                OutlinedButton(onClick = onMakeManual) { Text("Make it myself") }
+                Spacer(Modifier.weight(1f))
+                androidx.compose.material3.TextButton(onClick = onClose) { Text("Close") }
+            }
+        }
+    }
+}

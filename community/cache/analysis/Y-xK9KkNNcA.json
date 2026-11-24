@@ -1,0 +1,832 @@
+[
+ {
+  "index": 0,
+  "startSeconds": 0,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Virtual run along a flat coastal promenade at sunrise with a moderate running pace."
+ },
+ {
+  "index": 1,
+  "startSeconds": 30,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.75,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat coastal path near the beach at sunset."
+ },
+ {
+  "index": 2,
+  "startSeconds": 60,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat paved beachfront path lined with palm trees."
+ },
+ {
+  "index": 3,
+  "startSeconds": 90,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video shows a steady jog along a flat, paved beachfront promenade with minimal pitch."
+ },
+ {
+  "index": 4,
+  "startSeconds": 120,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat, paved waterfront path lined with palm trees."
+ },
+ {
+  "index": 5,
+  "startSeconds": 150,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jog along a flat paved path and grassy area next to the beach with a cadence of around 162 steps per minute."
+ },
+ {
+  "index": 6,
+  "startSeconds": 180,
+  "durationSeconds": 30,
+  "speedKph": 11,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady pace of around 165 steps per minute along a flat paved coastal walkway."
+ },
+ {
+  "index": 7,
+  "startSeconds": 210,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jogging pace along a flat paved coastal promenade next to the beach."
+ },
+ {
+  "index": 8,
+  "startSeconds": 240,
+  "durationSeconds": 30,
+  "speedKph": 10.6,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video shows a steady jog along a flat paved coastal walkway next to the beach, with a cadence around 160 steps per minute."
+ },
+ {
+  "index": 9,
+  "startSeconds": 270,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner maintains a steady jogging pace on a flat paved promenade along the coast."
+ },
+ {
+  "index": 10,
+  "startSeconds": 300,
+  "durationSeconds": 30,
+  "speedKph": 10.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "road",
+  "note": "The runner is maintaining a steady jogging pace along a flat, paved seaside road. Cadence is approximately 162 steps per minute with a flat gradient throughout."
+ },
+ {
+  "index": 11,
+  "startSeconds": 330,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jog on a completely flat paved promenade path along the waterfront."
+ },
+ {
+  "index": 12,
+  "startSeconds": 360,
+  "durationSeconds": 30,
+  "speedKph": 9.6,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "road",
+  "note": "The runner maintains a steady jog on a flat, paved coastal promenade at around 152 steps per minute."
+ },
+ {
+  "index": 13,
+  "startSeconds": 390,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat paved coastal promenade with palm trees and a view of the ocean."
+ },
+ {
+  "index": 14,
+  "startSeconds": 420,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera moves at a steady walking pace along a flat sandy beach towards the water at sunrise."
+ },
+ {
+  "index": 15,
+  "startSeconds": 450,
+  "durationSeconds": 30,
+  "speedKph": 7.5,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "flat",
+  "note": "The camera pans across a beach at sunrise before the runner begins jogging along the flat sand at a steady, moderate pace."
+ },
+ {
+  "index": 16,
+  "startSeconds": 480,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner maintains a steady running pace along a flat, sandy beach shoreline."
+ },
+ {
+  "index": 17,
+  "startSeconds": 510,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is maintaining a steady jogging pace along a flat, sandy beach surface."
+ },
+ {
+  "index": 18,
+  "startSeconds": 540,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jogging pace along a flat sandy beach coastline."
+ },
+ {
+  "index": 19,
+  "startSeconds": 570,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner maintains a steady running pace on flat beach sand with a cadence of roughly 156 steps per minute."
+ },
+ {
+  "index": 20,
+  "startSeconds": 600,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The video shows a steady jog along a flat, sandy beach at a consistent pace."
+ },
+ {
+  "index": 21,
+  "startSeconds": 630,
+  "durationSeconds": 30,
+  "speedKph": 8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a runner jogging at a steady pace along a flat sandy beach shoreline."
+ },
+ {
+  "index": 22,
+  "startSeconds": 660,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady jog along a flat sandy beach. The footfall cadence is approximately 156 steps per minute."
+ },
+ {
+  "index": 23,
+  "startSeconds": 690,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat sandy beach."
+ },
+ {
+  "index": 24,
+  "startSeconds": 720,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The runner is jogging along a flat sandy beach at a steady cadence of around 150 steps per minute."
+ },
+ {
+  "index": 25,
+  "startSeconds": 750,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat sandy beach shoreline."
+ },
+ {
+  "index": 26,
+  "startSeconds": 780,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows first-person perspective of jogging along a flat sandy beach. Cadence and motion indicate a moderate jogging speed of around 8.5 km/h on flat ground."
+ },
+ {
+  "index": 27,
+  "startSeconds": 810,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The video shows a runner jogging along a flat sandy beach at a steady pace."
+ },
+ {
+  "index": 28,
+  "startSeconds": 840,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is maintaining a steady jog on flat, soft beach sand along the coastline."
+ },
+ {
+  "index": 29,
+  "startSeconds": 870,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat sandy beach. The cadence indicates a speed of approximately 9.2 km/h."
+ },
+ {
+  "index": 30,
+  "startSeconds": 900,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "flat",
+  "note": "Running along a flat sandy beach at a steady jogging pace."
+ },
+ {
+  "index": 31,
+  "startSeconds": 930,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The runner maintains a steady jog on a sandy beach along the shoreline with a flat profile."
+ },
+ {
+  "index": 32,
+  "startSeconds": 960,
+  "durationSeconds": 30,
+  "speedKph": 5.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The camera moves at a steady brisk walking/light jogging pace along a flat sandy beach."
+ },
+ {
+  "index": 33,
+  "startSeconds": 990,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The runner is jogging on flat sandy beach terrain at a steady pace."
+ },
+ {
+  "index": 34,
+  "startSeconds": 1020,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging along a flat sandy beach at a steady pace of around 9.5 km/h."
+ },
+ {
+  "index": 35,
+  "startSeconds": 1050,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jogging pace along a flat sandy beach at roughly 156 steps per minute."
+ },
+ {
+  "index": 36,
+  "startSeconds": 1080,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat sandy beach near the water line."
+ },
+ {
+  "index": 37,
+  "startSeconds": 1110,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is maintaining a steady jogging pace along a flat sandy beach."
+ },
+ {
+  "index": 38,
+  "startSeconds": 1140,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat sandy beach shoreline."
+ },
+ {
+  "index": 39,
+  "startSeconds": 1170,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Running along a flat sandy beach at a steady jogging pace of around 156 steps per minute."
+ },
+ {
+  "index": 40,
+  "startSeconds": 1200,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The runner is jogging at a steady pace along a flat, sandy beach. The cadence is around 150 steps per minute."
+ },
+ {
+  "index": 41,
+  "startSeconds": 1230,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "other",
+  "note": "Running at a steady pace along a flat sandy beach."
+ },
+ {
+  "index": 42,
+  "startSeconds": 1260,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is maintaining a steady jogging pace on flat, firm beach sand along the shoreline."
+ },
+ {
+  "index": 43,
+  "startSeconds": 1290,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat sandy beach with clear view of the horizon."
+ },
+ {
+  "index": 44,
+  "startSeconds": 1320,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is maintaining a steady jogging pace of approximately 160 steps per minute along a flat, sandy beach."
+ },
+ {
+  "index": 45,
+  "startSeconds": 1350,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady cadence on a flat sandy beach."
+ },
+ {
+  "index": 46,
+  "startSeconds": 1380,
+  "durationSeconds": 30,
+  "speedKph": 9.6,
+  "inclinePercent": 0,
+  "confidence": 0.88,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady cadence on a flat, sandy beach along the water's edge."
+ },
+ {
+  "index": 47,
+  "startSeconds": 1410,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The runner is jogging at a steady cadence of around 150 steps per minute on flat beach sand."
+ },
+ {
+  "index": 48,
+  "startSeconds": 1440,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat, sandy beach."
+ },
+ {
+  "index": 49,
+  "startSeconds": 1470,
+  "durationSeconds": 30,
+  "speedKph": 10.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The runner maintains a steady jogging cadence of around 180 steps per minute along a flat sandy beach."
+ },
+ {
+  "index": 50,
+  "startSeconds": 1500,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The video shows a steady jog along a flat sandy beach at around 160 steps per minute."
+ },
+ {
+  "index": 51,
+  "startSeconds": 1530,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat, sandy shoreline. Cadence is around 155-160 steps per minute."
+ },
+ {
+  "index": 52,
+  "startSeconds": 1560,
+  "durationSeconds": 30,
+  "speedKph": 10.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The runner is jogging at a steady pace along a flat, sandy beach surface."
+ },
+ {
+  "index": 53,
+  "startSeconds": 1590,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner maintains a steady running pace along a flat sandy beach."
+ },
+ {
+  "index": 54,
+  "startSeconds": 1620,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Running at a steady pace along a flat sandy beach next to a rock wall."
+ },
+ {
+  "index": 55,
+  "startSeconds": 1650,
+  "durationSeconds": 30,
+  "speedKph": 5.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "Walking along a flat, sandy beach shoreline at a steady pace."
+ },
+ {
+  "index": 56,
+  "startSeconds": 1680,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a runner on a flat sandy beach at a steady jogging pace of about 10.2 km/h."
+ },
+ {
+  "index": 57,
+  "startSeconds": 1710,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Running at a steady pace along a flat sandy beach."
+ },
+ {
+  "index": 58,
+  "startSeconds": 1740,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Running at a steady pace along a flat sandy beach."
+ },
+ {
+  "index": 59,
+  "startSeconds": 1770,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The runner is jogging at a steady pace along a flat sandy beach."
+ },
+ {
+  "index": 60,
+  "startSeconds": 1800,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat, wet sand beach shoreline."
+ },
+ {
+  "index": 61,
+  "startSeconds": 1830,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.88,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady cadence along a flat, wet sand beach."
+ },
+ {
+  "index": 62,
+  "startSeconds": 1860,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is running on a flat, wet sand beach with a steady running cadence of approximately 168 steps per minute."
+ },
+ {
+  "index": 63,
+  "startSeconds": 1890,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging on wet, flat beach sand along the water's edge at a steady cadence of approximately 152 steps per minute."
+ },
+ {
+  "index": 64,
+  "startSeconds": 1920,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady running pace of approximately 180 steps per minute along a flat, wet sandy beach at shoreline."
+ },
+ {
+  "index": 65,
+  "startSeconds": 1950,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Running at a steady pace on a flat wet sand beach shoreline."
+ },
+ {
+  "index": 66,
+  "startSeconds": 1980,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The runner is jogging along a flat, wet sandy beach at sunset."
+ },
+ {
+  "index": 67,
+  "startSeconds": 2010,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Running along a flat sandy beach at a steady pace before slowing down towards the end of the clip."
+ },
+ {
+  "index": 68,
+  "startSeconds": 2040,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "flat",
+  "note": "Walking along a flat sandy beach at a steady pace."
+ },
+ {
+  "index": 69,
+  "startSeconds": 2070,
+  "durationSeconds": 30,
+  "speedKph": 2.2,
+  "inclinePercent": 0,
+  "confidence": 0.7,
+  "terrain": "flat",
+  "note": "The camera pans while stationary for the first half, then begins walking along a flat wet sand beach at a relaxed pace."
+ },
+ {
+  "index": 70,
+  "startSeconds": 2100,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera captures a steady walk along a flat, wet sandy beach shoreline."
+ },
+ {
+  "index": 71,
+  "startSeconds": 2130,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat, wet sandy beach. Cadence is approximately 160-165 steps per minute."
+ },
+ {
+  "index": 72,
+  "startSeconds": 2160,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging along a flat, wet sandy beach at a steady cadence of around 150 steps per minute."
+ },
+ {
+  "index": 73,
+  "startSeconds": 2190,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat, wet sandy beach."
+ },
+ {
+  "index": 74,
+  "startSeconds": 2220,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 0,
+  "confidence": 0.88,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jog on wet beach sand along the shoreline. Ground is flat with near zero incline."
+ },
+ {
+  "index": 75,
+  "startSeconds": 2250,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging along a flat, firm wet-sand beach at a steady pace of around 150 steps per minute."
+ },
+ {
+  "index": 76,
+  "startSeconds": 2280,
+  "durationSeconds": 30,
+  "speedKph": 6,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "other",
+  "note": "The camera moves along a flat sandy beach at a steady jogging/walking speed of approximately 6 km/h."
+ },
+ {
+  "index": 77,
+  "startSeconds": 2310,
+  "durationSeconds": 30,
+  "speedKph": 6.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking/light jogging along a flat sandy beach shoreline with a consistent cadence."
+ },
+ {
+  "index": 78,
+  "startSeconds": 2340,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace on a flat sandy beach."
+ },
+ {
+  "index": 79,
+  "startSeconds": 2370,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging along a flat, wet sandy beach shoreline at a steady pace of approximately 150 steps per minute."
+ },
+ {
+  "index": 80,
+  "startSeconds": 2400,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jogging pace along a flat, wet sand beach shoreline."
+ },
+ {
+  "index": 81,
+  "startSeconds": 2430,
+  "durationSeconds": 30,
+  "speedKph": 7,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat, wet sandy beach next to the sea wall."
+ },
+ {
+  "index": 82,
+  "startSeconds": 2460,
+  "durationSeconds": 24,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking along a flat sandy beach shoreline next to large rocks."
+ }
+]

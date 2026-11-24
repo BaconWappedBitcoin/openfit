@@ -1,0 +1,34 @@
+{
+ "landmarks": [
+  {
+   "seconds": 144,
+   "name": "Port of Santa Margherita Ligure",
+   "fact": "A picturesque harbor on the Italian Riviera, famous for its colorful buildings, luxury yachts, and traditional fishing boats."
+  },
+  {
+   "seconds": 200,
+   "name": "Grand Hotel Miramare",
+   "fact": "A landmark luxury hotel in Santa Margherita Ligure where Guglielmo Marconi conducted pioneering radio communication experiments in 1933."
+  },
+  {
+   "seconds": 910,
+   "name": "Paraggi Bay",
+   "fact": "A stunning cove nestled between Santa Margherita Ligure and Portofino, famous for its emerald-green waters and sandy beach."
+  },
+  {
+   "seconds": 1480,
+   "name": "Church of San Martino",
+   "fact": "A 12th-century Divo Martino church in Portofino featuring a distinctive striped facade and historic religious artwork inside."
+  },
+  {
+   "seconds": 1660,
+   "name": "Piazzetta di Portofino",
+   "fact": "The iconic main square of Portofino overlooking the harbor, surrounded by pastel-colored houses, boutique shops, and cafes."
+  },
+  {
+   "seconds": 2225,
+   "name": "Castello Brown",
+   "fact": "A historic fortress and house museum perched above Portofino, offering panoramic views of the harbor and Ligurian coastline."
+  }
+ ]
+}

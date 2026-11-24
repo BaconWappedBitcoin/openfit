@@ -26,6 +26,7 @@ object WorkoutCodec {
         val text = StringBuilder()
         text.append("{\n")
         text.append("  \"name\": ").append(quote(program.name)).append(",\n")
+        program.videoPaceKph?.let { text.append("  \"videoPaceKph\": ").append(number(it)).append(",\n") }
         if (program.steps.isEmpty()) {
             text.append("  \"steps\": []\n")
         } else {
@@ -80,7 +81,8 @@ object WorkoutCodec {
             WorkoutStep(speedKph = speed, inclinePercent = incline, durationSeconds = duration.toInt())
         }
 
-        return WorkoutProgram(name = name, steps = steps)
+        val pace = (fields["videoPaceKph"] as? Number)?.toDouble()?.takeIf { it.isFinite() && it in 0.5..30.0 }
+        return WorkoutProgram(name = name, steps = steps, videoPaceKph = pace)
     }
 
     /** Read a number out of a step, or explain why it cannot. */

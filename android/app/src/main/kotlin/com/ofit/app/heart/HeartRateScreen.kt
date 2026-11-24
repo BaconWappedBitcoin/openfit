@@ -53,7 +53,7 @@ fun zoneColor(zone: Int?): Color = when (zone) {
  * the age or max heart rate the zones come from.
  */
 @Composable
-fun HeartRateScreen(manager: HeartRateManager, onBack: () -> Unit) {
+fun HeartRateScreen(manager: HeartRateManager, onBack: () -> Unit, embedded: Boolean = false) {
     val devices by manager.devices.collectAsStateWithLifecycle()
     val scanning by manager.scanning.collectAsStateWithLifecycle()
     val savedName by manager.savedName.collectAsStateWithLifecycle()
@@ -65,14 +65,15 @@ fun HeartRateScreen(manager: HeartRateManager, onBack: () -> Unit) {
     var ageText by remember(age) { mutableStateOf(age?.toString() ?: "") }
     var maxText by remember(maxHr) { mutableStateOf(maxHr?.toString() ?: "") }
 
-    Column(Modifier.fillMaxSize().statusBarsPadding().padding(16.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            MenuButton()
-            OutlinedButton(onClick = { manager.stopScan(); onBack() }) { Text("Back") }
-            Spacer(Modifier.width(12.dp))
-            Text("Heart-rate monitor", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+    // Embedded in Devices: no header of its own, just the strap side.
+    Column(if (embedded) Modifier.fillMaxSize() else Modifier.fillMaxSize().statusBarsPadding().padding(16.dp)) {
+        if (!embedded) {
+            com.ofit.app.ui.ScreenHeader("Heart-rate monitor", "Your strap, zones and Hold zone", onBack = { manager.stopScan(); onBack() })
+            Spacer(Modifier.height(12.dp))
+        } else {
+            Text("HEART-RATE STRAP", style = MaterialTheme.typography.labelLarge, color = Color(0x99FFFFFF))
+            Spacer(Modifier.height(8.dp))
         }
-        Spacer(Modifier.height(12.dp))
 
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(16.dp)) {
@@ -113,27 +114,11 @@ fun HeartRateScreen(manager: HeartRateManager, onBack: () -> Unit) {
             Column(Modifier.padding(16.dp)) {
                 Text("Zones", style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "Give your age (zones use 220 minus age) or your own max heart rate, which wins if both are set.",
+                    "Your age, max heart rate, weight and sex are in your profile (tap your avatar, then Edit profiles).",
                     style = MaterialTheme.typography.bodySmall,
                 )
                 Spacer(Modifier.height(8.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedTextField(
-                        value = ageText,
-                        onValueChange = { ageText = it.filter(Char::isDigit).take(3); manager.setAge(ageText.toIntOrNull()) },
-                        label = { Text("Age") },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.width(120.dp),
-                    )
-                    OutlinedTextField(
-                        value = maxText,
-                        onValueChange = { maxText = it.filter(Char::isDigit).take(3); manager.setMaxHr(maxText.toIntOrNull()) },
-                        label = { Text("Max HR") },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.width(120.dp),
-                    )
                     val zones = HeartRateZones.of(maxHr, age)
                     Text(
                         if (zones == null) "No zones yet" else
@@ -142,6 +127,7 @@ fun HeartRateScreen(manager: HeartRateManager, onBack: () -> Unit) {
                 }
             }
         }
+
 
         Spacer(Modifier.height(12.dp))
         Card(Modifier.fillMaxWidth()) {
@@ -195,6 +181,52 @@ fun HeartRateScreen(manager: HeartRateManager, onBack: () -> Unit) {
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+/** Weight and sex for the calorie estimate (age is in Zones above). */
+@Composable
+private fun AboutYouCard(manager: HeartRateManager) {
+    val units = com.ofit.app.settings.LocalUnits.current
+    val imperial = units == com.ofit.protocol.UnitSystem.IMPERIAL
+    val weightKg by manager.weightKg.collectAsStateWithLifecycle()
+    val sex by manager.sex.collectAsStateWithLifecycle()
+    var weightText by remember(weightKg, imperial) {
+        mutableStateOf(weightKg?.let { "%.0f".format(if (imperial) it * 2.20462 else it) } ?: "")
+    }
+    Card(Modifier.fillMaxWidth()) {
+        Column(Modifier.padding(16.dp)) {
+            Text("About you (for calories)", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Calories are estimated from speed, incline and your weight. With a heart-rate strap, age, sex " +
+                    "and weight set, your heart rate is used too, which is closer for most people. Without a weight, " +
+                    "70 kg is assumed. All of it stays on this device.",
+                style = MaterialTheme.typography.bodySmall,
+            )
+            Spacer(Modifier.height(8.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                OutlinedTextField(
+                    value = weightText,
+                    onValueChange = {
+                        weightText = it.filter(Char::isDigit).take(3)
+                        val entered = weightText.toDoubleOrNull()
+                        manager.setWeightKg(entered?.let { w -> if (imperial) w / 2.20462 else w })
+                    },
+                    label = { Text(if (imperial) "Weight (lb)" else "Weight (kg)") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.width(150.dp),
+                )
+                listOf(com.ofit.protocol.Sex.FEMALE to "Female", com.ofit.protocol.Sex.MALE to "Male", null to "Not given")
+                    .forEach { (option, label) ->
+                        androidx.compose.material3.FilterChip(
+                            selected = sex == option,
+                            onClick = { manager.setSex(option) },
+                            label = { Text(label) },
+                        )
+                    }
             }
         }
     }

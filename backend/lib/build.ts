@@ -25,9 +25,55 @@ export interface BuildOptions {
   smooth: number;
   mergeSpeed: number;
   mergeIncline: number;
+  /**
+   * Seconds per step after filling in between readings: speed and incline change gradually
+   * between one reading and the next, as they do on screen, rather than jumping every window
+   * (user request, 2026-11-24). 0 keeps one step per window.
+   */
+  resolution: number;
 }
 
-const DEFAULTS: BuildOptions = { smooth: 3, mergeSpeed: 0.4, mergeIncline: 0.8 };
+const DEFAULTS: BuildOptions = { smooth: 3, mergeSpeed: 0.15, mergeIncline: 0.4, resolution: 10 };
+
+/**
+ * Fill in between readings: each window is cut into pieces of [resolution] seconds, and each piece
+ * gets the value on the straight line between the middles of the windows around it.
+ */
+export function interpolate(
+  rows: { duration: number; speed: number; incline: number }[],
+  resolution: number,
+): { duration: number; speed: number; incline: number }[] {
+  if (resolution <= 0 || rows.length < 2) return rows;
+  const centres: number[] = [];
+  let t = 0;
+  for (const r of rows) {
+    centres.push(t + r.duration / 2);
+    t += r.duration;
+  }
+  const at = (time: number, key: "speed" | "incline") => {
+    if (time <= centres[0]) return rows[0][key];
+    for (let i = 1; i < rows.length; i++) {
+      if (time <= centres[i]) {
+        const share = (time - centres[i - 1]) / (centres[i] - centres[i - 1]);
+        return rows[i - 1][key] + (rows[i][key] - rows[i - 1][key]) * share;
+      }
+    }
+    return rows[rows.length - 1][key];
+  };
+  const out: { duration: number; speed: number; incline: number }[] = [];
+  let start = 0;
+  for (const r of rows) {
+    let done = 0;
+    while (done < r.duration - 1e-9) {
+      const piece = Math.min(resolution, r.duration - done);
+      const mid = start + done + piece / 2;
+      out.push({ duration: piece, speed: at(mid, "speed"), incline: at(mid, "incline") });
+      done += piece;
+    }
+    start += r.duration;
+  }
+  return out;
+}
 
 export function buildProgram(
   readings: WindowReading[],
@@ -74,20 +120,42 @@ export function buildProgram(
     });
   }
 
+  const fine = interpolate(rows, o.resolution);
+  // The finest steps that stay inside the step limit: coarser merging if a long video needs it.
+  let mergeSpeed = o.mergeSpeed;
+  let mergeIncline = o.mergeIncline;
+  let steps = toSteps(fine, mergeSpeed, mergeIncline);
+  while (steps.length > LIMITS.maxSteps) {
+    mergeSpeed *= 1.5;
+    mergeIncline *= 1.5;
+    steps = toSteps(fine, mergeSpeed, mergeIncline);
+  }
+
+  // The video's own pace: the time-weighted average of what was read, before limits and rounding,
+  // so the app can play the video at belt speed / this pace ("Match my speed").
+  const timed = readings.filter((r) => r.speedKph !== null && r.durationSeconds > 0);
+  const seconds = timed.reduce((n, r) => n + r.durationSeconds, 0);
+  const videoPaceKph = seconds > 0 ? timed.reduce((n, r) => n + (r.speedKph as number) * r.durationSeconds, 0) / seconds : fallbackSpeed;
+  return { name, steps, videoPaceKph: Math.round(videoPaceKph * 100) / 100 };
+}
+
+/** Round to what the machine takes, then merge neighbours that are close enough. */
+function toSteps(rows: { duration: number; speed: number; incline: number }[], mergeSpeed: number, mergeIncline: number): Step[] {
   const steps: Step[] = [];
   for (const r of rows) {
     // Limits, then the machine's own minimum: it cannot be told to stand still.
     const speed = Math.round(Math.max(LIMITS.minSpeedKph, Math.min(LIMITS.maxSpeedKph, r.speed)) * 20) / 20;
     const incline =
       Math.round(Math.max(LIMITS.minInclinePercent, Math.min(LIMITS.maxInclinePercent, r.incline)) * 2) / 2;
-    const duration = Math.round(r.duration);
+    const duration = r.duration;
     if (duration <= 0) continue;
     const last = steps[steps.length - 1];
-    if (last && Math.abs(last.speedKph - speed) <= o.mergeSpeed && Math.abs(last.inclinePercent - incline) <= o.mergeIncline) {
+    if (last && Math.abs(last.speedKph - speed) <= mergeSpeed && Math.abs(last.inclinePercent - incline) <= mergeIncline) {
       last.durationSeconds += duration;
     } else {
       steps.push({ speedKph: speed, inclinePercent: incline, durationSeconds: duration });
     }
   }
-  return { name, steps };
+  for (const s of steps) s.durationSeconds = Math.round(s.durationSeconds);
+  return steps.filter((s) => s.durationSeconds > 0);
 }

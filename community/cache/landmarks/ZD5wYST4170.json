@@ -1,0 +1,19 @@
+{
+ "landmarks": [
+  {
+   "seconds": 380,
+   "name": "Shionomisaki Southernmost Point Monument",
+   "fact": "This stone monument marks Cape Shionomisaki as the southernmost point of Japan's main island of Honshu."
+  },
+  {
+   "seconds": 755,
+   "name": "Shionomisaki Lighthouse",
+   "fact": "Built in 1878, this historic white stone lighthouse guides ships navigating along the southern coast of Honshu."
+  },
+  {
+   "seconds": 1100,
+   "name": "Shionomisaki Tourist Tower",
+   "fact": "This tower features an observation deck offering sweeping 360-degree views of the Pacific Ocean and surrounding cape."
+  }
+ ]
+}

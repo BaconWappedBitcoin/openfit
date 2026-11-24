@@ -1,0 +1,54 @@
+{
+ "landmarks": [
+  {
+   "seconds": 30,
+   "name": "Shin-Okubo Station",
+   "fact": "Shin-Okubo Station on the Yamanote Line is located at the heart of Tokyo's vibrant Koreatown district."
+  },
+  {
+   "seconds": 400,
+   "name": "Hotel Gracery Shinjuku",
+   "fact": "Hotel Gracery Shinjuku is famous for its iconic, life-sized Godzilla head perched on the eighth-floor terrace."
+  },
+  {
+   "seconds": 555,
+   "name": "Shinjuku Station",
+   "fact": "Shinjuku Station is world-renowned as the busiest railway station, handling over three million passengers daily."
+  },
+  {
+   "seconds": 765,
+   "name": "Sekaido Shinjuku Main Store",
+   "fact": "Sekaido Shinjuku is one of Tokyo's most famous and extensive art and drafting supply stores."
+  },
+  {
+   "seconds": 925,
+   "name": "Shinjuku Gyoen National Garden",
+   "fact": "Shinjuku Gyoen is a expansive historic park featuring Japanese landscape, French Formal, and English Landscape gardens."
+  },
+  {
+   "seconds": 1612,
+   "name": "Sendagaya Station",
+   "fact": "Sendagaya Station provides direct access to the Japan National Stadium and Meiji Jingu Gaien park grounds."
+  },
+  {
+   "seconds": 2045,
+   "name": "Takashimaya Times Square",
+   "fact": "Takashimaya Times Square is a major retail complex housing a flagship department store, specialty shops, and restaurants."
+  },
+  {
+   "seconds": 2330,
+   "name": "Isetan Shinjuku Department Store",
+   "fact": "Isetan Shinjuku is a historic department store celebrated for its flagship luxury fashion offerings and gourmet food hall."
+  },
+  {
+   "seconds": 2410,
+   "name": "Kinokuniya Shinjuku Main Store",
+   "fact": "Kinokuniya Shinjuku Main Store is an iconic multi-story bookstore offering extensive Japanese and international publications."
+  },
+  {
+   "seconds": 2585,
+   "name": "Shinjuku Toho Building",
+   "fact": "The Shinjuku Toho Building in Kabukicho is a premier entertainment hub featuring cinemas, restaurants, and a hotel."
+  }
+ ]
+}

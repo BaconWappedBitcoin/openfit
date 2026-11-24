@@ -1,5 +1,13 @@
 package com.ofit.app.workout
 
+import androidx.compose.material.icons.filled.Close
+
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
+
+import androidx.compose.foundation.layout.widthIn
+
+import androidx.compose.ui.graphics.asImageBitmap
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -26,6 +34,14 @@ import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material.icons.automirrored.filled.TrendingFlat
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.VolumeOff
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.FastForward
+import androidx.compose.material.icons.filled.FastRewind
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -58,6 +74,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -125,7 +145,32 @@ fun WorkoutHud(
     onCoachStop: () -> Unit = {},
     coachLevel: String = "Normal",
     onCoachLevel: (String) -> Unit = {},
+    /** Leave the workout screen (asks first while a workout runs). */
+    onBack: () -> Unit = {},
+    /** Jump to a point in the workout. */
+    onSeek: (Long) -> Unit = {},
+    playbackRate: Float = 1f,
+    onPlaybackRate: (Float) -> Unit = {},
+    chosenRate: Float = playbackRate,
+    matchSpeed: Boolean = false,
+    onMatchSpeed: (Boolean) -> Unit = {},
+    /** Video volume 0..100 (0 = muted). */
+    volume: Int = 100,
+    onVolume: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
+    /** The virtual coach shown over the video, and choosing it. */
+    runCoach: CoachChoice = CoachChoice.OFF,
+    onRunCoach: (CoachChoice) -> Unit = {},
+    coachSpeaks: Boolean = true,
+    onCoachSpeaks: (Boolean) -> Unit = {},
+    /** How fast the coach moves against the speed it is given: 1 = as is (user request 2026-11-24). */
+    coachPace: Float = 1f,
+    onCoachPace: (Float) -> Unit = {},
+    /** How big the coach is drawn: 1 = as designed (user request 2026-11-24). */
+    coachSize: Float = 1f,
+    onCoachSize: (Float) -> Unit = {},
+    /** Open the coach designer over the workout. */
+    onDesignCoach: () -> Unit = {},
 ) {
     val landscape = LocalConfiguration.current.screenWidthDp > LocalConfiguration.current.screenHeightDp
     var editing by remember { mutableStateOf<OverrideTarget?>(null) }
@@ -145,6 +190,15 @@ fun WorkoutHud(
         }
     }
 
+    // The heart-rate zone over the run, for the colour strip under the chart (spec 002 H5).
+    val zones = remember(program.name) { com.ofit.protocol.ZoneTimeline() }
+    var zoneTick by remember { mutableStateOf(0) }
+    androidx.compose.runtime.LaunchedEffect(heartRate?.zone, heartRate?.bpm != null, snapshot.state) {
+        if (!snapshot.isActive) return@LaunchedEffect
+        zones.record(snapshot.totalElapsedMillis / 1000f, heartRate?.zone.takeIf { heartRate?.bpm != null })
+        zoneTick++
+    }
+
     // The controls can be hidden to leave the video clear (spec 002 R9a).
     var overlayHidden by remember { mutableStateOf(false) }
 
@@ -158,10 +212,13 @@ fun WorkoutHud(
         HudHiddenOverlay(
             snapshot = snapshot,
             onShow = { overlayHidden = false },
+            onPause = onPause,
+            onResume = onResume,
             onAbandon = onAbandon,
             onEmergencyStop = onEmergencyStop,
             coachStatus = coachStatus,
             onCoachStop = onCoachStop,
+            noTreadmill = preview,
             modifier = modifier,
         )
     } else if (landscape) {
@@ -169,18 +226,36 @@ fun WorkoutHud(
             modifier = modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            // 1. Top Telemetry Ribbon
-            HudTopBar(
-                program = program,
-                snapshot = snapshot,
-                state = state,
-                preview = preview,
-                tiles = tiles,
-                onTilesChange = onTilesChange,
-                heartRate = heartRate,
-                heartSummary = heartSummary,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            // 1. Top Telemetry Ribbon, with Back at the top left.
+            Box(Modifier.fillMaxWidth()) {
+                HudTopBar(
+                    program = program,
+                    snapshot = snapshot,
+                    rate = playbackRate,
+                    state = state,
+                    preview = preview,
+                    tiles = tiles,
+                    onTilesChange = onTilesChange,
+                    heartRate = heartRate,
+                    heartSummary = heartSummary,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Row(
+                    modifier = Modifier.align(Alignment.TopStart).padding(start = 8.dp, top = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    // Menu first, then back: the same order as every other screen (user report 2026-11-24).
+                    com.ofit.app.ui.LocalOpenMenu.current?.let { open ->
+                        HudSquareButton(icon = Icons.Filled.Menu, description = "Menu", enabled = true, onClick = open)
+                    }
+                    HudSquareButton(
+                        icon = Icons.AutoMirrored.Filled.ArrowBack,
+                        description = "Back",
+                        enabled = true,
+                        onClick = onBack,
+                    )
+                }
+            }
 
             // 2. Middle: the incline card on the left and the speed card on the right, with +/-
             //    buttons clamped to the machine's range (the user prefers these to
@@ -231,7 +306,32 @@ fun WorkoutHud(
                     )
                 }
 
-                if (swapSides) speedCard() else inclineCard()
+                // No treadmill: no machine to control, so no +/- controls. Instead the program's own
+                // speed and incline are shown as a suggestion to match on whatever the runner is using.
+                val firstStep = program?.steps?.firstOrNull()
+                val suggestSpeed = if (snapshot.isActive) snapshot.speedKph else firstStep?.speedKph
+                val suggestIncline = if (snapshot.isActive) snapshot.inclinePercent else firstStep?.inclinePercent
+                val nextSpeed = if (snapshot.isActive) snapshot.nextSpeedKph else program?.steps?.getOrNull(1)?.speedKph
+                val nextIncline = if (snapshot.isActive) snapshot.nextInclinePercent else program?.steps?.getOrNull(1)?.inclinePercent
+                val suggestedIncline: @Composable () -> Unit = {
+                    HudSuggestedCard(
+                        label = "INCLINE",
+                        accent = HudColors.incline,
+                        value = suggestIncline?.let { "%.1f".format(it) } ?: "--",
+                        unit = "%",
+                        next = nextIncline?.let { "Next %.1f%%".format(it) },
+                    )
+                }
+                val suggestedSpeed: @Composable () -> Unit = {
+                    HudSuggestedCard(
+                        label = "SPEED",
+                        accent = HudColors.speed,
+                        value = suggestSpeed?.let { "%.1f".format(units.speedFromKph(it)) } ?: "--",
+                        unit = units.speedUnit,
+                        next = nextSpeed?.let { "Next %.1f".format(units.speedFromKph(it)) },
+                    )
+                }
+                if (!preview) { if (swapSides) speedCard() else inclineCard() } else { if (swapSides) suggestedSpeed() else suggestedIncline() }
 
                 Column(
                     modifier = Modifier.weight(1f),
@@ -275,7 +375,7 @@ fun WorkoutHud(
                     }
                 }
 
-                if (swapSides) inclineCard() else speedCard()
+                if (!preview) { if (swapSides) inclineCard() else speedCard() } else { if (swapSides) suggestedIncline() else suggestedSpeed() }
             }
 
             // 3. Lower area: the chart (R8), then the bottom bar.
@@ -283,16 +383,40 @@ fun WorkoutHud(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
-                HudProfileRibbon(
-                    program = program,
-                    snapshot = snapshot,
-                    history = history,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(88.dp),
-                )
+                // No treadmill: no speed/incline chart (nothing to follow), just how far through you are.
+                if (preview) {
+                    HudProgressBar(snapshot, Modifier.fillMaxWidth(), onSeek = onSeek, rate = playbackRate)
+                } else {
+                    // Tap the chart to jump to that point.
+                    val total = (snapshot.totalElapsedMillis + snapshot.totalRemainingMillis).coerceAtLeast(1)
+                    val currentTotal by androidx.compose.runtime.rememberUpdatedState(total)
+                    val active by androidx.compose.runtime.rememberUpdatedState(snapshot.isActive)
+                    HudProfileRibbon(
+                        program = program,
+                        snapshot = snapshot,
+                        history = history,
+                        zones = zones.also { zoneTick },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(88.dp)
+                            .pointerInput(Unit) {
+                                detectTapGestures { o ->
+                                    if (active) onSeek((currentTotal * (o.x / size.width)).toLong())
+                                }
+                            },
+                    )
+                }
 
                 HudBottomControls(
+                    runCoach = runCoach,
+                    onRunCoach = onRunCoach,
+                    coachSpeaks = coachSpeaks,
+                    onCoachSpeaks = onCoachSpeaks,
+                    coachPace = coachPace,
+                    onCoachPace = onCoachPace,
+                    coachSize = coachSize,
+                    onCoachSize = onCoachSize,
+                    onDesignCoach = onDesignCoach,
                     onSwapSides = onSwapSides,
                     coachOn = coachStatus != null,
                     coachLevel = coachLevel,
@@ -312,6 +436,15 @@ fun WorkoutHud(
                     onTogglePreview = onTogglePreview,
                     onEmergencyStop = onEmergencyStop,
                     onHide = { overlayHidden = true },
+                    onSeek = onSeek,
+                    playbackRate = playbackRate,
+                    onPlaybackRate = onPlaybackRate,
+                    chosenRate = chosenRate,
+                    matchSpeed = matchSpeed,
+                    onMatchSpeed = onMatchSpeed,
+                    volume = volume,
+                    onVolume = onVolume,
+                    hasVideoAudio = hasVideo,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -325,6 +458,7 @@ fun WorkoutHud(
             HudTopBar(
                 program = program,
                 snapshot = snapshot,
+                rate = playbackRate,
                 state = state,
                 preview = preview,
                 tiles = tiles,
@@ -334,7 +468,7 @@ fun WorkoutHud(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            Row(
+            if (!preview) Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
@@ -419,10 +553,11 @@ fun WorkoutHud(
                 }
             }
 
-            HudProfileRibbon(
+            if (preview) HudProgressBar(snapshot, Modifier.fillMaxWidth()) else HudProfileRibbon(
                 program = program,
                 snapshot = snapshot,
                 history = history,
+                zones = zones.also { zoneTick },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -501,6 +636,8 @@ private fun HudTopBar(
     program: WorkoutProgram,
     snapshot: WorkoutEngineSnapshot,
     state: TreadmillState,
+    /** The playback speed in use, so 'remaining' is real time (1.25x: 10 min of video takes 8). */
+    rate: Float = 1f,
     preview: Boolean,
     tiles: List<HudStat> = HudStat.DEFAULT,
     onTilesChange: (List<HudStat>) -> Unit = {},
@@ -519,9 +656,11 @@ private fun HudTopBar(
     // The workout's own clock. The console's clock restarts at 0:00 when it is paused (seen live,
     // 2026-11-23) and is zeroed on its results screen, so it is not used here.
     val elapsed = (snapshot.totalElapsedMillis / 1000).toInt()
-    val remaining = (snapshot.totalRemainingMillis / 1000).toInt()
+    val remaining = (com.ofit.protocol.MatchSpeed.realMillis(snapshot.totalRemainingMillis, rate) / 1000).toInt()
     val distance = if (snapshot.isFinished) keptDistance else state.distanceMeters ?: 0L
-    val calories = if (snapshot.isFinished) keptCalories else state.calories
+    // OpenFit's own estimate (age, sex, weight, heart rate, speed, incline) when it has one; the
+    // console's figure only as a fallback.
+    val calories = heartSummary?.calories ?: if (snapshot.isFinished) keptCalories else state.calories
     val units = LocalUnits.current
 
     // Average pace over the whole run so far (the reference shows "avg. pace"), from the console's
@@ -593,7 +732,14 @@ private fun HudTopBar(
 
             // Tapping a tile opens the picker under it (R3): swap it for another stat, or remove it.
             var picking by remember { mutableStateOf<Int?>(null) }
-            tiles.forEachIndexed { index, stat ->
+            // No treadmill: only stats that mean something without a machine (time, heart rate and the
+            // calorie estimate), fixed; the treadmill ones (incline, speed, distance, pace, climb) are hidden.
+            val shownTiles = if (preview) {
+                listOf(HudStat.REMAINING, HudStat.ELAPSED, HudStat.CALORIES, HudStat.HEART_RATE, HudStat.AVG_HEART_RATE)
+            } else {
+                tiles
+            }
+            shownTiles.forEachIndexed { index, stat ->
                 if (index > 0) HudStatDivider()
                 Box {
                     val tile = tileOf(stat)
@@ -602,7 +748,7 @@ private fun HudTopBar(
                         value = tile.value,
                         icon = tile.icon,
                         valueColor = tile.color,
-                        modifier = Modifier.clickable { picking = index },
+                        modifier = if (preview) Modifier else Modifier.clickable { picking = index },
                     )
                     HudStatPicker(
                         expanded = picking == index,
@@ -626,7 +772,7 @@ private fun HudTopBar(
                     )
                 }
             }
-            if (tiles.size < HudStat.MAX_TILES) {
+            if (!preview && tiles.size < HudStat.MAX_TILES) {
                 var adding by remember { mutableStateOf(false) }
                 Box {
                     Icon(
@@ -687,7 +833,7 @@ private fun HudTopBar(
                 maxLines = 1,
             )
             if (preview) {
-                HudPill(text = "PREVIEW", tint = HudColors.amber, bg = Color(0x33F59E0B))
+                HudPill(text = "NO TREADMILL", tint = HudColors.amber, bg = Color(0x33F59E0B))
             }
         }
     }
@@ -889,13 +1035,18 @@ private fun HudInclineCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 HudPill(text = "MANUAL", tint = HudColors.incline, bg = Color(0x33FB923C))
-                TextButton(
-                    onClick = onReset,
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
-                    modifier = Modifier.height(28.dp),
-                ) {
-                    Text("Follow program", fontSize = 11.sp, color = HudColors.incline)
-                }
+                // The manual value holds across steps until this is tapped (user request 2026-11-24).
+                Text(
+                    "Rejoin program",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF0D0D0D),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(HudColors.incline)
+                        .clickable(onClick = onReset)
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                )
             }
         } else {
             Text(
@@ -905,6 +1056,44 @@ private fun HudInclineCard(
                 maxLines = 1,
             )
         }
+    }
+}
+
+/**
+ * No treadmill: what the program asks for now, to match by hand on any treadmill. Read only.
+ */
+@Composable
+private fun HudSuggestedCard(
+    label: String,
+    accent: Color,
+    value: String,
+    unit: String,
+    next: String?,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .width(128.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(HudColors.glassPanel)
+            .border(BorderStroke(1.dp, HudColors.glassBorder), RoundedCornerShape(20.dp))
+            .padding(horizontal = 12.dp, vertical = 14.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(label, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.5.sp, color = accent)
+        Text("SUGGESTED", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 1.sp, color = Color(0x99FFFFFF))
+        Text(
+            text = value,
+            fontSize = 36.sp,
+            lineHeight = 38.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            maxLines = 1,
+            softWrap = false,
+        )
+        Text(unit, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xCCFFFFFF))
+        if (next != null) Text(next, fontSize = 11.sp, color = Color(0x99FFFFFF), maxLines = 1)
     }
 }
 
@@ -1015,13 +1204,18 @@ private fun HudSpeedCard(
                     tint = if (coachOn) Color(0xFFFF8A80) else HudColors.speed,
                     bg = if (coachOn) Color(0x33B71C1C) else Color(0x3338BDF8),
                 )
-                TextButton(
-                    onClick = onReset,
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
-                    modifier = Modifier.height(28.dp),
-                ) {
-                    Text("Follow program", fontSize = 11.sp, color = HudColors.speed)
-                }
+                // The manual value holds across steps until this is tapped (user request 2026-11-24).
+                Text(
+                    "Rejoin program",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF0D0D0D),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(HudColors.speed)
+                        .clickable(onClick = onReset)
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                )
             }
         } else {
             Text(
@@ -1073,11 +1267,79 @@ private fun HudNudgeButton(
 /**
  * Elevation and Speed Profile Ribbon (Topography Chart).
  */
+/** A slim glass bar showing how far through the workout you are (No treadmill mode). */
+@Composable
+private fun HudProgressBar(snapshot: WorkoutEngineSnapshot, modifier: Modifier = Modifier, onSeek: (Long) -> Unit = {}, rate: Float = 1f) {
+    val total = (snapshot.totalElapsedMillis + snapshot.totalRemainingMillis).coerceAtLeast(1)
+    // While dragging, the bar follows the finger; the jump happens when the finger lifts.
+    var dragShare by remember { mutableStateOf<Float?>(null) }
+    val share = dragShare ?: (snapshot.totalElapsedMillis.toFloat() / total).coerceIn(0f, 1f)
+    val currentTotal by androidx.compose.runtime.rememberUpdatedState(total)
+    val active by androidx.compose.runtime.rememberUpdatedState(snapshot.isActive)
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(16.dp))
+            .background(HudColors.glassPanel)
+            .border(BorderStroke(1.dp, HudColors.glassBorder), RoundedCornerShape(16.dp))
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        Text(
+            formatClock(((dragShare?.let { it * total } ?: snapshot.totalElapsedMillis.toFloat()) / 1000).toInt()),
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+        )
+        Box(
+            Modifier
+                .weight(1f)
+                .height(36.dp)
+                .pointerInput(Unit) {
+                    detectTapGestures { o ->
+                        if (active) onSeek((currentTotal * (o.x / size.width).coerceIn(0f, 1f)).toLong())
+                    }
+                }
+                .pointerInput(Unit) {
+                    detectHorizontalDragGestures(
+                        onDragStart = { o -> if (active) dragShare = (o.x / size.width).coerceIn(0f, 1f) },
+                        onDragEnd = {
+                            dragShare?.let { onSeek((currentTotal * it).toLong()) }
+                            dragShare = null
+                        },
+                        onDragCancel = { dragShare = null },
+                    ) { change, _ ->
+                        if (active) dragShare = (change.position.x / size.width).coerceIn(0f, 1f)
+                        change.consume()
+                    }
+                },
+            contentAlignment = Alignment.CenterStart,
+        ) {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(10.dp)
+                    .clip(RoundedCornerShape(5.dp))
+                    .background(Color(0x33FFFFFF)),
+            )
+            Box(
+                Modifier
+                    .fillMaxWidth(share)
+                    .height(10.dp)
+                    .clip(RoundedCornerShape(5.dp))
+                    .background(MaterialTheme.colorScheme.primary),
+            )
+        }
+        Text("−" + formatClock((com.ofit.protocol.MatchSpeed.realMillis(snapshot.totalRemainingMillis, rate) / 1000).toInt()), color = Color(0xCCFFFFFF), fontWeight = FontWeight.Bold)
+    }
+}
+
 @Composable
 private fun HudProfileRibbon(
     program: WorkoutProgram,
     snapshot: WorkoutEngineSnapshot,
     history: List<HudTargetPoint> = emptyList(),
+    /** The heart-rate zone over the run: drawn as a colour strip along the bottom (spec 002 H5). */
+    zones: com.ofit.protocol.ZoneTimeline? = null,
     modifier: Modifier = Modifier,
 ) {
     val units = LocalUnits.current
@@ -1178,6 +1440,20 @@ private fun HudProfileRibbon(
                     drawPath(actualSpeed, Color(0xFFB3E5FF), style = Stroke(width = 2.dp.toPx(), pathEffect = dash))
                 }
 
+                // Heart-rate zone strip along the bottom, over the part already run.
+                if (zones != null && !zones.isEmpty) {
+                    val strip = 5.dp.toPx()
+                    zones.segments(snapshot.totalElapsedMillis / 1000f).forEach { seg ->
+                        val x0 = w * (seg.fromSeconds / totalSeconds)
+                        val x1 = w * (seg.toSeconds.coerceAtMost(totalSeconds.toFloat()) / totalSeconds)
+                        drawRect(
+                            com.ofit.app.heart.zoneColor(seg.zone),
+                            topLeft = Offset(x0, size.height - strip),
+                            size = androidx.compose.ui.geometry.Size((x1 - x0).coerceAtLeast(1f), strip),
+                        )
+                    }
+                }
+
                 drawLine(Color.White, Offset(markerX, 0f), Offset(markerX, size.height), strokeWidth = 2.dp.toPx())
                 drawCircle(Color.White, radius = 4.dp.toPx(), center = Offset(markerX, 4.dp.toPx()))
             }
@@ -1213,6 +1489,18 @@ private val HudButtonHeight = 54.dp
  */
 @Composable
 private fun HudBottomControls(
+    runCoach: CoachChoice = CoachChoice.OFF,
+    onRunCoach: (CoachChoice) -> Unit = {},
+    coachSpeaks: Boolean = true,
+    onCoachSpeaks: (Boolean) -> Unit = {},
+    /** How fast the coach moves against the speed it is given: 1 = as is (user request 2026-11-24). */
+    coachPace: Float = 1f,
+    onCoachPace: (Float) -> Unit = {},
+    /** How big the coach is drawn: 1 = as designed (user request 2026-11-24). */
+    coachSize: Float = 1f,
+    onCoachSize: (Float) -> Unit = {},
+    /** Open the coach designer over the workout. */
+    onDesignCoach: () -> Unit = {},
     snapshot: WorkoutEngineSnapshot,
     state: TreadmillState,
     preview: Boolean,
@@ -1232,6 +1520,15 @@ private fun HudBottomControls(
     onCoachLevel: (String) -> Unit = {},
     onCoachStart: ((Int) -> Unit)? = null,
     onCoachStop: () -> Unit = {},
+    onSeek: (Long) -> Unit = {},
+    playbackRate: Float = 1f,
+    onPlaybackRate: (Float) -> Unit = {},
+    chosenRate: Float = playbackRate,
+    matchSpeed: Boolean = false,
+    onMatchSpeed: (Boolean) -> Unit = {},
+    volume: Int = 100,
+    onVolume: (Int) -> Unit = {},
+    hasVideoAudio: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -1254,7 +1551,7 @@ private fun HudBottomControls(
                 enabled = true,
                 onClick = onHide,
             )
-            if (onSwapSides != null) {
+            if (onSwapSides != null && !preview) {
                 HudSquareButton(
                     icon = Icons.Filled.SwapHoriz,
                     description = "Swap speed and incline sides",
@@ -1262,7 +1559,99 @@ private fun HudBottomControls(
                     onClick = onSwapSides,
                 )
             }
-            if (onCoachStart != null) {
+            // The virtual coach: off, or a woman or a man running with you over the video.
+            var coachMenu by remember { mutableStateOf(false) }
+            // While a coach slider is dragged the menu turns see-through, so the coach shows clearly.
+            var adjustingCoach by remember { mutableStateOf(false) }
+            Box {
+                HudSquareButton(
+                    icon = Icons.AutoMirrored.Filled.DirectionsRun,
+                    description = if (runCoach == CoachChoice.OFF) "Run with a coach" else "Coach is on",
+                    enabled = true,
+                    onClick = { coachMenu = true },
+                )
+                if (runCoach != CoachChoice.OFF) {
+                    Box(
+                        Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(6.dp)
+                            .size(10.dp)
+                            .clip(RoundedCornerShape(5.dp))
+                            .background(Color(0xFF4ADE80)),
+                    )
+                }
+                com.ofit.app.ui.theme.OfitDropdownMenu(
+                    expanded = coachMenu,
+                    onDismissRequest = { coachMenu = false; adjustingCoach = false },
+                    seeThrough = adjustingCoach,
+                ) {
+                    val others = Modifier.alpha(if (adjustingCoach) 0f else 1f)
+                    Column(others) {
+                    com.ofit.app.ui.theme.OfitMenuHeader("Run with a coach")
+                    com.ofit.app.ui.theme.OfitMenuItem(
+                        text = if (coachSpeaks) "Coach speaks: on" else "Coach speaks: off",
+                        icon = if (coachSpeaks) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeOff,
+                        detail = "changes coming up, how hard, time left and facts about the place, out loud",
+                        onClick = { onCoachSpeaks(!coachSpeaks) },
+                    )
+                    }
+                    if (runCoach != CoachChoice.OFF) {
+                        // Pace: some videos are filmed faster or slower than they read, so the runner
+                        // can match the coach's stride to the picture. Kept for this workout.
+                        Column(Modifier.width(340.dp).padding(horizontal = 16.dp, vertical = 8.dp)) {
+                            Text(
+                                "Coach pace  ${"%.2f".format(java.util.Locale.ROOT, coachPace)}x",
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Text("match the coach's stride to the video", color = Color(0x99FFFFFF), fontSize = 12.sp)
+                            androidx.compose.material3.Slider(
+                                value = coachPace,
+                                onValueChange = { adjustingCoach = true; onCoachPace((Math.round(it * 20) / 20f).coerceIn(0.5f, 2f)) },
+                                onValueChangeFinished = { adjustingCoach = false },
+                                valueRange = 0.5f..2f,
+                                steps = 29,
+                            )
+                            Text(
+                                "Coach size  ${(coachSize * 100).toInt()} %",
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            androidx.compose.material3.Slider(
+                                value = coachSize,
+                                onValueChange = { adjustingCoach = true; onCoachSize((Math.round(it * 20) / 20f).coerceIn(0.6f, 1.6f)) },
+                                onValueChangeFinished = { adjustingCoach = false },
+                                valueRange = 0.6f..1.6f,
+                                steps = 19,
+                            )
+                        }
+                    }
+                    Column(others) {
+                    com.ofit.app.ui.theme.OfitMenuItem(
+                        text = "Design your coach",
+                        icon = Icons.AutoMirrored.Filled.DirectionsRun,
+                        detail = "outfit, colours, skin tone and hair",
+                        onClick = { coachMenu = false; onDesignCoach() },
+                    )
+                    com.ofit.app.ui.theme.OfitMenuDivider()
+                    CoachChoice.entries.forEach { choice ->
+                        com.ofit.app.ui.theme.OfitMenuItem(
+                            text = choice.label + if (choice == runCoach) "  ✓" else "",
+                            icon = if (choice == CoachChoice.OFF) Icons.Filled.Close else Icons.AutoMirrored.Filled.DirectionsRun,
+                            detail = when (choice) {
+                                CoachChoice.OFF -> "no coach on the video"
+                                else -> "runs ahead at your speed and cheers you on"
+                            },
+                            onClick = {
+                                coachMenu = false
+                                onRunCoach(choice)
+                            },
+                        )
+                    }
+                    }
+                }
+            }
+            if (onCoachStart != null && !preview) {
                 // Hold a heart-rate zone (spec 003): pick a zone, or turn it off.
                 var zoneMenu by remember { mutableStateOf(false) }
                 Box {
@@ -1304,128 +1693,291 @@ private fun HudBottomControls(
                     }
                 }
             }
-            OutlinedButton(
-                modifier = Modifier.height(HudButtonHeight),
-                onClick = onSelectVideo,
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
-                border = BorderStroke(1.dp, Color(0x44FFFFFF)),
-                shape = RoundedCornerShape(12.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-            ) {
-                Icon(Icons.Filled.Movie, contentDescription = null, modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(6.dp))
-                Text(if (hasVideo) "Change Video" else "Add Video", fontSize = 12.sp)
-            }
+            // Videos are attached in the editor or from video search, not here (user request).
 
-            if (state.connectionState != ConnectionState.CONNECTED) {
-                OutlinedButton(
-                    modifier = Modifier.height(HudButtonHeight),
+            if (state.connectionState != ConnectionState.CONNECTED || preview) {
+                // Switching mode ends a running workout, so it is only offered before Start.
+                HudActionButton(
+                    icon = if (preview) Icons.Filled.Check else Icons.Filled.Visibility,
+                    label = "No treadmill",
+                    background = if (preview) Color(0x33F59E0B) else Color(0x22FFFFFF),
+                    tint = if (preview) HudColors.amber else Color.White,
+                    enabled = !snapshot.isActive,
                     onClick = onTogglePreview,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = if (preview) Color(0x33F59E0B) else Color.Transparent,
-                        contentColor = if (preview) HudColors.amber else Color.White,
-                    ),
-                    border = BorderStroke(1.dp, if (preview) HudColors.amber else Color(0x44FFFFFF)),
-                    shape = RoundedCornerShape(12.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                ) {
-                    Icon(Icons.Filled.Visibility, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text(if (preview) "Preview Active" else "Preview", fontSize = 12.sp)
-                }
+                )
             }
         }
 
-        // Centre: the reference's "Workout" pill (R9b). One tap does the main thing - start,
-        // pause, resume, start again - and the square button beside it opens Skip and End.
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Button(
-                modifier = Modifier.height(HudButtonHeight),
-                onClick = when (snapshot.state) {
-                    WorkoutEngineState.RUNNING -> onPause
-                    WorkoutEngineState.PAUSED -> onResume
-                    else -> onStart
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (snapshot.state == WorkoutEngineState.RUNNING) Color(0x33FFFFFF) else Color(0xFF2563EB),
-                    contentColor = Color.White,
-                ),
-                border = BorderStroke(1.dp, Color(0x55FFFFFF)),
-                shape = RoundedCornerShape(14.dp),
-                contentPadding = PaddingValues(horizontal = 18.dp, vertical = 8.dp),
+        // Right side: music, rewind, fast forward, playback speed and volume; then Emergency Stop.
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        // Sound: music from other apps (play / pause / skip, volume) and the video's own sound, in one panel.
+        val context = androidx.compose.ui.platform.LocalContext.current
+        var musicOpen by remember { mutableStateOf(false) }
+        val nowPlaying = rememberNowPlaying()
+        // The song playing in the music app, beside the music button; tap opens the panel.
+        nowPlaying?.let { NowPlayingChip(it, onClick = { musicOpen = true }) }
+        Box {
+            HudSquareButton(
+                // One button for all sound (user request): your music and the video's own sound.
+                icon = Icons.Filled.MusicNote,
+                description = "Sound: your music and the video",
+                enabled = true,
+                onClick = { musicOpen = true },
+            )
+            com.ofit.app.ui.theme.OfitDropdownMenu(expanded = musicOpen, onDismissRequest = { musicOpen = false }) {
+                val apps = remember { OutsideMusic.installed(context) }
+                var target by remember { mutableStateOf(OutsideMusic.lastApp(context)) }
+                val targetLabel = apps.firstOrNull { it.packageName == target }?.label
+                com.ofit.app.ui.theme.OfitMenuHeader(
+                    nowPlaying?.let { "Sound · ${it.app}" } ?: if (targetLabel != null) "Sound · $targetLabel" else "Sound",
+                )
+                if (nowPlaying != null) {
+                    NowPlayingCard(nowPlaying, Modifier.padding(horizontal = 12.dp, vertical = 4.dp).width(420.dp))
+                } else if (!OutsideMusic.hasAccess(context)) {
+                    com.ofit.app.ui.theme.OfitMenuItem(
+                        text = "Show the song playing",
+                        icon = Icons.Filled.MusicNote,
+                        detail = "allow OpenFit music in Android's notification access",
+                        onClick = {
+                            musicOpen = false
+                            OutsideMusic.openAccessSettings(context)
+                        },
+                    )
+                }
+                Row(
+                    Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    HudSquareButton(Icons.Filled.SkipPrevious, "Previous track", true, {
+                        OutsideMusic.key(context, android.view.KeyEvent.KEYCODE_MEDIA_PREVIOUS)
+                    })
+                    HudSquareButton(if (nowPlaying?.playing == true) Icons.Filled.Pause else Icons.Filled.PlayArrow, "Play or pause your music", true, {
+                        OutsideMusic.key(context, android.view.KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
+                    })
+                    HudSquareButton(Icons.Filled.SkipNext, "Next track", true, {
+                        OutsideMusic.key(context, android.view.KeyEvent.KEYCODE_MEDIA_NEXT)
+                    })
+                }
+                // Music volume: the tablet's media volume, which the music app plays at.
+                var musicVolume by remember { mutableStateOf(OutsideMusic.volume(context)) }
+                var beforeMute by remember { mutableStateOf(0.5f) }
+                Row(
+                    Modifier.padding(horizontal = 12.dp, vertical = 2.dp).width(420.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    HudSquareButton(
+                        if (musicVolume <= 0f) Icons.AutoMirrored.Filled.VolumeOff else Icons.AutoMirrored.Filled.VolumeUp,
+                        if (musicVolume <= 0f) "Unmute music" else "Mute music",
+                        true,
+                        {
+                            if (musicVolume > 0f) {
+                                beforeMute = musicVolume
+                                musicVolume = 0f
+                            } else {
+                                musicVolume = beforeMute.coerceAtLeast(0.2f)
+                            }
+                            OutsideMusic.setVolume(context, musicVolume)
+                        },
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text("Music volume  ${(musicVolume * 100).toInt()} %", color = Color.White, fontWeight = FontWeight.SemiBold)
+                        androidx.compose.material3.Slider(
+                            value = musicVolume,
+                            onValueChange = {
+                                musicVolume = it
+                                OutsideMusic.setVolume(context, it)
+                            },
+                        )
+                    }
+                }
+                // The workout video's own sound, separate from the music.
+                if (hasVideoAudio) {
+                    Row(
+                        Modifier.padding(horizontal = 12.dp, vertical = 2.dp).width(420.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        HudSquareButton(
+                            if (volume <= 0) Icons.AutoMirrored.Filled.VolumeOff else Icons.AutoMirrored.Filled.VolumeUp,
+                            if (volume <= 0) "Turn the video's sound on" else "Mute the video",
+                            true,
+                            { onVolume(if (volume <= 0) 60 else 0) },
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                if (volume <= 0) "Video sound off" else "Video sound  $volume %",
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            androidx.compose.material3.Slider(
+                                value = volume / 100f,
+                                onValueChange = { onVolume((it * 100).toInt()) },
+                            )
+                        }
+                    }
+                }
+                com.ofit.app.ui.theme.OfitMenuDivider()
+                if (apps.isEmpty()) {
+                    com.ofit.app.ui.theme.OfitMenuHeader("No music app found")
+                } else {
+                    apps.forEach { app ->
+                        com.ofit.app.ui.theme.OfitMenuItem(
+                            text = "Open ${app.label}",
+                            icon = Icons.Filled.MusicNote,
+                            detail = if (app.packageName == target) "the buttons above control it" else "start your music there",
+                            onClick = {
+                                musicOpen = false
+                                target = app.packageName
+                                // Mute the video so the music is heard; the workout carries on.
+                                if (hasVideoAudio && volume > 0) onVolume(0)
+                                OutsideMusic.open(context, app)
+                            },
+                        )
+                    }
+                }
+            }
+        }
+        HudSquareButton(
+            icon = Icons.Filled.FastRewind,
+            description = "Back 30 seconds",
+            enabled = snapshot.isActive,
+            onClick = { onSeek(snapshot.totalElapsedMillis - 30_000) },
+        )
+        HudSquareButton(
+            icon = Icons.Filled.FastForward,
+            description = "Forward 30 seconds",
+            enabled = snapshot.isActive,
+            onClick = { onSeek(snapshot.totalElapsedMillis + 30_000) },
+        )
+        // Playback speed: a menu of rates, and "Match my speed" with a treadmill.
+        var rateOpen by remember { mutableStateOf(false) }
+        Box {
+            Column(
+                Modifier
+                    .size(HudButtonHeight)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(if (matchSpeed || playbackRate != 1f) Color(0x4438BDF8) else Color(0x22FFFFFF))
+                    .border(BorderStroke(1.dp, Color(0x44FFFFFF)), RoundedCornerShape(12.dp))
+                    .clickable(onClickLabel = "Playback speed") { rateOpen = true },
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
             ) {
-                Icon(
-                    imageVector = if (snapshot.state == WorkoutEngineState.RUNNING) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp),
-                )
-                Spacer(Modifier.width(6.dp))
-                Text(
-                    text = when (snapshot.state) {
-                        WorkoutEngineState.RUNNING -> "Pause workout"
-                        WorkoutEngineState.PAUSED -> "Resume workout"
-                        WorkoutEngineState.IDLE -> "Start workout"
-                        else -> "Start again"
-                    },
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                )
+                Text(rateText(playbackRate), color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                if (matchSpeed) Text("match", color = Color(0xCCFFFFFF), fontSize = 9.sp, lineHeight = 9.sp)
             }
-
-            var menuOpen by remember { mutableStateOf(false) }
-            Box {
-                HudSquareButton(
-                    icon = Icons.Filled.MoreHoriz,
-                    description = "More: skip step, end workout",
-                    enabled = snapshot.isActive,
-                    onClick = { menuOpen = true },
+            com.ofit.app.ui.theme.OfitDropdownMenu(expanded = rateOpen, onDismissRequest = { rateOpen = false }) {
+                com.ofit.app.ui.theme.OfitMenuHeader("Video speed")
+                com.ofit.app.ui.theme.OfitMenuSegments(
+                    listOf("0.75×", "1×", "1.25×", "1.5×", "2×"),
+                    rateText(chosenRate),
+                ) { label -> onPlaybackRate(label.removeSuffix("×").toFloat()) }
+                com.ofit.app.ui.theme.OfitMenuDivider()
+                com.ofit.app.ui.theme.OfitMenuItem(
+                    text = if (matchSpeed) "Match my speed: on" else "Match my speed",
+                    detail = if (preview) "needs a treadmill" else "1× on plan; faster or slower belt speeds it up or down",
+                    icon = Icons.Filled.Speed,
+                    onClick = {
+                        onMatchSpeed(!matchSpeed)
+                        rateOpen = false
+                    },
                 )
-                com.ofit.app.ui.theme.OfitDropdownMenu(
-                    expanded = menuOpen && snapshot.isActive,
-                    onDismissRequest = { menuOpen = false },
-                ) {
-                    com.ofit.app.ui.theme.OfitMenuHeader("Workout")
-                    com.ofit.app.ui.theme.OfitMenuItem(
-                        text = "Skip step",
-                        icon = Icons.Filled.SkipNext,
-                        detail = "Step ${snapshot.stepIndex + 1} of ${snapshot.stepCount}",
-                        onClick = {
-                            menuOpen = false
-                            onSkip()
-                        },
-                    )
-                    com.ofit.app.ui.theme.OfitMenuDivider()
-                    com.ofit.app.ui.theme.OfitMenuItem(
-                        text = "End workout",
-                        icon = Icons.Filled.Stop,
-                        destructive = true,
-                        onClick = {
-                            menuOpen = false
-                            onAbandon()
-                        },
-                    )
-                }
             }
         }
-
-        // Right side: Emergency Stop
-        Button(
-            modifier = Modifier.height(HudButtonHeight),
-            onClick = onEmergencyStop,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFDC2626),
-                contentColor = Color.White,
-            ),
-            shape = RoundedCornerShape(12.dp),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-        ) {
-            Text("EMERGENCY STOP", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+        Spacer(Modifier.width(10.dp))
+            // Start / Pause, Skip and End, right before E-STOP: anchored to the right edge so they never
+            // move when the song chip or other buttons come and go (user request, 2026-11-24).
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                val running = snapshot.state == WorkoutEngineState.RUNNING
+                HudActionButton(
+                    icon = if (running) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                    label = when (snapshot.state) {
+                        WorkoutEngineState.RUNNING -> "Pause"
+                        WorkoutEngineState.PAUSED -> "Resume"
+                        WorkoutEngineState.IDLE -> "Start"
+                        // In the cool-down the belt is winding down: no restart from here (seen on
+                        // the tablet 2026-11-24, it read "Again"); End or E-STOP stop it.
+                        WorkoutEngineState.COOLING_DOWN -> "Cool-down"
+                        else -> "Again"
+                    },
+                    background = if (running || snapshot.state == WorkoutEngineState.COOLING_DOWN) Color(0x33FFFFFF) else Color(0xFF2563EB),
+                    enabled = snapshot.state != WorkoutEngineState.COOLING_DOWN,
+                    onClick = when (snapshot.state) {
+                        WorkoutEngineState.RUNNING -> onPause
+                        WorkoutEngineState.PAUSED -> onResume
+                        else -> onStart
+                    },
+                )
+                HudActionButton(
+                    icon = Icons.Filled.SkipNext,
+                    label = "Skip",
+                    enabled = snapshot.isActive,
+                    onClick = onSkip,
+                )
+                HudActionButton(
+                    icon = Icons.Filled.Stop,
+                    label = "End",
+                    background = Color(0x33F87171),
+                    enabled = snapshot.isActive,
+                    onClick = onAbandon,
+                )
+            }
+        if (!preview) {
+            HudActionButton(
+                icon = Icons.Filled.Stop,
+                label = "E-STOP",
+                background = Color(0xFFDC2626),
+                enabled = true,
+                onClick = onEmergencyStop,
+            )
+        } else {
+            // Keep E-STOP's place, so Start, Skip and End sit in the same spot with no treadmill too.
+            Spacer(Modifier.size(HudActionSize))
+        }
         }
     }
 }
+
+/** A square button with an icon and a short word under it: easy to hit on a moving belt. */
+@Composable
+private fun HudActionButton(
+    icon: ImageVector,
+    label: String,
+    enabled: Boolean,
+    onClick: () -> Unit,
+    background: Color = Color(0x22FFFFFF),
+    tint: Color = Color.White,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .size(HudActionSize)
+            .clip(RoundedCornerShape(14.dp))
+            .background(if (enabled) background else Color(0x14FFFFFF))
+            .border(BorderStroke(1.dp, Color(0x44FFFFFF)), RoundedCornerShape(14.dp))
+            .let { if (enabled) it.clickable(onClickLabel = label, onClick = onClick) else it },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        val color = if (enabled) tint else Color(0x55FFFFFF)
+        Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(28.dp))
+        Text(
+            label,
+            color = color,
+            fontSize = if (label.length > 8) 10.sp else 11.sp,
+            lineHeight = 11.sp,
+            fontWeight = FontWeight.Bold,
+            maxLines = 2,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+        )
+    }
+}
+
+/** The size of the bar's main square buttons (the user wants about 72 dp, square). */
+private val HudActionSize = 72.dp
 
 /** A square glass button, the bottom bar's size, for an icon-only action. */
 @Composable
@@ -1464,8 +2016,11 @@ private fun HudHiddenOverlay(
     onShow: () -> Unit,
     onAbandon: () -> Unit,
     onEmergencyStop: () -> Unit,
+    onPause: () -> Unit = {},
+    onResume: () -> Unit = {},
     coachStatus: com.ofit.app.heart.CoachStatus? = null,
     onCoachStop: () -> Unit = {},
+    noTreadmill: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -1504,22 +2059,24 @@ private fun HudHiddenOverlay(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            // Fullscreen keeps one workout button: pause or resume (End is in the full controls).
             if (snapshot.isActive) {
+                val running = snapshot.state == WorkoutEngineState.RUNNING
                 HudSquareButton(
-                    icon = Icons.Filled.Stop,
-                    description = "End workout",
+                    icon = if (running) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                    description = if (running) "Pause workout" else "Resume workout",
                     enabled = true,
-                    onClick = onAbandon,
+                    onClick = if (running) onPause else onResume,
                 )
             }
-            Button(
-                modifier = Modifier.height(HudButtonHeight),
-                onClick = onEmergencyStop,
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFDC2626), contentColor = Color.White),
-                shape = RoundedCornerShape(12.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-            ) {
-                Text("EMERGENCY STOP", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+            if (!noTreadmill) {
+                HudActionButton(
+                    icon = Icons.Filled.Stop,
+                    label = "E-STOP",
+                    background = Color(0xFFDC2626),
+                    enabled = true,
+                    onClick = onEmergencyStop,
+                )
             }
         }
     }
@@ -1619,7 +2176,7 @@ private fun HudOverrideDialog(
         dismissButton = {
             if (manualOverride) {
                 TextButton(onClick = onReset) {
-                    Text("Follow program")
+                    Text("Rejoin program")
                 }
             }
         },
@@ -1644,4 +2201,67 @@ object HudColors {
 
     /** Warning/Preview amber */
     val amber = Color(0xFFFBBF24) // amber-400
+}
+
+/** "1×", "1.25×", "0.75×" … for a playback rate. */
+private fun rateText(rate: Float): String {
+    val r = Math.round(rate * 100) / 100.0
+    val text = if (r % 1.0 == 0.0) "%.0f".format(r) else if ((r * 10) % 1.0 == 0.0) "%.1f".format(r) else "%.2f".format(r)
+    return text + "×"
+}
+
+/** A small pill with the album art and the song, for the workout bar. */
+@Composable
+private fun NowPlayingChip(now: OutsideMusic.NowPlaying, onClick: () -> Unit) {
+    Row(
+        Modifier
+            .height(HudButtonHeight)
+            .widthIn(max = 280.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0x22FFFFFF))
+            .border(BorderStroke(1.dp, Color(0x44FFFFFF)), RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+            .padding(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        AlbumArt(now, Modifier.size(HudButtonHeight - 12.dp))
+        Spacer(Modifier.width(10.dp))
+        Column(Modifier.padding(end = 6.dp)) {
+            Text(now.title, color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            now.artist?.let {
+                Text(it, color = Color(0xB3FFFFFF), fontSize = 12.sp, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            }
+        }
+    }
+}
+
+/** The song in the music panel: big art, title, artist, the app. */
+@Composable
+private fun NowPlayingCard(now: OutsideMusic.NowPlaying, modifier: Modifier = Modifier) {
+    Row(modifier, verticalAlignment = Alignment.CenterVertically) {
+        AlbumArt(now, Modifier.size(72.dp))
+        Spacer(Modifier.width(14.dp))
+        Column(Modifier.weight(1f)) {
+            Text(now.title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 18.sp, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            now.artist?.let { Text(it, color = Color(0xCCFFFFFF), maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis) }
+            Text(if (now.playing) "Playing in ${now.app}" else "Paused in ${now.app}", color = Color(0x99FFFFFF), fontSize = 12.sp)
+        }
+    }
+}
+
+@Composable
+private fun AlbumArt(now: OutsideMusic.NowPlaying, modifier: Modifier) {
+    val art = now.art
+    Box(modifier.clip(RoundedCornerShape(8.dp)).background(Color(0x33FFFFFF)), contentAlignment = Alignment.Center) {
+        if (art != null) {
+            androidx.compose.foundation.Image(
+                art.asImageBitmap(),
+                contentDescription = null,
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+        } else {
+            Icon(Icons.Filled.MusicNote, contentDescription = null, tint = Color.White)
+        }
+    }
 }

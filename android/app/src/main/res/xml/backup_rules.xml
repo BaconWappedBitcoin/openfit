@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The same rules for Android 11 and older (see data_extraction_rules.xml). -->
+<full-backup-content>
+    <include domain="sharedpref" path="." />
+    <include domain="file" path="." />
+    <exclude domain="sharedpref" path="ofit_secrets.xml" />
+    <exclude domain="sharedpref" path="ofit_device.xml" />
+    <exclude domain="sharedpref" path="WebViewChromiumPrefs.xml" />
+    <exclude domain="sharedpref" path="AwOriginVisitLoggerPrefs.xml" />
+    <exclude domain="file" path="profileInstalled" />
+</full-backup-content>

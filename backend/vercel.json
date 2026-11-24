@@ -1,5 +1,6 @@
 {
   "functions": {
-    "api/analyze.ts": { "maxDuration": 300 }
+    "api/analyze.ts": { "maxDuration": 300 },
+    "api/landmarks.ts": { "maxDuration": 300 }
   }
 }

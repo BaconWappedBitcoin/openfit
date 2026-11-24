@@ -1,0 +1,932 @@
+[
+ {
+  "index": 0,
+  "startSeconds": 0,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": -2,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner begins running on a wide dirt trail in Sedona with a slight downward slope."
+ },
+ {
+  "index": 1,
+  "startSeconds": 30,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -4,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner is descending a red dirt trail towards a trailhead parking area at a steady pace."
+ },
+ {
+  "index": 2,
+  "startSeconds": 60,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": -1,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner crosses a paved road/parking area and enters a dirt trail, maintaining a steady jogging pace of around 9.5 km/h on slightly downhill to flat terrain."
+ },
+ {
+  "index": 3,
+  "startSeconds": 90,
+  "durationSeconds": 30,
+  "speedKph": 8,
+  "inclinePercent": 3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging on a dirt trail, slowing down briefly to navigate around hikers and rocks before resuming a steady pace."
+ },
+ {
+  "index": 4,
+  "startSeconds": 120,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 4,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner is trail running on red dirt terrain with occasional rocky sections and a slight upward grade."
+ },
+ {
+  "index": 5,
+  "startSeconds": 150,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 1,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The video shows a steady trail run on a sandy red dirt path with a moderate cadence of around 175-180 steps per minute."
+ },
+ {
+  "index": 6,
+  "startSeconds": 180,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 2,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner moves uphill over a rocky trail section for the first 10 seconds before transitioning onto a flat to slightly downhill red dirt path."
+ },
+ {
+  "index": 7,
+  "startSeconds": 210,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 3.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail running pace on a dirt path with a gentle uphill incline."
+ },
+ {
+  "index": 8,
+  "startSeconds": 240,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 5,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "Runner is light jogging/trail running past hikers on a dirt trail in Sedona with a slight uphill gradient."
+ },
+ {
+  "index": 9,
+  "startSeconds": 270,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 4,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail jog on a rocky red-dirt path with a slight uphill gradient."
+ },
+ {
+  "index": 10,
+  "startSeconds": 300,
+  "durationSeconds": 30,
+  "speedKph": 9.6,
+  "inclinePercent": -1,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is maintaining a steady trail running pace on a mostly flat, slightly descending dirt path surrounded by trees and red rock scenery."
+ },
+ {
+  "index": 11,
+  "startSeconds": 330,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging on a red dirt and rocky trail at a steady cadence of around 165 steps per minute on a slightly uphill gradient."
+ },
+ {
+  "index": 12,
+  "startSeconds": 360,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 7,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail running cadence along a rocky, red dirt path with a noticeable uphill incline."
+ },
+ {
+  "index": 13,
+  "startSeconds": 390,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 3.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner moves along a red dirt trail in Sedona, climbing an uphill section for the first half before reaching a crest near a trail sign and flattening out."
+ },
+ {
+  "index": 14,
+  "startSeconds": 420,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner navigating a red dirt trail in a desert environment with a slight incline."
+ },
+ {
+  "index": 15,
+  "startSeconds": 450,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging on a red dirt trail with a mild uphill slope."
+ },
+ {
+  "index": 16,
+  "startSeconds": 480,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 4,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail jog on a rocky red-dirt track with a slight uphill gradient."
+ },
+ {
+  "index": 17,
+  "startSeconds": 510,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": 2,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging on a dirt trail with slight rocky sections at a steady pace."
+ },
+ {
+  "index": 18,
+  "startSeconds": 540,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 4,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging at a steady pace on a rocky dirt trail in Sedona, navigating a slight uphill incline."
+ },
+ {
+  "index": 19,
+  "startSeconds": 570,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail jogging pace on a relatively flat red-dirt dirt path with moderate footfall cadence."
+ },
+ {
+  "index": 20,
+  "startSeconds": 600,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging on a red dirt trail with moderate rocky steps, maintaining a slight uphill incline throughout the clip."
+ },
+ {
+  "index": 21,
+  "startSeconds": 630,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 1.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Running on a dirt trail at a steady cadence of around 168 steps per minute on mostly flat to slightly undulating terrain."
+ },
+ {
+  "index": 22,
+  "startSeconds": 660,
+  "durationSeconds": 30,
+  "speedKph": 9.3,
+  "inclinePercent": 3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail jogging cadence of around 165 steps per minute on an unpaved red dirt trail with a mild uphill gradient."
+ },
+ {
+  "index": 23,
+  "startSeconds": 690,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 1,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging along a red dirt trail passing other hikers at a steady cadence of approximately 160 steps per minute."
+ },
+ {
+  "index": 24,
+  "startSeconds": 720,
+  "durationSeconds": 30,
+  "speedKph": 7.5,
+  "inclinePercent": 1,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is trail running at a moderate pace before slowing down to pass several hikers on a dirt trail."
+ },
+ {
+  "index": 25,
+  "startSeconds": 750,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 3.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail-running pace on a dirt path with a slight uphill gradient."
+ },
+ {
+  "index": 26,
+  "startSeconds": 780,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 3,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "Runner is moving at a steady jog on a dirt trail with a slight upward grade, passing other hikers/joggers."
+ },
+ {
+  "index": 27,
+  "startSeconds": 810,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is maintaining a steady jog uphill along a red dirt trail."
+ },
+ {
+  "index": 28,
+  "startSeconds": 840,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 2.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging at a steady cadence of around 170 steps per minute on a red dirt desert trail with a very gentle slight uphill gradient."
+ },
+ {
+  "index": 29,
+  "startSeconds": 870,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 1,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail running cadence of approximately 160 steps per minute along a dirt and sandstone trail with a gentle positive grade."
+ },
+ {
+  "index": 30,
+  "startSeconds": 900,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": 3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady jogging pace along a wide red dirt trail leading toward a rock formation."
+ },
+ {
+  "index": 31,
+  "startSeconds": 930,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 6.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is maintaining a steady trail-running pace uphill along a dirt and red-rock path in Sedona, with an incline increasing from around 4% to 8%."
+ },
+ {
+  "index": 32,
+  "startSeconds": 960,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": 5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner is jogging on a rocky red dirt trail with a steady moderate uphill incline."
+ },
+ {
+  "index": 33,
+  "startSeconds": 990,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The video shows a runner maintaining a steady jog on a red dirt and rocky trail with a slight to moderate uphill incline."
+ },
+ {
+  "index": 34,
+  "startSeconds": 1020,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 10,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Hiking at a steady pace uphill along a rocky red dirt trail."
+ },
+ {
+  "index": 35,
+  "startSeconds": 1050,
+  "durationSeconds": 30,
+  "speedKph": 7.2,
+  "inclinePercent": 12,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "Runner is jogging uphill on a rocky red-rock dirt trail."
+ },
+ {
+  "index": 36,
+  "startSeconds": 1080,
+  "durationSeconds": 30,
+  "speedKph": 3.5,
+  "inclinePercent": 14,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "Hiking uphill on a steep, rocky red dirt trail."
+ },
+ {
+  "index": 37,
+  "startSeconds": 1110,
+  "durationSeconds": 30,
+  "speedKph": 7.5,
+  "inclinePercent": 10,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner is jogging uphill on a rocky red-dirt trail."
+ },
+ {
+  "index": 38,
+  "startSeconds": 1140,
+  "durationSeconds": 30,
+  "speedKph": 3.8,
+  "inclinePercent": 15,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner/hiker is walking uphill at a steady pace on a steep, rocky red dirt trail."
+ },
+ {
+  "index": 39,
+  "startSeconds": 1170,
+  "durationSeconds": 30,
+  "speedKph": 3.2,
+  "inclinePercent": 12,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The video shows a person hiking uphill on a rocky red dirt trail at a steady walking cadence of about 70 steps per minute."
+ },
+ {
+  "index": 40,
+  "startSeconds": 1200,
+  "durationSeconds": 30,
+  "speedKph": 3.8,
+  "inclinePercent": 12,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The camera is moving uphill on a rocky hiking trail with stone steps, passing oncoming hikers."
+ },
+ {
+  "index": 41,
+  "startSeconds": 1230,
+  "durationSeconds": 30,
+  "speedKph": 3.6,
+  "inclinePercent": 16,
+  "confidence": 0.85,
+  "terrain": "stairs",
+  "note": "The runner is hiking at a steady pace up stone steps on an uphill trail."
+ },
+ {
+  "index": 42,
+  "startSeconds": 1260,
+  "durationSeconds": 30,
+  "speedKph": 4,
+  "inclinePercent": 9,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The user is hiking at a steady pace up a steep, rocky dirt trail."
+ },
+ {
+  "index": 43,
+  "startSeconds": 1290,
+  "durationSeconds": 30,
+  "speedKph": 2.6,
+  "inclinePercent": 22,
+  "confidence": 0.85,
+  "terrain": "stairs",
+  "note": "Ascending steep stone stairs along a red rock mountain trail."
+ },
+ {
+  "index": 44,
+  "startSeconds": 1320,
+  "durationSeconds": 30,
+  "speedKph": 3,
+  "inclinePercent": 18,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner is hiking/scrambling up steep red rock steps, then reaching a flatter scenic ridge area."
+ },
+ {
+  "index": 45,
+  "startSeconds": 1350,
+  "durationSeconds": 30,
+  "speedKph": 2.8,
+  "inclinePercent": 20,
+  "confidence": 0.7,
+  "terrain": "trail",
+  "note": "Steep uphill hiking/scrambling along a rocky red rock trail."
+ },
+ {
+  "index": 46,
+  "startSeconds": 1380,
+  "durationSeconds": 30,
+  "speedKph": 3,
+  "inclinePercent": 14,
+  "confidence": 0.7,
+  "terrain": "trail",
+  "note": "The video shows a hiker scrambling and walking uphill over steep, rocky terrain and natural stone steps."
+ },
+ {
+  "index": 47,
+  "startSeconds": 1410,
+  "durationSeconds": 30,
+  "speedKph": 5.4,
+  "inclinePercent": 5,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The video shows a hike along a rocky red dirt trail, starting at a slower uphill walk and transitioning to a brisk walk/jog."
+ },
+ {
+  "index": 48,
+  "startSeconds": 1440,
+  "durationSeconds": 30,
+  "speedKph": 3.6,
+  "inclinePercent": -1,
+  "confidence": 0.75,
+  "terrain": "trail",
+  "note": "Walking at a steady pace along a rocky sandstone trail towards the natural arch viewpoint."
+ },
+ {
+  "index": 49,
+  "startSeconds": 1470,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 7,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The camera starts stationary viewing Devil's Bridge before turning around and hiking/walking uphill on a red rock trail."
+ },
+ {
+  "index": 50,
+  "startSeconds": 1500,
+  "durationSeconds": 30,
+  "speedKph": 5.8,
+  "inclinePercent": 5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is maintaining a brisk power-walk or light jog on a red dirt trail, passing several hikers on a moderate uphill incline."
+ },
+ {
+  "index": 51,
+  "startSeconds": 1530,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": -1,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner is jogging on a red rock dirt trail for the first half, then slows to a walk to admire the scenic panoramic view."
+ },
+ {
+  "index": 52,
+  "startSeconds": 1560,
+  "durationSeconds": 30,
+  "speedKph": 5.2,
+  "inclinePercent": -3,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The video shows a mix of slow walking around scenic viewpoints followed by moderate trail jogging along red rock mountain paths."
+ },
+ {
+  "index": 53,
+  "startSeconds": 1590,
+  "durationSeconds": 30,
+  "speedKph": 7.2,
+  "inclinePercent": 1,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner is jogging along a rocky, narrow cliffside trail in a red rock canyon. The cadence is steady on relatively level ground."
+ },
+ {
+  "index": 54,
+  "startSeconds": 1620,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": -5,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner is jogging downhill along a rocky red earth trail in Sedona, passing other hikers on a narrow ridge."
+ },
+ {
+  "index": 55,
+  "startSeconds": 1650,
+  "durationSeconds": 30,
+  "speedKph": 8.8,
+  "inclinePercent": -3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is moving along a dirt trail with trees and red rock surrounding, descending slightly."
+ },
+ {
+  "index": 56,
+  "startSeconds": 1680,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a moderate jogging pace along a rocky red dirt trail, starting on a gentle uphill gradient before reaching a slight crest."
+ },
+ {
+  "index": 57,
+  "startSeconds": 1710,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": -4,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is descending a rocky dirt trail at a steady running pace."
+ },
+ {
+  "index": 58,
+  "startSeconds": 1740,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": -3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The video shows trail running along a red-rock dirt path with a gentle downhill slope and occasional hikers."
+ },
+ {
+  "index": 59,
+  "startSeconds": 1770,
+  "durationSeconds": 30,
+  "speedKph": 9.6,
+  "inclinePercent": -1.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail running pace on a slightly descending red dirt trail in Sedona."
+ },
+ {
+  "index": 60,
+  "startSeconds": 1800,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": -1,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Trail running on red sand surface with low incline at a steady pace."
+ },
+ {
+  "index": 61,
+  "startSeconds": 1830,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": -3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady jog on a red dirt trail, slightly sloping downhill (-3%) at around 155 steps per minute."
+ },
+ {
+  "index": 62,
+  "startSeconds": 1860,
+  "durationSeconds": 30,
+  "speedKph": 9.3,
+  "inclinePercent": 3.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady jogging pace on a red dirt trail with a gentle uphill slope."
+ },
+ {
+  "index": 63,
+  "startSeconds": 1890,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging along a red dirt desert trail at a steady cadence of around 160 steps per minute on a slight uphill incline."
+ },
+ {
+  "index": 64,
+  "startSeconds": 1920,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 2,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner maintains a steady jog on a sandy red dirt trail, passing several hikers along a mild slope."
+ },
+ {
+  "index": 65,
+  "startSeconds": 1950,
+  "durationSeconds": 30,
+  "speedKph": 9.3,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail jog at around 153 steps per minute on a mostly flat red dirt trail."
+ },
+ {
+  "index": 66,
+  "startSeconds": 1980,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady jogging pace on a sandy red dirt trail with minimal incline, passing hikers."
+ },
+ {
+  "index": 67,
+  "startSeconds": 2010,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 2,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady jogging cadence of around 162 steps per minute along a dirt trail with a slightly positive incline."
+ },
+ {
+  "index": 68,
+  "startSeconds": 2040,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging at a steady pace along a flat, unpaved red dirt trail, passing several hikers."
+ },
+ {
+  "index": 69,
+  "startSeconds": 2070,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 2,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady jog along a red dirt trail with slight uphill sections surrounded by low trees and shrubs."
+ },
+ {
+  "index": 70,
+  "startSeconds": 2100,
+  "durationSeconds": 30,
+  "speedKph": 6.5,
+  "inclinePercent": 6,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner starts by jogging on a red dirt trail before slowing down to a walk on a slight uphill incline around halfway through the clip."
+ },
+ {
+  "index": 71,
+  "startSeconds": 2130,
+  "durationSeconds": 30,
+  "speedKph": 5.2,
+  "inclinePercent": 1.5,
+  "confidence": 0.7,
+  "terrain": "trail",
+  "note": "The runner jogs on a red dirt desert trail for the first half, then slows and steps aside to yield to several approaching mountain bikers."
+ },
+ {
+  "index": 72,
+  "startSeconds": 2160,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 1,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail jogging pace on a relatively flat red-dirt trail."
+ },
+ {
+  "index": 73,
+  "startSeconds": 2190,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The video shows a steady trail run on a red dirt surface with a slight uphill gradient."
+ },
+ {
+  "index": 74,
+  "startSeconds": 2220,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 1.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner maintaining a steady jogging pace on a red dirt desert trail with a very slight grade."
+ },
+ {
+  "index": 75,
+  "startSeconds": 2250,
+  "durationSeconds": 30,
+  "speedKph": 9,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging at a steady pace along a flat red-dirt trail, passing other hikers."
+ },
+ {
+  "index": 76,
+  "startSeconds": 2280,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 1.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady jog on a sandy red dirt trail with a cadence around 160 steps per minute and a gentle slight uphill gradient."
+ },
+ {
+  "index": 77,
+  "startSeconds": 2310,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady trail running pace on a red dirt/rock path in a desert landscape."
+ },
+ {
+  "index": 78,
+  "startSeconds": 2340,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": -0.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady jogging pace along a relatively flat red dirt desert trail."
+ },
+ {
+  "index": 79,
+  "startSeconds": 2370,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 1.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner is trail running at a steady cadence (~165 spm), climbing a short rise past a trail marker before descending slightly."
+ },
+ {
+  "index": 80,
+  "startSeconds": 2400,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 1,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The video shows a runner on a red rock dirt trail at a steady jogging cadence of around 155-160 steps per minute on mostly level to slightly rolling terrain."
+ },
+ {
+  "index": 81,
+  "startSeconds": 2430,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 5,
+  "confidence": 0.8,
+  "terrain": "trail",
+  "note": "The runner maintains a steady jog on a dirt trail with a moderate uphill gradient."
+ },
+ {
+  "index": 82,
+  "startSeconds": 2460,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady jog on a dirt trail with red rock soil in a desert environment, moving uphill at a moderate gradient."
+ },
+ {
+  "index": 83,
+  "startSeconds": 2490,
+  "durationSeconds": 30,
+  "speedKph": 10.2,
+  "inclinePercent": 1,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging at a steady pace of around 10.2 km/h along a red dirt trail with a mostly flat to slightly positive gradient."
+ },
+ {
+  "index": 84,
+  "startSeconds": 2520,
+  "durationSeconds": 30,
+  "speedKph": 10.5,
+  "inclinePercent": -3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Trail running through a wooded area on red soil at a steady jogging cadence with a slight downhill grade."
+ },
+ {
+  "index": 85,
+  "startSeconds": 2550,
+  "durationSeconds": 30,
+  "speedKph": 9.3,
+  "inclinePercent": 1,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner maintains a steady jogging cadence of around 160 steps per minute along a red dirt trail with minimal gradient changes."
+ },
+ {
+  "index": 86,
+  "startSeconds": 2580,
+  "durationSeconds": 30,
+  "speedKph": 9.3,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is jogging on a relatively flat red dirt trail at a steady cadence."
+ },
+ {
+  "index": 87,
+  "startSeconds": 2610,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 2.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner is navigating a red dirt trail with slight undulating incline and minor rocky sections at a steady pace."
+ },
+ {
+  "index": 88,
+  "startSeconds": 2640,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner is maintaining a steady trail running pace on a sandy dirt path with minor rocky patches."
+ },
+ {
+  "index": 89,
+  "startSeconds": 2670,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 3.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner maintains a steady trail jogging pace on a red dirt trail, passing hikers with a slight uphill grade."
+ },
+ {
+  "index": 90,
+  "startSeconds": 2700,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0.5,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "The runner descends a dirt trail into a parking lot, crosses a paved road via a marked crosswalk, and continues onto an uphill dirt trail at a steady jogging pace."
+ },
+ {
+  "index": 91,
+  "startSeconds": 2730,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": -3,
+  "confidence": 0.85,
+  "terrain": "trail",
+  "note": "Runner is descending a red dirt trail towards a parking lot trailhead, transitioning from a slight downhill to flatter ground."
+ },
+ {
+  "index": 92,
+  "startSeconds": 2760,
+  "durationSeconds": 25,
+  "speedKph": 7.2,
+  "inclinePercent": 1.5,
+  "confidence": 0.75,
+  "terrain": "trail",
+  "note": "The runner completes a jog on a red dirt trail leading toward a trailhead parking area before the clip transitions to the end screen."
+ }
+]

@@ -1,0 +1,942 @@
+[
+ {
+  "index": 0,
+  "startSeconds": 0,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is jogging at a steady pace along a flat city sidewalk."
+ },
+ {
+  "index": 1,
+  "startSeconds": 30,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 4,
+  "confidence": 0.85,
+  "terrain": "stairs",
+  "note": "Walking across a street crosswalk at normal walking speed before climbing a flight of outdoor stairs."
+ },
+ {
+  "index": 2,
+  "startSeconds": 60,
+  "durationSeconds": 30,
+  "speedKph": 5.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera moves along a paved pedestrian walkway in front of a building at a brisk walking pace of around 5.8 km/h on completely flat ground."
+ },
+ {
+  "index": 3,
+  "startSeconds": 90,
+  "durationSeconds": 30,
+  "speedKph": 8.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera moves at a steady jogging pace along a flat paved pedestrian walkway on the Las Vegas Strip."
+ },
+ {
+  "index": 4,
+  "startSeconds": 120,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jogging pace along a flat, paved pedestrian sidewalk and street on the Las Vegas Strip."
+ },
+ {
+  "index": 5,
+  "startSeconds": 150,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking on a flat city sidewalk along the Las Vegas Strip at a steady brisk walking pace."
+ },
+ {
+  "index": 6,
+  "startSeconds": 180,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat city sidewalk on the Las Vegas Strip."
+ },
+ {
+  "index": 7,
+  "startSeconds": 210,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 9,
+  "confidence": 0.75,
+  "terrain": "uphill",
+  "note": "The video shows movement up an inclined moving walkway (travelator) outdoors at a resort."
+ },
+ {
+  "index": 8,
+  "startSeconds": 240,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 7.5,
+  "confidence": 0.8,
+  "terrain": "uphill",
+  "note": "The video shows a person moving up an inclined moving walkway (travelator) at a steady walking pace before stepping off onto flat indoor ground."
+ },
+ {
+  "index": 9,
+  "startSeconds": 270,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along an indoor covered walkway/corridor at a steady pace."
+ },
+ {
+  "index": 10,
+  "startSeconds": 300,
+  "durationSeconds": 30,
+  "speedKph": 3.2,
+  "inclinePercent": -35,
+  "confidence": 0.85,
+  "terrain": "stairs",
+  "note": "The subject walks indoors across a flat tiled area before descending a carpeted staircase."
+ },
+ {
+  "index": 11,
+  "startSeconds": 330,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera operator is walking at a steady pace through a flat indoor casino and lobby area toward an exit."
+ },
+ {
+  "index": 12,
+  "startSeconds": 360,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": -1,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows walking at a normal pace on a paved plaza, starting with a slight downhill ramp from a pedestrian bridge onto a flat walkway."
+ },
+ {
+  "index": 13,
+  "startSeconds": 390,
+  "durationSeconds": 30,
+  "speedKph": 5.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Moving at a steady brisk walking pace along a flat paved pedestrian walkway outside the Venetian in Las Vegas."
+ },
+ {
+  "index": 14,
+  "startSeconds": 420,
+  "durationSeconds": 30,
+  "speedKph": 7,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera moves at a steady brisk walk or light jog speed along a flat paved urban sidewalk."
+ },
+ {
+  "index": 15,
+  "startSeconds": 450,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a person walking at a steady pace along a flat paved sidewalk on a city street."
+ },
+ {
+  "index": 16,
+  "startSeconds": 480,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat sidewalk in Las Vegas before approaching an escalator."
+ },
+ {
+  "index": 17,
+  "startSeconds": 510,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 3,
+  "confidence": 0.75,
+  "terrain": "flat",
+  "note": "The camera moves up an escalator during the first 9 seconds before stepping off and walking at a steady pace along a flat pedestrian overpass bridge."
+ },
+ {
+  "index": 18,
+  "startSeconds": 540,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": -12,
+  "confidence": 0.85,
+  "terrain": "stairs",
+  "note": "The runner/walker moves across a flat pedestrian bridge before descending a flight of outdoor stairs to the street level."
+ },
+ {
+  "index": 19,
+  "startSeconds": 570,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.88,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jog on a paved flat pedestrian walkway along the Las Vegas Strip at approximately 158-160 steps per minute."
+ },
+ {
+  "index": 20,
+  "startSeconds": 600,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera operator is walking at a steady pace along a flat paved sidewalk in an urban setting."
+ },
+ {
+  "index": 21,
+  "startSeconds": 630,
+  "durationSeconds": 30,
+  "speedKph": 5.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady brisk walk on a flat paved sidewalk alongside Las Vegas Boulevard near the Wynn Resort."
+ },
+ {
+  "index": 22,
+  "startSeconds": 660,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace along a flat paved sidewalk next to the Wynn Plaza Shops."
+ },
+ {
+  "index": 23,
+  "startSeconds": 690,
+  "durationSeconds": 30,
+  "speedKph": 9.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is jogging at a steady pace along a flat, paved city sidewalk."
+ },
+ {
+  "index": 24,
+  "startSeconds": 720,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The camera moves at a steady walking speed along a flat paved urban sidewalk."
+ },
+ {
+  "index": 25,
+  "startSeconds": 750,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat, paved sidewalk on the Las Vegas Strip."
+ },
+ {
+  "index": 26,
+  "startSeconds": 780,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The user is walking along a flat urban sidewalk and crossing a street near the Encore hotel."
+ },
+ {
+  "index": 27,
+  "startSeconds": 810,
+  "durationSeconds": 30,
+  "speedKph": 9.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The runner is moving at a steady jogging pace along a flat paved urban sidewalk next to a construction wall."
+ },
+ {
+  "index": 28,
+  "startSeconds": 840,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "Brisk walking pace along a flat, paved temporary road/pedestrian lane in Las Vegas."
+ },
+ {
+  "index": 29,
+  "startSeconds": 870,
+  "durationSeconds": 30,
+  "speedKph": 5.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The video shows a brisk walking or light jogging motion on a flat paved sidewalk next to a road."
+ },
+ {
+  "index": 30,
+  "startSeconds": 900,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The camera indicates a steady walking pace on a flat urban sidewalk along Las Vegas Boulevard."
+ },
+ {
+  "index": 31,
+  "startSeconds": 930,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat paved sidewalk on a city street at a steady pace."
+ },
+ {
+  "index": 32,
+  "startSeconds": 960,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking on a paved outdoor pedestrian walkway at a steady, normal pace on flat terrain."
+ },
+ {
+  "index": 33,
+  "startSeconds": 990,
+  "durationSeconds": 30,
+  "speedKph": 5.1,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a person briskly walking on a flat, paved outdoor pedestrian plaza in Las Vegas at around 5.1 km/h."
+ },
+ {
+  "index": 34,
+  "startSeconds": 1020,
+  "durationSeconds": 30,
+  "speedKph": 5.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walk along a flat paved city sidewalk next to Las Vegas Boulevard."
+ },
+ {
+  "index": 35,
+  "startSeconds": 1050,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 20,
+  "confidence": 0.7,
+  "terrain": "stairs",
+  "note": "The runner walks across flat pavement, rides an ascending outdoor escalator, and continues onto an elevated pedestrian bridge."
+ },
+ {
+  "index": 36,
+  "startSeconds": 1080,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": -2,
+  "confidence": 0.75,
+  "terrain": "flat",
+  "note": "Walking along an elevated pedestrian skybridge towards Treasure Island before stepping onto a downward escalator."
+ },
+ {
+  "index": 37,
+  "startSeconds": 1110,
+  "durationSeconds": 30,
+  "speedKph": 4.9,
+  "inclinePercent": 0,
+  "confidence": 0.88,
+  "terrain": "flat",
+  "note": "The video shows a person stepping off an escalator and walking along a flat urban sidewalk at a steady walking pace."
+ },
+ {
+  "index": 38,
+  "startSeconds": 1140,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace along a flat pedestrian walkway and wooden boardwalk."
+ },
+ {
+  "index": 39,
+  "startSeconds": 1170,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace on a flat wooden boardwalk along the Las Vegas Strip."
+ },
+ {
+  "index": 40,
+  "startSeconds": 1200,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace on a flat city sidewalk towards an outdoor escalator."
+ },
+ {
+  "index": 41,
+  "startSeconds": 1230,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": 22,
+  "confidence": 0.85,
+  "terrain": "stairs",
+  "note": "The video shows a pedestrian climbing a set of outdoor stairs next to escalators before transitioning to a flat elevated pedestrian walkway."
+ },
+ {
+  "index": 42,
+  "startSeconds": 1260,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner/walker is moving at a steady walking pace along a flat paved pedestrian bridge and indoor corridor."
+ },
+ {
+  "index": 43,
+  "startSeconds": 1290,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The camera moves at a steady walking pace along a flat tiled covered walkway."
+ },
+ {
+  "index": 44,
+  "startSeconds": 1320,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 2.5,
+  "confidence": 0.8,
+  "terrain": "other",
+  "note": "Walking through an indoor resort corridor on flat tiled floor, transitioning to an inclined moving walkway (travelator)."
+ },
+ {
+  "index": 45,
+  "startSeconds": 1350,
+  "durationSeconds": 30,
+  "speedKph": 3.2,
+  "inclinePercent": 4,
+  "confidence": 0.7,
+  "terrain": "other",
+  "note": "The user is riding an inclined moving walkway (travelator) upward for the first two-thirds of the video before transitioning across a landing to a downward-moving walkway."
+ },
+ {
+  "index": 46,
+  "startSeconds": 1380,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The camera bearer walks past an inclined moving walkway onto a flat paved city sidewalk at a steady walking speed."
+ },
+ {
+  "index": 47,
+  "startSeconds": 1410,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat city sidewalk."
+ },
+ {
+  "index": 48,
+  "startSeconds": 1440,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady, normal pace along a flat city sidewalk in Las Vegas."
+ },
+ {
+  "index": 49,
+  "startSeconds": 1470,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace along a flat urban sidewalk on the Las Vegas Strip."
+ },
+ {
+  "index": 50,
+  "startSeconds": 1500,
+  "durationSeconds": 30,
+  "speedKph": 5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking along an outdoor paved pedestrian promenade on flat ground."
+ },
+ {
+  "index": 51,
+  "startSeconds": 1530,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The camera operator is walking along a flat urban sidewalk at a steady brisk walking pace of around 4.8 km/h."
+ },
+ {
+  "index": 52,
+  "startSeconds": 1560,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat paved city sidewalk."
+ },
+ {
+  "index": 53,
+  "startSeconds": 1590,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The camera operator is walking at a steady pace along a flat paved pedestrian sidewalk outside the Flamingo in Las Vegas."
+ },
+ {
+  "index": 54,
+  "startSeconds": 1620,
+  "durationSeconds": 30,
+  "speedKph": 4.7,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace on a flat paved sidewalk past a casino."
+ },
+ {
+  "index": 55,
+  "startSeconds": 1650,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat paved sidewalk past buildings."
+ },
+ {
+  "index": 56,
+  "startSeconds": 1680,
+  "durationSeconds": 30,
+  "speedKph": 3.8,
+  "inclinePercent": 18,
+  "confidence": 0.75,
+  "terrain": "stairs",
+  "note": "Walking towards, riding up an outdoor escalator, and walking along a pedestrian overpass bridge."
+ },
+ {
+  "index": 57,
+  "startSeconds": 1710,
+  "durationSeconds": 30,
+  "speedKph": 3.8,
+  "inclinePercent": -6,
+  "confidence": 0.75,
+  "terrain": "downhill",
+  "note": "Walking along an elevated pedestrian walkway before taking a downward escalator to street level."
+ },
+ {
+  "index": 58,
+  "startSeconds": 1740,
+  "durationSeconds": 30,
+  "speedKph": 4.7,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The camera moves at a steady walking pace along a flat, paved pedestrian plaza in Las Vegas."
+ },
+ {
+  "index": 59,
+  "startSeconds": 1770,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking along a flat urban sidewalk on the Las Vegas Strip at a steady walking pace."
+ },
+ {
+  "index": 60,
+  "startSeconds": 1800,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking along a flat urban sidewalk in Las Vegas at a steady, normal walking pace."
+ },
+ {
+  "index": 61,
+  "startSeconds": 1830,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The camera operator is walking at a steady, normal pace along a flat, paved urban sidewalk (Las Vegas Strip)."
+ },
+ {
+  "index": 62,
+  "startSeconds": 1860,
+  "durationSeconds": 30,
+  "speedKph": 5.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera operator is walking at a steady pace of around 5.2 km/h along a flat paved city sidewalk."
+ },
+ {
+  "index": 63,
+  "startSeconds": 1890,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera moves at a standard walking pace across a street crosswalk and along a level city sidewalk."
+ },
+ {
+  "index": 64,
+  "startSeconds": 1920,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat paved pedestrian sidewalk."
+ },
+ {
+  "index": 65,
+  "startSeconds": 1950,
+  "durationSeconds": 30,
+  "speedKph": 4.6,
+  "inclinePercent": 2,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat urban sidewalk before reaching outdoor stairs at the very end."
+ },
+ {
+  "index": 66,
+  "startSeconds": 1980,
+  "durationSeconds": 30,
+  "speedKph": 3.2,
+  "inclinePercent": 32,
+  "confidence": 0.85,
+  "terrain": "stairs",
+  "note": "The camera bearer is walking up a set of pedestrian overpass stairs with a short flat landing in between."
+ },
+ {
+  "index": 67,
+  "startSeconds": 2010,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking along a flat elevated pedestrian walkway in Las Vegas."
+ },
+ {
+  "index": 68,
+  "startSeconds": 2040,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "First-person perspective walking along a flat elevated pedestrian walkway and plaza."
+ },
+ {
+  "index": 69,
+  "startSeconds": 2070,
+  "durationSeconds": 30,
+  "speedKph": 4.2,
+  "inclinePercent": -5,
+  "confidence": 0.85,
+  "terrain": "stairs",
+  "note": "The video shows the walker descending a set of outdoor pedestrian stairs before continuing onto a flat paved sidewalk."
+ },
+ {
+  "index": 70,
+  "startSeconds": 2100,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking along a flat paved pedestrian plaza outside a shopping center."
+ },
+ {
+  "index": 71,
+  "startSeconds": 2130,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking along a flat, paved outdoor shopping promenade at a steady brisk pace."
+ },
+ {
+  "index": 72,
+  "startSeconds": 2160,
+  "durationSeconds": 30,
+  "speedKph": 3.8,
+  "inclinePercent": 15,
+  "confidence": 0.85,
+  "terrain": "stairs",
+  "note": "Walking along a flat pedestrian promenade before ascending a steep flight of outdoor stairs."
+ },
+ {
+  "index": 73,
+  "startSeconds": 2190,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner ascends a brief flight of stairs before walking at a steady pace along a flat pedestrian bridge."
+ },
+ {
+  "index": 74,
+  "startSeconds": 2220,
+  "durationSeconds": 30,
+  "speedKph": 4.3,
+  "inclinePercent": 0,
+  "confidence": 0.8,
+  "terrain": "flat",
+  "note": "The video shows walking across a flat plaza, descending an outdoor escalator, and continuing to walk on a flat urban sidewalk."
+ },
+ {
+  "index": 75,
+  "startSeconds": 2250,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat concrete sidewalk on the Las Vegas Strip."
+ },
+ {
+  "index": 76,
+  "startSeconds": 2280,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "road",
+  "note": "The video shows a steady walking pace on a flat paved sidewalk along the Las Vegas Strip."
+ },
+ {
+  "index": 77,
+  "startSeconds": 2310,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace along a flat paved pedestrian sidewalk in front of commercial buildings."
+ },
+ {
+  "index": 78,
+  "startSeconds": 2340,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking on a flat paved sidewalk in an urban setting near Las Vegas Strip."
+ },
+ {
+  "index": 79,
+  "startSeconds": 2370,
+  "durationSeconds": 30,
+  "speedKph": 5.2,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking pace along a flat paved pedestrian promenade."
+ },
+ {
+  "index": 80,
+  "startSeconds": 2400,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The video shows a steady walking pace along a flat, paved pedestrian street."
+ },
+ {
+  "index": 81,
+  "startSeconds": 2430,
+  "durationSeconds": 30,
+  "speedKph": 5.8,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking at a steady pace along a flat paved pedestrian promenade."
+ },
+ {
+  "index": 82,
+  "startSeconds": 2460,
+  "durationSeconds": 30,
+  "speedKph": 5.6,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a paved pedestrian sidewalk at a steady brisk pace on flat ground."
+ },
+ {
+  "index": 83,
+  "startSeconds": 2490,
+  "durationSeconds": 30,
+  "speedKph": 3.6,
+  "inclinePercent": 25,
+  "confidence": 0.85,
+  "terrain": "stairs",
+  "note": "The video starts on a flat pavement, climbs a steep flight of outdoor pedestrian bridge stairs, and finishes walking across the bridge deck."
+ },
+ {
+  "index": 84,
+  "startSeconds": 2520,
+  "durationSeconds": 30,
+  "speedKph": 4.6,
+  "inclinePercent": -2,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking along a flat pedestrian bridge before stepping onto a downward escalator."
+ },
+ {
+  "index": 85,
+  "startSeconds": 2550,
+  "durationSeconds": 30,
+  "speedKph": 4.5,
+  "inclinePercent": 0,
+  "confidence": 0.7,
+  "terrain": "stairs",
+  "note": "The user is walking down and up outdoor pedestrian bridge stairs before continuing onto a flat paved sidewalk at a standard walking pace."
+ },
+ {
+  "index": 86,
+  "startSeconds": 2580,
+  "durationSeconds": 30,
+  "speedKph": 5.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner is walking at a steady, brisk pace along a level, paved sidewalk in an urban environment."
+ },
+ {
+  "index": 87,
+  "startSeconds": 2610,
+  "durationSeconds": 30,
+  "speedKph": 5.4,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The camera moves at a steady walking pace along a flat, paved sidewalk."
+ },
+ {
+  "index": 88,
+  "startSeconds": 2640,
+  "durationSeconds": 30,
+  "speedKph": 10,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner maintains a consistent jogging pace on a flat paved sidewalk alongside a city street."
+ },
+ {
+  "index": 89,
+  "startSeconds": 2670,
+  "durationSeconds": 30,
+  "speedKph": 5.2,
+  "inclinePercent": 0,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "Walking along a flat city sidewalk towards an intersection."
+ },
+ {
+  "index": 90,
+  "startSeconds": 2700,
+  "durationSeconds": 30,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The camera operator is walking at a steady pace along a flat concrete sidewalk on the Las Vegas Strip."
+ },
+ {
+  "index": 91,
+  "startSeconds": 2730,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0.5,
+  "confidence": 0.9,
+  "terrain": "flat",
+  "note": "The runner maintains a steady jogging pace along a flat paved sidewalk outside the Luxor Hotel in Las Vegas."
+ },
+ {
+  "index": 92,
+  "startSeconds": 2760,
+  "durationSeconds": 30,
+  "speedKph": 9.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "The runner is moving at a steady pace along a flat paved sidewalk past the Luxor obelisk."
+ },
+ {
+  "index": 93,
+  "startSeconds": 2790,
+  "durationSeconds": 11,
+  "speedKph": 4.8,
+  "inclinePercent": 0,
+  "confidence": 0.85,
+  "terrain": "flat",
+  "note": "Walking at a steady pace on a flat paved pedestrian path near Mandalay Bay."
+ }
+]

@@ -48,8 +48,17 @@ fun LocalVideoPlayer(
     modifier: Modifier = Modifier,
     /** Bump to jump exactly to [positionMillis] now, even while paused (the editor's scrubbing). */
     seekRequest: Int = 0,
+    /** Playback speed. */
+    rate: Float = 1f,
+    /** Volume 0..100; 0 is muted. */
+    volume: Int = 100,
 ) {
     val holder = remember { VideoHolder() }
+    androidx.compose.runtime.LaunchedEffect(rate, volume) {
+        holder.rate = rate
+        holder.volume = volume
+        holder.applyAudioAndRate()
+    }
     androidx.compose.runtime.LaunchedEffect(seekRequest) {
         if (seekRequest > 0) holder.seekExactly(positionMillis())
     }
@@ -141,6 +150,18 @@ class VideoHolder {
     /** What the screen last asked for. */
     var wantPlaying: Boolean = false
 
+    /** Playback speed and volume (0..100) the screen asked for. */
+    var rate: Float = 1f
+    var volume: Int = 100
+
+    /** Apply volume always, and speed only while playing (setting a speed starts a paused player). */
+    fun applyAudioAndRate() {
+        val p = player ?: return
+        if (!ready) return
+        runCatching { p.setVolume(volume / 100f, volume / 100f) }
+        if (p.isPlaying) runCatching { p.playbackParams = p.playbackParams.setSpeed(rate) }
+    }
+
     /** The size of the picture, once the player has reported it. */
     var videoWidth: Int = 0
     var videoHeight: Int = 0
@@ -199,19 +220,25 @@ class VideoHolder {
         val viewHeight = view.height.toFloat()
         if (viewWidth <= 0f || viewHeight <= 0f) return
 
+        // A TextureView first stretches the picture to the view's own size, so the transform is
+        // relative to that, not to the video's pixels. Scaling by video pixels shrank a 4K picture
+        // into a corner (seen 2026-11-23).
         val scale = max(viewWidth / videoWidth, viewHeight / videoHeight)
         val matrix = Matrix()
-        matrix.setScale(scale, scale)
-        matrix.postTranslate(
-            (viewWidth - videoWidth * scale) / 2f,
-            (viewHeight - videoHeight * scale) / 2f,
+        matrix.setScale(
+            videoWidth * scale / viewWidth,
+            videoHeight * scale / viewHeight,
+            viewWidth / 2f,
+            viewHeight / 2f,
         )
         view.setTransform(matrix)
     }
 
     /** Start playing, if the file is ready. */
     fun play() {
-        if (ready) player?.start()
+        if (!ready) return
+        player?.start()
+        applyAudioAndRate()
     }
 
     /** Stop playing, if the file is ready. */

@@ -29,6 +29,12 @@ data class WorkoutStep(
 data class WorkoutProgram(
     val name: String,
     val steps: List<WorkoutStep>,
+    /**
+     * The walker's or runner's own average pace in the video, in km/h, when known (the AI analysis
+     * reads it). "Match my speed" plays the video at belt speed / this pace; without it, the
+     * workout's average speed is used.
+     */
+    val videoPaceKph: Double? = null,
 ) {
     /** The total running time of the program. */
     val totalDurationSeconds: Int get() = steps.sumOf { it.durationSeconds }
@@ -39,6 +45,27 @@ data class WorkoutProgram(
      * A program is rejected as a whole, not trimmed: silently dropping a step would run a
      * workout the user did not author. Constitution Article IV and Constraint 3.
      */
+    /**
+     * The program fitted to what this machine and the user's ceilings allow: each step's speed and
+     * incline are moved into range, so a workout made for another treadmill still starts here
+     * (user request, 2026-11-24: "the workout values should never stop a workout from starting").
+     * Nothing outside the range is ever sent, so the ceilings still hold.
+     */
+    fun fitTo(limits: SafetyLimits): WorkoutProgram {
+        val minSpeed = limits.machineMinSpeedKph ?: 0.0
+        val maxSpeed = limits.effectiveMaxSpeedKph
+        val minIncline = limits.machineMinInclinePercent ?: Double.NEGATIVE_INFINITY
+        val maxIncline = limits.effectiveMaxInclinePercent
+        return copy(
+            steps = steps.map { step ->
+                step.copy(
+                    speedKph = step.speedKph.coerceIn(minOf(minSpeed, maxSpeed), maxSpeed),
+                    inclinePercent = step.inclinePercent.coerceIn(minOf(minIncline, maxIncline), maxIncline),
+                )
+            },
+        )
+    }
+
     fun validate(limits: SafetyLimits): ProgramValidation {
         val problems = mutableListOf<ProgramProblem>()
 

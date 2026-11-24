@@ -1,0 +1,19 @@
+{
+ "landmarks": [
+  {
+   "seconds": 5,
+   "name": "Lake Wānaka",
+   "fact": "Lake Wānaka is New Zealand's fourth-largest lake, known for its crystal-clear glacial waters and scenic mountain backdrop."
+  },
+  {
+   "seconds": 40,
+   "name": "Roys Peak",
+   "fact": "Roys Peak stands at 1,578 meters altitude between Wanaka and Glendhu Bay in the South Island."
+  },
+  {
+   "seconds": 590,
+   "name": "Roys Peak Lookout",
+   "fact": "Roys Peak Lookout is a famous vantage point offering breathtaking 360-degree views of Lake Wānaka and surrounding peaks."
+  }
+ ]
+}

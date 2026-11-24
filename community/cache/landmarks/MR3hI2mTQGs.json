@@ -1,0 +1,39 @@
+{
+ "landmarks": [
+  {
+   "seconds": 160,
+   "name": "Lady Bird Lake",
+   "fact": "Named after First Lady Lady Bird Johnson, this reservoir on the Colorado River is a central recreation hub in Austin."
+  },
+  {
+   "seconds": 525,
+   "name": "Boardwalk at Lady Bird Lake",
+   "fact": "This boardwalk section of the Ann and Roy Butler Trail stretches over water, connecting gaps along the lake's southern shore."
+  },
+  {
+   "seconds": 840,
+   "name": "Ann W. Richards Congress Avenue Bridge",
+   "fact": "Famous for housing the world's largest urban bat colony, millions of Mexican free-tailed bats emerge from beneath it at sunset."
+  },
+  {
+   "seconds": 990,
+   "name": "Auditorium Shores at Town Lake Metropolitan Park",
+   "fact": "Auditorium Shores is an iconic urban park along Lady Bird Lake that hosts outdoor concerts, festivals, and community gatherings."
+  },
+  {
+   "seconds": 1335,
+   "name": "The Independent",
+   "fact": "Nicknamed the 'Jenga Tower' due to its offset architecture, this 58-story skyscraper is a distinct feature of Austin's skyline."
+  },
+  {
+   "seconds": 1390,
+   "name": "James D. Pfluger Pedestrian Bridge",
+   "fact": "A dedicated pedestrian and bicycle bridge crossing Lady Bird Lake, offering panoramic views of downtown Austin."
+  },
+  {
+   "seconds": 2048,
+   "name": "Mexic-Arte Museum",
+   "fact": "Located on Congress Avenue, this museum celebrates Mexican, Latino, and Latin American art and culture through exhibitions and educational programs."
+  }
+ ]
+}

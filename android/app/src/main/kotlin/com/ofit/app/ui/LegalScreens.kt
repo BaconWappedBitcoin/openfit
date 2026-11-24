@@ -1,5 +1,15 @@
 package com.ofit.app.ui
 
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
+
+import androidx.compose.material.icons.filled.Code
+
+import androidx.compose.foundation.layout.width
+
+import androidx.compose.foundation.layout.size
+
+import androidx.compose.foundation.clickable
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -117,19 +127,20 @@ fun LegalScreen(versionName: String, onBack: () -> Unit) {
             .padding(16.dp)
             .verticalScroll(rememberScrollState()),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            MenuButton()
-            OutlinedButton(onClick = onBack) { Text("Back") }
-            Text("About & legal", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-        }
+        com.ofit.app.ui.ScreenHeader("About & legal", "Version, licence and safety", onBack = onBack)
         Spacer(Modifier.height(12.dp))
-        Text("OpenFit $versionName · free software under the GNU GPL v3", style = MaterialTheme.typography.titleMedium)
-        Text(
-            "Source, licence and the full disclaimer: github.com/BaconWappedBitcoin/openfit",
-            style = MaterialTheme.typography.bodySmall,
-        )
+        AboutCard(versionName)
+        DonateCard()
         Spacer(Modifier.height(16.dp))
         Column(Modifier.widthIn(max = 1000.dp)) { LegalSections() }
+        Spacer(Modifier.height(16.dp))
+        Text("No ads", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text(
+            "OpenFit never shows ads. YouTube's own player may show YouTube's ads on some videos; OpenFit can't " +
+                "remove those under YouTube's terms, but they can never change your workout: while the video is stopped " +
+                "for an ad, the workout holds at its current speed and incline. For no ads at all, use a video file on the tablet or no video.",
+            style = MaterialTheme.typography.bodyMedium,
+        )
         Spacer(Modifier.height(16.dp))
         Text(
             "Credits: protocol knowledge from public projects including DavisGoglin/treadmill, ianchi/ifit, " +
@@ -153,6 +164,143 @@ private fun LegalSections() {
                 Text(title, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.height(4.dp))
                 Text(body, style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+    }
+}
+
+/** Where OpenFit's source lives. */
+const val GITHUB_URL = "https://github.com/BaconWappedBitcoin/openfit"
+
+/** Donation addresses (user request 2026-11-24); also in README.md. */
+const val DONATE_BITCOIN = "bc1qh82ncrxc0pjszjugmk29gpyswnd0cfsklwr800"
+const val DONATE_ETHEREUM = "0x16979A3283Ff840C2dD12Ea30d0e40a9508f81DA"
+
+/** Support OpenFit: the Bitcoin and Ethereum addresses, each to copy or to open in a wallet app. */
+@Composable
+private fun DonateCard() {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val clipboard = androidx.compose.ui.platform.LocalClipboardManager.current
+    Column(
+        Modifier
+            .widthIn(max = 1000.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(Color(0xFF1A1A1A))
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        Text("Support OpenFit", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Text(
+            "OpenFit is free and has no ads. If it helps your training, a donation keeps it going.",
+            style = MaterialTheme.typography.bodyLarge,
+            color = Color(0xCCFFFFFF),
+        )
+        listOf(
+            Triple("Bitcoin", DONATE_BITCOIN, "bitcoin:$DONATE_BITCOIN"),
+            Triple("Ethereum", DONATE_ETHEREUM, "ethereum:$DONATE_ETHEREUM"),
+        ).forEach { (coin, address, uri) ->
+            androidx.compose.foundation.layout.Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(Modifier.weight(1f)) {
+                    Text(coin, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        address,
+                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color(0xCCFFFFFF),
+                    )
+                }
+                androidx.compose.material3.OutlinedButton(onClick = {
+                    clipboard.setText(androidx.compose.ui.text.AnnotatedString(address))
+                    android.widget.Toast.makeText(context, "$coin address copied", android.widget.Toast.LENGTH_SHORT).show()
+                }) { Text("Copy") }
+                androidx.compose.material3.OutlinedButton(onClick = {
+                    val opened = runCatching {
+                        context.startActivity(
+                            android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(uri))
+                                .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+                        )
+                    }.isSuccess
+                    if (!opened) android.widget.Toast.makeText(context, "No $coin wallet app found; copy the address instead.", android.widget.Toast.LENGTH_LONG).show()
+                }) { Text("Open wallet") }
+            }
+        }
+    }
+}
+
+/** About: what OpenFit is, its version and licence, and links to the source on GitHub. */
+@Composable
+private fun AboutCard(versionName: String) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val accent = MaterialTheme.colorScheme.primary
+    fun open(url: String) {
+        runCatching {
+            context.startActivity(
+                android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url))
+                    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+            )
+        }
+    }
+    androidx.compose.foundation.layout.Row(
+        Modifier
+            .widthIn(max = 1000.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(
+                androidx.compose.ui.graphics.Brush.linearGradient(
+                    listOf(accent.copy(alpha = 0.35f), Color(0xFF1A1A1A)),
+                ),
+            )
+            .padding(28.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(24.dp),
+    ) {
+        androidx.compose.foundation.layout.Box(
+            Modifier
+                .size(96.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .background(accent),
+            contentAlignment = Alignment.Center,
+        ) {
+            androidx.compose.material3.Icon(
+                androidx.compose.material.icons.Icons.AutoMirrored.Filled.DirectionsRun,
+                contentDescription = null,
+                tint = Color(0xFF0D0D0D),
+                modifier = Modifier.size(56.dp),
+            )
+        }
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text("OpenFit", fontSize = 34.sp, fontWeight = FontWeight.Bold)
+            Text(
+                "Open treadmill control: run your treadmill from your own workouts and videos. " +
+                    "Version $versionName · free software under the GNU GPL v3.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color(0xCCFFFFFF),
+            )
+            Text(GITHUB_URL.removePrefix("https://"), style = MaterialTheme.typography.bodyMedium, color = accent)
+            Spacer(Modifier.height(6.dp))
+            androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                androidx.compose.foundation.layout.Row(
+                    Modifier
+                        .height(52.dp)
+                        .clip(RoundedCornerShape(26.dp))
+                        .background(Color(0xFFF5F7F8))
+                        .clickable { open(GITHUB_URL) }
+                        .padding(horizontal = 24.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    androidx.compose.material3.Icon(
+                        androidx.compose.material.icons.Icons.Filled.Code,
+                        contentDescription = null,
+                        tint = Color(0xFF0D0D0D),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text("View on GitHub", color = Color(0xFF0D0D0D), fontWeight = FontWeight.Bold)
+                }
+                androidx.compose.material3.OutlinedButton(
+                    onClick = { open("$GITHUB_URL/issues") },
+                    modifier = Modifier.height(52.dp),
+                ) { Text("Report a problem") }
             }
         }
     }

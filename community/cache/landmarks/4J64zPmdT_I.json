@@ -1,0 +1,34 @@
+{
+ "landmarks": [
+  {
+   "seconds": 58,
+   "name": "Tokyo Tower",
+   "fact": "Completed in 1958, Tokyo Tower is a communications tower inspired by the Eiffel Tower in Paris."
+  },
+  {
+   "seconds": 250,
+   "name": "Zojoji Temple",
+   "fact": "Zojoji is a major Buddhist temple serving as the main family temple of the Tokugawa shogunate."
+  },
+  {
+   "seconds": 1238,
+   "name": "Tokyo Station",
+   "fact": "Opened in 1914, Tokyo Station features an iconic restored red-brick facade on its Marunouchi side."
+  },
+  {
+   "seconds": 2205,
+   "name": "Sumida River",
+   "fact": "The Sumida River flows through Tokyo and is famous for its scenic riverside walkways and cherry blossoms."
+  },
+  {
+   "seconds": 2748,
+   "name": "Asahi Beer Hall",
+   "fact": "Designed by Philippe Starck, this building features an iconic golden flame sculpture on its rooftop."
+  },
+  {
+   "seconds": 3028,
+   "name": "Tokyo Skytree",
+   "fact": "Standing at 634 meters, Tokyo Skytree is the tallest structure in Japan and a primary television broadcast tower."
+  }
+ ]
+}

@@ -1,0 +1,19 @@
+{
+ "landmarks": [
+  {
+   "seconds": 1505,
+   "name": "Rifugio Nuvolau",
+   "fact": "Perched high on Mount Nuvolau, this historic alpine refuge built in 1883 offers breathtaking 360-degree views of the Dolomites."
+  },
+  {
+   "seconds": 1660,
+   "name": "Cinque Torri",
+   "fact": "A striking rock formation of five towers near Cortina d'Ampezzo, famous for rock climbing and World War I historical trails."
+  },
+  {
+   "seconds": 2240,
+   "name": "Rifugio Scoiattoli",
+   "fact": "A popular mountain hut situated opposite Cinque Torri, providing scenic outdoor dining and access to ski slopes and hiking routes."
+  }
+ ]
+}

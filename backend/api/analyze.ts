@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { allow, cacheAnalysis, cachedAnalysis } from "../lib/store.js";
-import { clientIp, env, fail, method, readBody, serverError, userGeminiKey } from "../lib/http.js";
+import { clientIp, env, fail, isAdmin, method, readBody, serverError, userGeminiKey } from "../lib/http.js";
 import { VIDEO_ID, videoDetails } from "../lib/youtube.js";
 import { analyseVideo } from "../lib/gemini.js";
 import { buildProgram } from "../lib/build.js";
@@ -8,7 +8,6 @@ import { sanitize, tidyTitle, totalSeconds } from "../lib/program.js";
 
 const MIN_SECONDS = 120;
 const MAX_SECONDS = 3600;
-const DAILY_CAP = 200; // analyses across everyone, a ceiling on what Gemini can cost
 
 // POST { videoId }  ->  { program, videoId, durationSeconds, confidence, note }
 //
@@ -36,11 +35,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     let readings = await cachedAnalysis(videoId);
     if (!readings) {
-      // Only an uncached analysis costs money, so only that is limited.
-      if (!(await allow("analyze", clientIp(req), ownKey ? 30 : 5, 3600))) return fail(res, 429, "too many analyses, try again later");
-      if (!ownKey && !(await allow("analyze-day", "all", DAILY_CAP, 86400))) {
-        return fail(res, 429, "the daily analysis limit is used up; add your own Gemini key in OpenFit to keep going");
+      // A new video is read only on the runner's own Gemini key (user decision 2026-11-24: no AI
+      // on the project's key for the public, and no paid plan for now). Videos already read are
+      // free for everyone. The owner's batch jobs (admin) use the server's key.
+      const admin = isAdmin(req);
+      if (!admin && !ownKey) {
+        return fail(res, 403, "Making a workout from a new video needs your own free Gemini key: add it in OpenFit under Keys & services. Videos others have already made are free.");
       }
+      if (!admin && !(await allow("analyze", clientIp(req), 30, 3600))) return fail(res, 429, "too many analyses, try again later");
       readings = await analyseVideo(
         ownKey ?? env("GEMINI_API_KEY"),
         process.env.GEMINI_MODEL ?? "gemini-3.5-flash",
@@ -59,6 +61,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       durationSeconds: info.durationSeconds,
       programSeconds: totalSeconds(program),
       confidence: Math.round(confidence * 100) / 100,
+      // The model's readings per window, so a copy of the community data (community/cache/analysis)
+      // lets the app rebuild the workout without a server.
+      readings,
       note: "Speed and incline are estimates by a video model, not measurements.",
     });
   } catch (e) {

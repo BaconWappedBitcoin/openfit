@@ -1,0 +1,14 @@
+{
+ "landmarks": [
+  {
+   "seconds": 5,
+   "name": "The Neck Lookout",
+   "fact": "This elevated wooden lookout offers breathtaking 360-degree views of the narrow isthmus connecting North and South Bruny Island."
+  },
+  {
+   "seconds": 145,
+   "name": "Neck Beach",
+   "fact": "A pristine stretch of golden sand along the isthmus that hosts little penguin and short-tailed shearwater nesting colonies."
+  }
+ ]
+}
