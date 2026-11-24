@@ -22,17 +22,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const videoId = String(body.videoId ?? "");
   if (!VIDEO_ID.test(videoId)) return fail(res, 400, "videoId must be an 11 character YouTube id");
 
+  // Bring your own key: the user's Gemini account pays, so the server's daily cap does not apply.
+  // A header that is present but malformed is refused before anything else is called.
+  const ownKey = userGeminiKey(req);
+  if (req.headers["x-gemini-key"] && !ownKey) return fail(res, 400, "that does not look like a Gemini API key");
+
   try {
     const [info] = await videoDetails([videoId], env("YOUTUBE_API_KEY"));
     if (!info) return fail(res, 404, "video not found, or it is private");
     if (!info.embeddable) return fail(res, 422, "this video cannot be played in other apps");
     if (info.durationSeconds < MIN_SECONDS) return fail(res, 422, "video is too short to make a workout");
     if (info.durationSeconds > MAX_SECONDS) return fail(res, 422, "video is longer than 60 minutes");
-
-    // Bring your own key: the user's Gemini account pays, so the server's daily cap does not apply.
-    // A header that is present but malformed is refused rather than silently using the server key.
-    const ownKey = userGeminiKey(req);
-    if (req.headers["x-gemini-key"] && !ownKey) return fail(res, 400, "that does not look like a Gemini API key");
 
     let readings = await cachedAnalysis(videoId);
     if (!readings) {
