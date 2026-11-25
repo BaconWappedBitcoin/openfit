@@ -16,6 +16,13 @@ export interface Program {
    * the app's "Match my speed" plays the video at belt speed / this pace.
    */
   videoPaceKph?: number;
+  /**
+   * The suggested start and end of the run in the video, in seconds from the video's start: the
+   * intro is before introEndSeconds and the outro after outroStartSeconds. The steps still cover
+   * the whole video; the app skips to these when "Skip intro and outro" is on.
+   */
+  introEndSeconds?: number;
+  outroStartSeconds?: number;
 }
 
 export const LIMITS = {
@@ -60,12 +67,32 @@ export function sanitize(input: unknown): Program {
     };
   });
   if (total > LIMITS.maxTotalSeconds) throw new ProgramError("programme is too long");
+  const out: Program = { name, steps };
   // The video's own pace, when given: kept only if it is a plausible walking or running speed.
   const pace = (raw as { videoPaceKph?: unknown }).videoPaceKph;
   if (typeof pace === "number" && Number.isFinite(pace) && pace >= 0.5 && pace <= 30) {
-    return { name, steps, videoPaceKph: Math.round(pace * 100) / 100 };
+    out.videoPaceKph = Math.round(pace * 100) / 100;
   }
-  return { name, steps };
+  // The suggested start and end, when given: whole seconds inside the programme, start before end.
+  Object.assign(out, cleanBounds(raw as { introEndSeconds?: unknown; outroStartSeconds?: unknown }, total));
+  return out;
+}
+
+/** Keep a suggested start and end only when they make sense for a programme [total] seconds long. */
+export function cleanBounds(
+  raw: { introEndSeconds?: unknown; outroStartSeconds?: unknown },
+  total: number,
+): { introEndSeconds?: number; outroStartSeconds?: number } {
+  const whole = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? Math.round(v) : undefined);
+  let intro = whole(raw.introEndSeconds);
+  let outro = whole(raw.outroStartSeconds);
+  if (intro !== undefined && !(intro > 0 && intro < total)) intro = undefined;
+  if (outro !== undefined && !(outro > 0 && outro < total)) outro = undefined;
+  if (intro !== undefined && outro !== undefined && outro - intro < 60) return {};
+  const out: { introEndSeconds?: number; outroStartSeconds?: number } = {};
+  if (intro !== undefined) out.introEndSeconds = intro;
+  if (outro !== undefined) out.outroStartSeconds = outro;
+  return out;
 }
 
 export function totalSeconds(p: Program): number {

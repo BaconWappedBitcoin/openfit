@@ -79,6 +79,12 @@ fun CoachOverlay(
     scale: Float = 1f,
     /** Outfit, colours, skin and hair, from the coach designer. */
     look: CoachLook = CoachLook(),
+    /** Show what the coach says in a speech bubble (separate from [speaks]). */
+    captions: Boolean = true,
+    /** The spoken voice's volume, 0..1 against the media volume. */
+    voiceVolume: Float = 1f,
+    /** The coach's name and voice, from the coach designer. */
+    persona: CoachPersona = CoachPersona(),
 ) {
     if (choice == CoachChoice.OFF) return
     val units = com.ofit.app.settings.LocalUnits.current
@@ -91,7 +97,10 @@ fun CoachOverlay(
     }
     talk.referenceKph = referenceKph
     // The spoken voice, matching the coach; let go when the coach or the screen goes away.
-    val voice = remember(choice, speaks) { if (speaks) CoachVoice(context, male = choice == CoachChoice.MALE) else null }
+    val voice = remember(choice, speaks, persona.voice) {
+        if (speaks) CoachVoice(context, male = choice == CoachChoice.MALE, voiceName = persona.voice) else null
+    }
+    voice?.volume = voiceVolume
     DisposableEffect(voice) { onDispose { voice?.shutdown() } }
     val currentVoice by rememberUpdatedState(voice)
     // Facts about the place in the video, from the AI, kept on the tablet once fetched.
@@ -140,39 +149,33 @@ fun CoachOverlay(
     val currentSpeed by rememberUpdatedState(speedKph)
     val currentPace by rememberUpdatedState(pace)
 
-    // Talk: checked once a second; a line stays up for 7 s.
+    // Talk: checked once a second; a line stays up long enough to read (about 6 s, longer for long lines).
     LaunchedEffect(choice) {
         talk.reset()
         var shownAt = 0L
+        var showFor = 0L
         while (true) {
             val now = System.currentTimeMillis()
             talk.update(currentSnapshot, now)?.let { said ->
                 line = said
                 shownAt = now
+                showFor = bubbleMillis(said)
                 Log.i(TAG, "says: $said")
                 currentVoice?.say(said)
             }
-            if (line != null && now - shownAt > 9_000) line = null
+            if (line != null && now - shownAt > showFor) line = null
             delay(1_000)
         }
     }
 
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(Modifier.size(width = 340.dp, height = 96.dp), contentAlignment = Alignment.BottomCenter) {
-            if (line != null) {
-                Text(
-                    line ?: "",
-                    color = Color.White,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier
-                        .widthIn(max = 340.dp)
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(Color(0xD90D0D0D))
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
-                )
-            }
+        // The speech bubble sits above the coach and grows with the line, so nothing is cut off
+        // (user report 2026-11-24); the coach's feet stay where they are.
+        val said = line
+        if (captions && said != null) {
+            SpeechBubble(name = persona.name, text = said)
         }
+        androidx.compose.foundation.layout.Spacer(Modifier.size(4.dp))
         CoachFigure(
             choice = choice,
             look = look,
@@ -184,8 +187,48 @@ fun CoachOverlay(
     }
 }
 
+/** How long a line stays on screen: 6 s, plus about a third of a second a word past 15 words, up to 16 s. */
+internal fun bubbleMillis(line: String): Long {
+    val words = line.split(Regex("\\s+")).count { it.isNotBlank() }
+    return (6_000L + (words - 15).coerceAtLeast(0) * 330L).coerceAtMost(16_000L)
+}
+
+/** A comic-style speech bubble with the coach's name, its tail pointing down at the coach. */
+@Composable
+fun SpeechBubble(name: String, text: String, modifier: Modifier = Modifier) {
+    val fill = Color(0xF2FFFFFF)
+    Column(modifier.widthIn(max = 420.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            Modifier
+                .clip(RoundedCornerShape(22.dp))
+                .background(fill)
+                .padding(horizontal = 18.dp, vertical = 12.dp),
+        ) {
+            Text(
+                name,
+                color = androidx.compose.material3.MaterialTheme.colorScheme.primary.let { if (it.luminance() > 0.6f) Color(0xFF4A3A8C) else it },
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(text, color = Color(0xFF151515), fontSize = 18.sp, fontWeight = FontWeight.Medium, lineHeight = 24.sp)
+        }
+        // The tail.
+        androidx.compose.foundation.Canvas(Modifier.size(width = 28.dp, height = 14.dp)) {
+            val path = androidx.compose.ui.graphics.Path().apply {
+                moveTo(0f, 0f)
+                lineTo(size.width, 0f)
+                lineTo(size.width * 0.5f, size.height)
+                close()
+            }
+            drawPath(path, fill)
+        }
+    }
+}
+
+private fun Color.luminance(): Float = 0.2126f * red + 0.7152f * green + 0.0722f * blue
+
 /**
- * The 3D coach on its own: a WebView with the coach page, dressed in [look], told the speed, whether
+ * The 3D coach on its own:a WebView with the coach page, dressed in [look], told the speed, whether
  * to run, and the stride pace twice a second. Used over the workout video and in the coach designer.
  * Keyed on the coach and the look, so a change shows at once.
  */

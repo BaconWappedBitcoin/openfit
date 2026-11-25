@@ -7,7 +7,8 @@
   "inclinePercent": 1,
   "confidence": 0.85,
   "terrain": "trail",
-  "note": "The video shows a first-person perspective walk along a snow-covered forest trail at a steady walking cadence."
+  "note": "The video shows a first-person perspective walk along a snow-covered forest trail at a steady walking cadence.",
+  "part": "running"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 1,
   "confidence": 0.85,
   "terrain": "trail",
-  "note": "Walking on a snow-covered boardwalk trail through a forest at a steady pace."
+  "note": "Walking on a snow-covered boardwalk trail through a forest at a steady pace.",
+  "part": "running"
  },
  {
   "index": 2,

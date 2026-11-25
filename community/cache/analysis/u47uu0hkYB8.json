@@ -7,7 +7,8 @@
   "inclinePercent": 0,
   "confidence": 0.85,
   "terrain": "road",
-  "note": "The runner is jogging at a steady pace along a flat city sidewalk."
+  "note": "The runner is jogging at a steady pace along a flat city sidewalk.",
+  "part": "running"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 4,
   "confidence": 0.85,
   "terrain": "stairs",
-  "note": "Walking across a street crosswalk at normal walking speed before climbing a flight of outdoor stairs."
+  "note": "Walking across a street crosswalk at normal walking speed before climbing a flight of outdoor stairs.",
+  "part": "running"
  },
  {
   "index": 2,

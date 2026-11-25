@@ -27,6 +27,8 @@ object WorkoutCodec {
         text.append("{\n")
         text.append("  \"name\": ").append(quote(program.name)).append(",\n")
         program.videoPaceKph?.let { text.append("  \"videoPaceKph\": ").append(number(it)).append(",\n") }
+        program.introEndSeconds?.let { text.append("  \"introEndSeconds\": ").append(it).append(",\n") }
+        program.outroStartSeconds?.let { text.append("  \"outroStartSeconds\": ").append(it).append(",\n") }
         if (program.steps.isEmpty()) {
             text.append("  \"steps\": []\n")
         } else {
@@ -82,7 +84,9 @@ object WorkoutCodec {
         }
 
         val pace = (fields["videoPaceKph"] as? Number)?.toDouble()?.takeIf { it.isFinite() && it in 0.5..30.0 }
+        fun whole(key: String) = (fields[key] as? Number)?.toDouble()?.takeIf { it.isFinite() }?.let { Math.round(it).toInt() }
         return WorkoutProgram(name = name, steps = steps, videoPaceKph = pace)
+            .withBounds(whole("introEndSeconds"), whole("outroStartSeconds"))
     }
 
     /** Read a number out of a step, or explain why it cannot. */

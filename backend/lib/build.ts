@@ -13,6 +13,8 @@ export interface WindowReading {
   confidence: number;
   terrain: string;
   note: string;
+  /** What the window mostly is: the run itself, or an intro or outro around it. */
+  part?: "intro" | "running" | "outro";
 }
 
 const median = (xs: number[]) => {
@@ -133,10 +135,47 @@ export function buildProgram(
 
   // The video's own pace: the time-weighted average of what was read, before limits and rounding,
   // so the app can play the video at belt speed / this pace ("Match my speed").
-  const timed = readings.filter((r) => r.speedKph !== null && r.durationSeconds > 0);
+  // The intro and outro are left out of it: standing at a title card is not the runner's pace.
+  const bounds = videoBounds(readings);
+  const inRun = (r: WindowReading) =>
+    (bounds.introEndSeconds === undefined || r.startSeconds >= bounds.introEndSeconds) &&
+    (bounds.outroStartSeconds === undefined || r.startSeconds < bounds.outroStartSeconds);
+  const timedAll = readings.filter((r) => r.speedKph !== null && r.durationSeconds > 0);
+  const timed = timedAll.filter(inRun).length ? timedAll.filter(inRun) : timedAll;
   const seconds = timed.reduce((n, r) => n + r.durationSeconds, 0);
   const videoPaceKph = seconds > 0 ? timed.reduce((n, r) => n + (r.speedKph as number) * r.durationSeconds, 0) / seconds : fallbackSpeed;
-  return { name, steps, videoPaceKph: Math.round(videoPaceKph * 100) / 100 };
+  return { name, steps, videoPaceKph: Math.round(videoPaceKph * 100) / 100, ...bounds };
+}
+
+/**
+ * The suggested start and end of the run in the video (user request 2026-11-24): the end of the
+ * windows read as intro at the start, and the start of those read as outro at the end. Nothing is
+ * cut from the workout; the app jumps to the start and ends at the end when "Skip intro and
+ * outro" is on. An intro over 40 % of the video, an outro starting before 60 %, or less than a
+ * minute of run left between them is not believed.
+ */
+export function videoBounds(readings: WindowReading[]): { introEndSeconds?: number; outroStartSeconds?: number } {
+  const sorted = [...readings].sort((a, b) => a.startSeconds - b.startSeconds);
+  if (sorted.length < 3) return {};
+  const last = sorted[sorted.length - 1];
+  const total = last.startSeconds + last.durationSeconds;
+  let intro = 0;
+  for (const r of sorted) {
+    if (r.part !== "intro") break;
+    intro = r.startSeconds + r.durationSeconds;
+  }
+  let outro = total;
+  for (let i = sorted.length - 1; i >= 0; i--) {
+    if (sorted[i].part !== "outro") break;
+    outro = sorted[i].startSeconds;
+  }
+  const introOk = intro > 0 && intro <= total * 0.4;
+  const outroOk = outro < total && outro >= total * 0.6;
+  if ((outroOk ? outro : total) - (introOk ? intro : 0) < 60) return {};
+  const out: { introEndSeconds?: number; outroStartSeconds?: number } = {};
+  if (introOk) out.introEndSeconds = intro;
+  if (outroOk) out.outroStartSeconds = outro;
+  return out;
 }
 
 /** Round to what the machine takes, then merge neighbours that are close enough. */

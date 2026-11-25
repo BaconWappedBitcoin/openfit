@@ -7,7 +7,8 @@
   "inclinePercent": -1,
   "confidence": 0.75,
   "terrain": "trail",
-  "note": "The video starts with scenic aerial footage before transitioning at 00:20 to a first-person perspective walking along the paved Pa'rus Trail in Zion National Park at a steady walking pace on a gentle downhill gradient."
+  "note": "The video starts with scenic aerial footage before transitioning at 00:20 to a first-person perspective walking along the paved Pa'rus Trail in Zion National Park at a steady walking pace on a gentle downhill gradient.",
+  "part": "intro"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": -2,
   "confidence": 0.85,
   "terrain": "trail",
-  "note": "Walking along a paved park trail with a slight downhill incline toward a bridge."
+  "note": "Walking along a paved park trail with a slight downhill incline toward a bridge.",
+  "part": "running"
  },
  {
   "index": 2,

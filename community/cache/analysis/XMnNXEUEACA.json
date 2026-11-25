@@ -7,7 +7,8 @@
   "inclinePercent": 10,
   "confidence": 0.6,
   "terrain": "trail",
-  "note": "Intro montage transitioning to a steady uphill trail run along the Roys Peak ridge."
+  "note": "Intro montage transitioning to a steady uphill trail run along the Roys Peak ridge.",
+  "part": "intro"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 11,
   "confidence": 0.7,
   "terrain": "trail",
-  "note": "Intro contains scenic cuts before settling into an uphill trail run around 00:50. Speed estimated from footfall cadence on an uphill dirt path."
+  "note": "Intro contains scenic cuts before settling into an uphill trail run around 00:50. Speed estimated from footfall cadence on an uphill dirt path.",
+  "part": "intro"
  },
  {
   "index": 2,

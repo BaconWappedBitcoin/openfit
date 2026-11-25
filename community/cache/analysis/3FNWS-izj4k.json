@@ -7,7 +7,8 @@
   "inclinePercent": 0,
   "confidence": 0.5,
   "terrain": "road",
-  "note": "Intro montage featuring various scenes of running and walking along flat paved paths, riverwalks, and city sidewalks in Chicago."
+  "note": "Intro montage featuring various scenes of running and walking along flat paved paths, riverwalks, and city sidewalks in Chicago.",
+  "part": "intro"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 0,
   "confidence": 0.88,
   "terrain": "flat",
-  "note": "The camera moves at a steady brisk walking pace along a flat concrete riverwalk."
+  "note": "The camera moves at a steady brisk walking pace along a flat concrete riverwalk.",
+  "part": "running"
  },
  {
   "index": 2,

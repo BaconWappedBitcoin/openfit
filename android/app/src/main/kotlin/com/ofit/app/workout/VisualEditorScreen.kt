@@ -80,6 +80,8 @@ fun VisualEditorScreen(
     onSave: (WorkoutProgram, String?, String?) -> Unit,
     onBack: () -> Unit,
     initialVideoFile: String? = null,
+    /** The saved program, for its video pace and suggested start and end (kept on save). */
+    initialProgram: WorkoutProgram? = null,
 ) {
     val units = LocalUnits.current
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -106,6 +108,9 @@ fun VisualEditorScreen(
     var positionMillis by remember { mutableIntStateOf(0) }
     var playing by remember { mutableStateOf(false) }
     var seekRequest by remember { mutableIntStateOf(0) }
+    // Where the run starts and ends in the video (user request 2026-11-24): set from the playhead.
+    var introEnd by remember { mutableStateOf(initialProgram?.introEndSeconds) }
+    var outroStart by remember { mutableStateOf(initialProgram?.outroStartSeconds) }
 
     val total = steps.sumOf { it.durationSeconds }.coerceAtLeast(1)
     fun commit(next: List<WorkoutStep>) {
@@ -156,7 +161,11 @@ fun VisualEditorScreen(
             OutlinedButton(onClick = { undo.removeLastOrNull()?.let { steps.clear(); steps.addAll(it) } }, enabled = undo.isNotEmpty()) {
                 Text("Undo")
             }
-            Button(onClick = { onSave(WorkoutProgram(name.trim().ifBlank { "My workout" }, steps.toList()), youtube, videoFile) }) {
+            Button(onClick = {
+                val program = WorkoutProgram(name.trim().ifBlank { "My workout" }, steps.toList(), videoPaceKph = initialProgram?.videoPaceKph)
+                    .withBounds(introEnd, outroStart)
+                onSave(program, youtube, videoFile)
+            }) {
                 Text("Save", fontWeight = FontWeight.Bold)
             }
         }
@@ -207,6 +216,32 @@ fun VisualEditorScreen(
                         Text(if (videoFile != null) "Change video file" else "Video file…")
                     }
                 }
+                // The run's start and end in the video: the intro and outro are skipped by default
+                // when the workout runs ("Skip intro and outro" in the workout's video menu).
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val here = positionMillis / 1000
+                    Text("Run starts", style = MaterialTheme.typography.labelLarge)
+                    OutlinedButton(onClick = { introEnd = here.takeIf { it > 0 } }) {
+                        Text(introEnd?.let { formatClock(it) } ?: "at 0:00")
+                    }
+                    if (introEnd != null) {
+                        androidx.compose.material3.TextButton(onClick = { introEnd = null }) { Text("Clear") }
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    Text("Run ends", style = MaterialTheme.typography.labelLarge)
+                    OutlinedButton(onClick = { outroStart = here.takeIf { it in 1 until total } }) {
+                        Text(outroStart?.let { formatClock(it) } ?: "at the end")
+                    }
+                    if (outroStart != null) {
+                        androidx.compose.material3.TextButton(onClick = { outroStart = null }) { Text("Clear") }
+                    }
+                }
+                Text(
+                    "Move the playhead to where the run starts or ends and tap the button to set it there. " +
+                        "Intros and outros are skipped when the workout runs, unless you turn that off.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0x99FFFFFF),
+                )
             }
 
             // The selected step.

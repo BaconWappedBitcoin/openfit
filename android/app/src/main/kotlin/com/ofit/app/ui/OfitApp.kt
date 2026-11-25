@@ -447,6 +447,7 @@ fun OfitApp(
                             name = saved.program.name,
                             steps = saved.program.steps,
                             videoId = controller.workouts.youtubeIdFor(saved.id),
+                            program = saved.program,
                         ),
                     )
                 },
@@ -523,6 +524,7 @@ fun OfitApp(
                 initialSteps = screen.steps,
                 videoId = screen.videoId,
                 initialVideoFile = screen.savedId?.let(controller.workouts::videoFileFor),
+                initialProgram = screen.program,
                 limits = limits,
                 onSave = { program, videoId, videoFile ->
                     controller.workouts.saveEdited(screen.savedId, program, videoId, videoFile)
@@ -543,6 +545,11 @@ fun OfitApp(
                 },
                 onDone = { onNavigate(AppScreen.Home) },
                 onHistory = { onNavigate(AppScreen.History) },
+                // Saved by default; "Don't save" takes it out of History (and Health Connect) again.
+                onDiscard = { e ->
+                    controller.history.delete(e)
+                    onNavigate(AppScreen.Home)
+                },
             )
 
             is AppScreen.Run -> {
@@ -814,6 +821,7 @@ private fun HomeScreen(
                         name = saved.program.name,
                         steps = saved.program.steps,
                         videoId = controller.workouts.youtubeIdFor(saved.id),
+                        program = saved.program,
                     ),
                 )
             },
@@ -1243,6 +1251,7 @@ private fun WorkoutSummaryScreen(
     onDone: () -> Unit,
     onHistory: () -> Unit,
     onRepeat: (() -> Unit)? = null,
+    onDiscard: ((com.ofit.protocol.HistoryEntry) -> Unit)? = null,
 ) {
     // The History entry is written a moment after the workout ends; wait briefly for it.
     var waited by remember { mutableStateOf(false) }
@@ -1255,6 +1264,7 @@ private fun WorkoutSummaryScreen(
         entry != null -> com.ofit.app.history.WorkoutDetail(
             entry, units, onClose = onDone, title = "Workout summary", onRepeat = onRepeat,
             onRate = { stars, feel -> onRate(entry, stars, feel) },
+            onDiscard = onDiscard?.let { discard -> { discard(entry) } },
         )
         !waited -> androidx.compose.foundation.layout.Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             androidx.compose.material3.CircularProgressIndicator()

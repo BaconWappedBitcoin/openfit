@@ -7,7 +7,8 @@
   "inclinePercent": 1.5,
   "confidence": 0.85,
   "terrain": "trail",
-  "note": "The runner maintains a steady jog on a smooth dirt trail under tree canopy."
+  "note": "The runner maintains a steady jog on a smooth dirt trail under tree canopy.",
+  "part": "running"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 1.5,
   "confidence": 0.85,
   "terrain": "trail",
-  "note": "The runner maintains a steady jogging pace along a shaded forest trail, crossing a small wooden bridge and turning onto a slightly inclined dirt path."
+  "note": "The runner maintains a steady jogging pace along a shaded forest trail, crossing a small wooden bridge and turning onto a slightly inclined dirt path.",
+  "part": "running"
  },
  {
   "index": 2,

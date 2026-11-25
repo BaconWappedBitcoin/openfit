@@ -7,7 +7,8 @@
   "inclinePercent": -0.5,
   "confidence": 0.7,
   "terrain": "flat",
-  "note": "The clip shows a walk/light jog across a flat grassy park area onto a sandy beach, coming to a stop near the water line."
+  "note": "The clip shows a walk/light jog across a flat grassy park area onto a sandy beach, coming to a stop near the water line.",
+  "part": "intro"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 0,
   "confidence": 0.85,
   "terrain": "flat",
-  "note": "Walking along a sandy beach shoreline at a steady pace."
+  "note": "Walking along a sandy beach shoreline at a steady pace.",
+  "part": "running"
  },
  {
   "index": 2,

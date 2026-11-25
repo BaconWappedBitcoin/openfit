@@ -7,7 +7,8 @@
   "inclinePercent": 1.5,
   "confidence": 0.85,
   "terrain": "road",
-  "note": "The video shows a steady running pace along a narrow paved country road with a very slight uphill incline."
+  "note": "The video shows a steady running pace along a narrow paved country road with a very slight uphill incline.",
+  "part": "running"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 0.5,
   "confidence": 0.8,
   "terrain": "road",
-  "note": "The video shows a steady forward motion along a paved village road with houses and stone walls. The terrain is flat to slightly uphill, moving at a light jogging pace."
+  "note": "The video shows a steady forward motion along a paved village road with houses and stone walls. The terrain is flat to slightly uphill, moving at a light jogging pace.",
+  "part": "running"
  },
  {
   "index": 2,

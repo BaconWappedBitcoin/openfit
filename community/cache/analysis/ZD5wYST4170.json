@@ -7,7 +7,8 @@
   "inclinePercent": -1,
   "confidence": 0.75,
   "terrain": "rolling",
-  "note": "The video features scenic clips of running along a coastal paved road and path with periodic map overlays."
+  "note": "The video features scenic clips of running along a coastal paved road and path with periodic map overlays.",
+  "part": "intro"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 0.5,
   "confidence": 0.75,
   "terrain": "road",
-  "note": "The video displays a coastal route recap with stats showing an average speed of ~10.1 km/h (7.4 km in 44 min, pace 5:58/km) across mostly flat to gently rolling paved roads."
+  "note": "The video displays a coastal route recap with stats showing an average speed of ~10.1 km/h (7.4 km in 44 min, pace 5:58/km) across mostly flat to gently rolling paved roads.",
+  "part": "outro"
  },
  {
   "index": 2,

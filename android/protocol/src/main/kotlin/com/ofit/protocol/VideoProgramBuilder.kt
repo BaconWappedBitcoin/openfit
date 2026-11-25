@@ -23,6 +23,8 @@ object VideoProgramBuilder {
         val confidence: Double,
         val terrain: String = "",
         val note: String = "",
+        /** What the window mostly is: "running", or an "intro" or "outro" around the run. */
+        val part: String = "running",
     )
 
     /** The community library's limits (backend lib/program.ts LIMITS). */
@@ -117,10 +119,15 @@ object VideoProgramBuilder {
         }
 
         // The video's own pace, before limits and rounding, for "Match my speed".
-        val timed = readings.filter { it.speedKph != null && it.durationSeconds > 0 }
+        // The intro and outro are left out of it: standing at a title card is not the runner's pace.
+        val (introEnd, outroStart) = VideoBounds.fromReadings(readings)
+        fun inRun(r: WindowReading) = (introEnd == null || r.startSeconds >= introEnd) && (outroStart == null || r.startSeconds < outroStart)
+        val timedAll = readings.filter { it.speedKph != null && it.durationSeconds > 0 }
+        val timed = timedAll.filter(::inRun).ifEmpty { timedAll }
         val seconds = timed.sumOf { it.durationSeconds }
         val pace = if (seconds > 0) timed.sumOf { it.speedKph!! * it.durationSeconds } / seconds else fallbackSpeed
         return WorkoutProgram(tidyTitle(name), steps, videoPaceKph = (pace * 100).roundToInt() / 100.0)
+            .withBounds(introEnd, outroStart)
     }
 
     private fun toSteps(rows: List<Row>, mergeSpeed: Double, mergeIncline: Double): List<WorkoutStep> {

@@ -7,7 +7,8 @@
   "inclinePercent": 0,
   "confidence": 0.1,
   "terrain": "other",
-  "note": "Intro sequence containing title cards and a Google Earth 3D route overview, with no running footage present."
+  "note": "Intro sequence containing title cards and a Google Earth 3D route overview, with no running footage present.",
+  "part": "intro"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 4,
   "confidence": 0.85,
   "terrain": "road",
-  "note": "The runner is walking at a steady pace up a gentle slope on a paved sidewalk near Tokyo Tower."
+  "note": "The runner is walking at a steady pace up a gentle slope on a paved sidewalk near Tokyo Tower.",
+  "part": "running"
  },
  {
   "index": 2,

@@ -7,7 +7,8 @@
   "inclinePercent": -2,
   "confidence": 0.85,
   "terrain": "trail",
-  "note": "The runner begins running on a wide dirt trail in Sedona with a slight downward slope."
+  "note": "The runner begins running on a wide dirt trail in Sedona with a slight downward slope.",
+  "part": "intro"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": -4,
   "confidence": 0.85,
   "terrain": "trail",
-  "note": "Runner is descending a red dirt trail towards a trailhead parking area at a steady pace."
+  "note": "Runner is descending a red dirt trail towards a trailhead parking area at a steady pace.",
+  "part": "running"
  },
  {
   "index": 2,

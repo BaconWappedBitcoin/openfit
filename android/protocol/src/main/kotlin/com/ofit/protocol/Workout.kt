@@ -35,7 +35,21 @@ data class WorkoutProgram(
      * workout's average speed is used.
      */
     val videoPaceKph: Double? = null,
+    /**
+     * The suggested start and end of the run in its video, in seconds from the start (user request
+     * 2026-11-24): the intro is before [introEndSeconds] and the outro after [outroStartSeconds].
+     * Nothing is cut: the steps still cover the whole video, and "Skip intro and outro" (on by
+     * default) jumps to the start and ends the workout at the end.
+     */
+    val introEndSeconds: Int? = null,
+    val outroStartSeconds: Int? = null,
 ) {
+    /** The bounds as given, kept only when they make sense for this program's length. */
+    fun withBounds(introEnd: Int?, outroStart: Int?): WorkoutProgram {
+        val (i, o) = VideoBounds.clean(introEnd, outroStart, totalDurationSeconds)
+        return copy(introEndSeconds = i, outroStartSeconds = o)
+    }
+
     /** The total running time of the program. */
     val totalDurationSeconds: Int get() = steps.sumOf { it.durationSeconds }
 

@@ -7,7 +7,8 @@
   "inclinePercent": 0,
   "confidence": 0.8,
   "terrain": "road",
-  "note": "The presenter is walking slowly while delivering a vlog intro on a flat residential street."
+  "note": "The presenter is walking slowly while delivering a vlog intro on a flat residential street.",
+  "part": "intro"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 0,
   "confidence": 0.85,
   "terrain": "flat",
-  "note": "The clip transitions to a first-person POV walking along a flat paved park path at a steady walking speed of around 5.5 km/h."
+  "note": "The clip transitions to a first-person POV walking along a flat paved park path at a steady walking speed of around 5.5 km/h.",
+  "part": "running"
  },
  {
   "index": 2,

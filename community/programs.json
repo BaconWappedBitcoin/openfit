@@ -423,7 +423,8 @@
      "inclinePercent": 0,
      "durationSeconds": 21
     }
-   ]
+   ],
+   "introEndSeconds": 30
   },
   "videoId": "D870xNwuSAM",
   "note": "",

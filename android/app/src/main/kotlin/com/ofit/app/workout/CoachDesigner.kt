@@ -53,11 +53,14 @@ fun CoachDesignerScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     var choice by remember { mutableStateOf(CoachLook.choice(context).let { if (it == CoachChoice.OFF) CoachChoice.FEMALE else it }) }
     var look by remember { mutableStateOf(CoachLook.load(context)) }
+    var persona by remember(choice) { mutableStateOf(CoachLook.persona(context, choice)) }
     CoachDesigner(
         choice = choice,
         look = look,
         onChoice = { choice = it; CoachLook.saveChoice(context, it) },
         onLook = { look = it; CoachLook.save(context, it) },
+        persona = persona,
+        onPersona = { persona = it; CoachLook.savePersona(context, choice, it) },
         onDone = onBack,
         doneLabel = "Back",
     )
@@ -71,6 +74,9 @@ fun CoachDesigner(
     onChoice: (CoachChoice) -> Unit,
     onLook: (CoachLook) -> Unit,
     onDone: () -> Unit,
+    /** The coach's name and voice (user request 2026-11-24). */
+    persona: CoachPersona = CoachPersona(),
+    onPersona: (CoachPersona) -> Unit = {},
     doneLabel: String = "Done",
     modifier: Modifier = Modifier,
 ) {
@@ -125,6 +131,24 @@ fun CoachDesigner(
                         FilterChip(selected = choice == c, onClick = { onChoice(c) }, label = { Text(label) })
                     }
                 }
+            }
+            Section("Name") {
+                // The typed text is kept as typed; a tidied copy is saved.
+                var typed by remember(choice) { mutableStateOf(persona.name) }
+                androidx.compose.material3.OutlinedTextField(
+                    value = typed,
+                    onValueChange = { t ->
+                        typed = t.take(CoachPersona.MAX_NAME)
+                        onPersona(persona.copy(name = CoachPersona.clean(typed)))
+                    },
+                    singleLine = true,
+                    placeholder = { Text(CoachPersona.DEFAULT_NAME) },
+                    supportingText = { Text("Shown on the coach's speech bubbles") },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            Section("Voice") {
+                VoicePicker(choice = choice, persona = persona, onPersona = onPersona)
             }
             Section("Outfit") {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -209,5 +233,80 @@ private fun Swatch(rgb: Int, on: Boolean, onClick: () -> Unit) {
             val dark = (colour.red * 0.3f + colour.green * 0.59f + colour.blue * 0.11f) > 0.6f
             Icon(Icons.Filled.Check, contentDescription = null, tint = if (dark) Color.Black else Color.White)
         }
+    }
+}
+
+/**
+ * The tablet's voices for this coach, best sounding first, each with a "Hear it" sample. "Automatic"
+ * uses the best voice of the coach's kind that works offline.
+ */
+@Composable
+private fun VoicePicker(choice: CoachChoice, persona: CoachPersona, onPersona: (CoachPersona) -> Unit) {
+    val context = LocalContext.current
+    val male = choice == CoachChoice.MALE
+    var options by remember { mutableStateOf<List<CoachVoices.Option>?>(null) }
+    // One speech engine to list the voices; a sample is spoken with a CoachVoice in that voice.
+    androidx.compose.runtime.DisposableEffect(male) {
+        var tts: android.speech.tts.TextToSpeech? = null
+        tts = android.speech.tts.TextToSpeech(context.applicationContext) { status ->
+            val all = if (status == android.speech.tts.TextToSpeech.SUCCESS) runCatching { tts?.voices }.getOrNull().orEmpty() else emptySet()
+            options = CoachVoices.options(all, male)
+        }
+        onDispose { runCatching { tts?.shutdown() } }
+    }
+    var sampleVoice by remember { mutableStateOf<String?>(null) }
+    var sampleKey by remember { mutableStateOf(0) }
+    val sampler = remember(sampleKey) { if (sampleKey == 0) null else CoachVoice(context, male, sampleVoice) }
+    androidx.compose.runtime.DisposableEffect(sampler) { onDispose { sampler?.shutdown() } }
+    androidx.compose.runtime.LaunchedEffect(sampler) {
+        // The engine needs a moment to start before it can speak.
+        val s = sampler ?: return@LaunchedEffect
+        repeat(40) {
+            kotlinx.coroutines.delay(150)
+            if (s.sayNow("Hi, I'm ${persona.name}. Let's go for a run together.")) return@LaunchedEffect
+        }
+    }
+    val list = options
+    when {
+        list == null -> Text("Looking for voices…", color = Color(0x99FFFFFF))
+        list.isEmpty() -> Text(
+            "No voices found. Install or update Speech Services by Google from the Play Store for natural voices.",
+            color = Color(0x99FFFFFF),
+        )
+        else -> Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            VoiceRow("Automatic", "the best ${if (male) "man's" else "woman's"} voice that works offline", persona.voice == null,
+                onPick = { onPersona(persona.copy(voice = null)) },
+                onHear = { sampleVoice = null; sampleKey++ })
+            list.take(12).forEach { o ->
+                VoiceRow(o.label, o.detail, persona.voice == o.name,
+                    onPick = { onPersona(persona.copy(voice = o.name)) },
+                    onHear = { sampleVoice = o.name; sampleKey++ })
+            }
+            Text(
+                "More natural voices: Android Settings → Text-to-speech → Speech Services by Google → Install voice data.",
+                fontSize = 12.sp,
+                color = Color(0x99FFFFFF),
+            )
+        }
+    }
+}
+
+@Composable
+private fun VoiceRow(label: String, detail: String, selected: Boolean, onPick: () -> Unit, onHear: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.22f) else Color(0x14FFFFFF))
+            .clickable(onClick = onPick)
+            .padding(start = 14.dp, end = 6.dp, top = 6.dp, bottom = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(label, fontWeight = FontWeight.SemiBold)
+            Text(detail, fontSize = 12.sp, color = Color(0x99FFFFFF))
+        }
+        if (selected) Icon(Icons.Filled.Check, contentDescription = "Chosen", modifier = Modifier.padding(end = 8.dp))
+        OutlinedButton(onClick = onHear) { Text("Hear it") }
     }
 }

@@ -206,6 +206,7 @@ class GeminiDirect(private val key: String, private val model: String = DEFAULT_
         return VideoProgramBuilder.WindowReading(
             index, start, end - start, num("speed_kph"), num("incline_percent"), num("confidence") ?: 0.0,
             a.optString("terrain"), a.optString("note").take(300),
+            part = a.optString("part").takeIf { it == "intro" || it == "outro" } ?: "running",
         )
     }
 
@@ -287,8 +288,13 @@ How to judge the two numbers:
   per cent uphill slope and -10 a ten per cent downhill slope. Judge it from the visible slope of
   the path against the horizon and from the runner's posture.
 - confidence is how sure you are about the two numbers together. Be honest: a low confidence is
-  more useful than a confident guess."""
+  more useful than a confident guess.
+- part says what the window mostly is: "intro" for an opening before the run itself gets going
+  (title cards, a channel intro, talking to the camera, standing still, a map or drone shot before
+  the start), "outro" for a closing after the run has ended (end cards, credits, subscribe screens,
+  standing or talking after finishing), and "running" for everything else, including walking,
+  short stops at crossings and any footage of moving along the route."""
 
-        private const val WINDOW_SCHEMA = """{"type":"OBJECT","properties":{"speed_kph":{"type":"NUMBER"},"incline_percent":{"type":"NUMBER"},"terrain":{"type":"STRING","enum":["flat","rolling","uphill","downhill","stairs","trail","road","water","other"]},"confidence":{"type":"NUMBER"},"note":{"type":"STRING"}},"required":["speed_kph","incline_percent","terrain","confidence","note"]}"""
+        private const val WINDOW_SCHEMA = """{"type":"OBJECT","properties":{"speed_kph":{"type":"NUMBER"},"incline_percent":{"type":"NUMBER"},"terrain":{"type":"STRING","enum":["flat","rolling","uphill","downhill","stairs","trail","road","water","other"]},"confidence":{"type":"NUMBER"},"note":{"type":"STRING"},"part":{"type":"STRING","enum":["intro","running","outro"]}},"required":["speed_kph","incline_percent","terrain","confidence","note","part"]}"""
     }
 }

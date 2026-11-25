@@ -152,6 +152,10 @@ fun WorkoutRunScreen(
     var coachLook by remember { mutableStateOf(CoachLook.load(context)) }
     var designingCoach by remember { mutableStateOf(false) }
     var coachSpeaks by remember { mutableStateOf(videoPrefs.getBoolean("coach_speaks", true)) }
+    // Captions and the voice are separate switches, and the voice has its own volume (user request 2026-11-24).
+    var coachCaptions by remember { mutableStateOf(videoPrefs.getBoolean("coach_captions", true)) }
+    var coachVolume by remember { mutableStateOf(videoPrefs.getFloat("coach_volume", 1f)) }
+    var coachPersona by remember(coach) { mutableStateOf(CoachLook.persona(context, coach)) }
     // The coach's pace against the speed it is given, kept per workout (user request 2026-11-24).
     var coachPace by remember(saved.id) { mutableStateOf(videoPrefs.getFloat("coach_pace:" + saved.id, 1f)) }
     // The coach's size, one setting for every workout (user request 2026-11-24).
@@ -218,6 +222,27 @@ fun WorkoutRunScreen(
         if (!resumed && snapshot.state == WorkoutEngineState.RUNNING && countdown == 0 && !awaitingStart) {
             resumed = true
             seekAndFollow(resumeAtMillis)
+        }
+    }
+
+    // Skip intro and outro (user request 2026-11-24), on by default: a video workout with a
+    // suggested start jumps there as it starts, and ends at the suggested end. Nothing is cut; the
+    // runner can turn it off in the video menu, and seeking back into the intro is left alone.
+    var skipIntro by remember { mutableStateOf(videoPrefs.getBoolean("skip_intro_outro", true)) }
+    val hasBounds = saved.program.introEndSeconds != null || saved.program.outroStartSeconds != null
+    var introDone by remember(saved.id) { mutableStateOf(false) }
+    LaunchedEffect(snapshot.state, countdown) {
+        if (introDone || resumeAtMillis > 0 || snapshot.state != WorkoutEngineState.RUNNING) return@LaunchedEffect
+        introDone = true
+        val start = com.ofit.protocol.VideoBounds.startSeconds(saved.program, skipIntro) ?: return@LaunchedEffect
+        if (snapshot.totalElapsedMillis < start * 1000L) seekAndFollow(start * 1000L)
+    }
+    LaunchedEffect(snapshot.totalElapsedMillis / 1000, skipIntro) {
+        if (snapshot.state == WorkoutEngineState.RUNNING &&
+            com.ofit.protocol.VideoBounds.reachedOutro(saved.program, skipIntro, snapshot.totalElapsedMillis / 1000)
+        ) {
+            // To the program's end: it finishes as usual, with its cool-down and summary.
+            seekAndFollow(saved.program.totalDurationSeconds * 1000L)
         }
     }
 
@@ -394,7 +419,10 @@ fun WorkoutRunScreen(
         // picture (user report 2026-11-24); otherwise, and in the cool-down, with the belt.
         val referenceKph = remember(saved.program) { com.ofit.protocol.MatchSpeed.referenceKph(saved.program) }
         val beltKph = displayState.displayedSpeedKph ?: snapshot.speedKph
+        // No treadmill with a speed set on screen: the coach runs at that speed, the runner's own
+        // (user request 2026-11-24); with Match my speed on the video follows it too.
         val sceneryKph = referenceKph?.takeIf { (youtubeId != null || videoUri != null) && snapshot.state == WorkoutEngineState.RUNNING }
+            ?.takeIf { !(preview && snapshot.speedOverride) }
             ?.let { it * playbackRate }
         CoachOverlay(
             choice = coach,
@@ -406,6 +434,9 @@ fun WorkoutRunScreen(
             referenceKph = referenceKph,
             scale = coachSize,
             look = coachLook,
+            captions = coachCaptions,
+            voiceVolume = coachVolume,
+            persona = coachPersona,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 // Feet at the bottom edge of the screen (user request 2026-11-24): the feet sit about
@@ -430,6 +461,16 @@ fun WorkoutRunScreen(
             onCoachSpeaks = { on ->
                 coachSpeaks = on
                 videoPrefs.edit().putBoolean("coach_speaks", on).apply()
+            },
+            coachCaptions = coachCaptions,
+            onCoachCaptions = { on ->
+                coachCaptions = on
+                videoPrefs.edit().putBoolean("coach_captions", on).apply()
+            },
+            coachVolume = coachVolume,
+            onCoachVolume = { v ->
+                coachVolume = v
+                videoPrefs.edit().putFloat("coach_volume", v).apply()
             },
             onRunCoach = { choice ->
                 coach = choice
@@ -474,6 +515,11 @@ fun WorkoutRunScreen(
             chosenRate = chosenRate,
             matchSpeed = matchSpeed,
             onMatchSpeed = onMatchSpeed,
+            skipIntro = if (hasBounds) skipIntro else null,
+            onSkipIntro = { on ->
+                skipIntro = on
+                videoPrefs.edit().putBoolean("skip_intro_outro", on).apply()
+            },
             volume = volume,
             onVolume = { v ->
                 volume = v.coerceIn(0, 100)
@@ -502,6 +548,11 @@ fun WorkoutRunScreen(
                     onLook = { l ->
                         coachLook = l
                         CoachLook.save(context, l)
+                    },
+                    persona = coachPersona,
+                    onPersona = { p ->
+                        coachPersona = p
+                        CoachLook.savePersona(context, if (coach == CoachChoice.OFF) CoachChoice.FEMALE else coach, p)
                     },
                     onDone = { designingCoach = false },
                 )

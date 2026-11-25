@@ -7,7 +7,8 @@
   "inclinePercent": 0,
   "confidence": 0.85,
   "terrain": "flat",
-  "note": "Walking along a flat city sidewalk in winter past outdoor seating structures."
+  "note": "Walking along a flat city sidewalk in winter past outdoor seating structures.",
+  "part": "running"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 0,
   "confidence": 0.85,
   "terrain": "flat",
-  "note": "The video shows a steady walking pace along a flat urban sidewalk with an estimated speed of around 4.7 km/h."
+  "note": "The video shows a steady walking pace along a flat urban sidewalk with an estimated speed of around 4.7 km/h.",
+  "part": "running"
  },
  {
   "index": 2,

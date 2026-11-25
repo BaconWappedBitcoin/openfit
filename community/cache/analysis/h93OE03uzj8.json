@@ -7,7 +7,8 @@
   "inclinePercent": 0,
   "confidence": 0.2,
   "terrain": "flat",
-  "note": "Intro sequence showing channel logo and Relive map graphics transitioning to a flat paved coastal promenade."
+  "note": "Intro sequence showing channel logo and Relive map graphics transitioning to a flat paved coastal promenade.",
+  "part": "intro"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 0,
   "confidence": 0.9,
   "terrain": "flat",
-  "note": "The runner maintains a steady jog on a level beachfront promenade."
+  "note": "The runner maintains a steady jog on a level beachfront promenade.",
+  "part": "running"
  },
  {
   "index": 2,

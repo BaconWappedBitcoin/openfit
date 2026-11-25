@@ -56,7 +56,26 @@ fun WorkoutDetail(
     onRepeat: (() -> Unit)? = null,
     /** Rate the workout (P15): stars 1-5 and how it felt; null shows the rating read-only. */
     onRate: ((stars: Int?, feel: String?) -> Unit)? = null,
+    /**
+     * After a workout (user request 2026-11-24): it is saved by default, and "Don't save" takes it
+     * out of History again (and out of Health Connect, if it was sent).
+     */
+    onDiscard: (() -> Unit)? = null,
 ) {
+    var confirmDiscard by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(false) }
+    if (confirmDiscard && onDiscard != null) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { confirmDiscard = false },
+            title = { Text("Don't save this workout?") },
+            text = { Text("It will be removed from History, your streaks and badges, and Health Connect if it was sent there.") },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = { confirmDiscard = false; onDiscard() }) { Text("Don't save") }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { confirmDiscard = false }) { Text("Keep it") }
+            },
+        )
+    }
     val context = androidx.compose.ui.platform.LocalContext.current
     var exported by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<String?>(null) }
     // Export: the runner picks where the file goes (Downloads, Drive…), then uploads it to Strava,
@@ -93,6 +112,10 @@ fun WorkoutDetail(
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color(0x99FFFFFF),
                     )
+                }
+                if (onDiscard != null) {
+                    androidx.compose.material3.TextButton(onClick = { confirmDiscard = true }) { Text("Don't save") }
+                    Spacer(Modifier.width(8.dp))
                 }
                 if (onRepeat != null) {
                     androidx.compose.material3.Button(onClick = onRepeat) { Text("Repeat workout") }

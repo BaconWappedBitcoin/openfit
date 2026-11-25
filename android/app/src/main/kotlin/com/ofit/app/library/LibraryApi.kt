@@ -309,6 +309,9 @@ class LibraryApi(
                 durationSeconds = it.getInt("durationSeconds"),
             )
         },
+    ).withBounds(
+        json.optInt("introEndSeconds", -1).takeIf { it > 0 },
+        json.optInt("outroStartSeconds", -1).takeIf { it > 0 },
     )
 
     private fun JSONArray.objects(): List<JSONObject> = (0 until length()).map { getJSONObject(it) }

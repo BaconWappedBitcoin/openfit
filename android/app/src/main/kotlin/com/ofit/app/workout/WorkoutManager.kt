@@ -365,10 +365,12 @@ class WorkoutManager(
             _effectiveRate.value = 1f
             return
         }
-        val matched = if (_matchSpeed.value && !previewMode && snapshot.isRunning &&
-            programmed != null && programmed > 0.3 && beltKph != null && beltKph > 0.3
+        // No treadmill: the speed set on screen stands in for the belt (user request 2026-11-24).
+        val belt = if (previewMode) snapshot.speedKph else beltKph
+        val matched = if (_matchSpeed.value && snapshot.isRunning &&
+            programmed != null && programmed > 0.3 && belt != null && belt > 0.3
         ) {
-            com.ofit.protocol.MatchSpeed.rate(beltKph, programmed)
+            com.ofit.protocol.MatchSpeed.rate(belt, programmed)
         } else {
             null
         }

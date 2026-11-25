@@ -59,6 +59,8 @@ sealed interface AppScreen {
         val name: String,
         val steps: List<com.ofit.protocol.WorkoutStep>,
         val videoId: String?,
+        /** The saved program being edited, so its video pace and suggested start and end are kept. */
+        val program: com.ofit.protocol.WorkoutProgram? = null,
     ) : AppScreen
 
     /** After a workout: its summary (the History entry saved for it, found by its start time). */

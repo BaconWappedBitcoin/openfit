@@ -7,7 +7,8 @@
   "inclinePercent": 0,
   "confidence": 0.85,
   "terrain": "flat",
-  "note": "Virtual run along a flat coastal promenade at sunrise with a moderate running pace."
+  "note": "Virtual run along a flat coastal promenade at sunrise with a moderate running pace.",
+  "part": "running"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 0,
   "confidence": 0.75,
   "terrain": "flat",
-  "note": "Walking at a steady pace along a flat coastal path near the beach at sunset."
+  "note": "Walking at a steady pace along a flat coastal path near the beach at sunset.",
+  "part": "intro"
  },
  {
   "index": 2,

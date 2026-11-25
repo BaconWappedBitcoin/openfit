@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildProgram, interpolate, type WindowReading } from "../lib/build.js";
-import { effort, ProgramError, sanitize, tidyTitle } from "../lib/program.js";
+import { buildProgram, interpolate, videoBounds, type WindowReading } from "../lib/build.js";
+import { cleanBounds, effort, ProgramError, sanitize, tidyTitle } from "../lib/program.js";
 import { parseIsoDuration } from "../lib/youtube.js";
 import { ratingScore } from "../lib/store.js";
 import { cleanFacts, cleanLandmarks } from "../lib/gemini.js";
@@ -126,4 +126,33 @@ test("effort: average METs and the share of time at running speed", () => {
   const e = effort({ name: "x", steps: [{ speedKph: 4.8, inclinePercent: 0, durationSeconds: 600 }, { speedKph: 10, inclinePercent: 1, durationSeconds: 600 }] });
   assert.equal(e.runShare, 0.5);
   assert.ok(Math.abs(e.mets - (3.29 + 10.95) / 2) < 0.02, String(e.mets));
+});
+
+test("intro and outro windows become a suggested start and end", () => {
+  const parts = ["intro", "intro", "running", "running", "running", "running", "running", "running", "outro", "outro"] as const;
+  const rs = parts.map((part, i) => ({ ...reading(i, part === "running" ? 9 : 1, 0), part }));
+  assert.deepEqual(videoBounds(rs), { introEndSeconds: 60, outroStartSeconds: 240 });
+  const p = buildProgram(rs, "Run");
+  assert.equal(p.introEndSeconds, 60);
+  assert.equal(p.outroStartSeconds, 240);
+  // The pace leaves out the intro and outro.
+  assert.equal(p.videoPaceKph, 9);
+  // All steps are still there: nothing is cut.
+  assert.equal(p.steps.reduce((n, s) => n + s.durationSeconds, 0), 300);
+});
+
+test("an unbelievable intro or outro is ignored", () => {
+  const allIntro = Array.from({ length: 6 }, (_, i) => ({ ...reading(i, 5, 0), part: "intro" as const }));
+  assert.deepEqual(videoBounds(allIntro), {});
+  const noParts = Array.from({ length: 6 }, (_, i) => reading(i, 5, 0));
+  assert.deepEqual(videoBounds(noParts), {});
+});
+
+test("sanitize keeps sensible bounds only", () => {
+  const steps = [{ speedKph: 8, inclinePercent: 0, durationSeconds: 600 }];
+  assert.deepEqual(cleanBounds({ introEndSeconds: 30, outroStartSeconds: 540 }, 600), { introEndSeconds: 30, outroStartSeconds: 540 });
+  assert.deepEqual(cleanBounds({ introEndSeconds: 700 }, 600), {});
+  assert.deepEqual(cleanBounds({ introEndSeconds: 300, outroStartSeconds: 320 }, 600), {});
+  assert.equal(sanitize({ name: "x", steps, introEndSeconds: "30" }).introEndSeconds, undefined);
+  assert.equal(sanitize({ name: "x", steps, introEndSeconds: 45.4 }).introEndSeconds, 45);
 });

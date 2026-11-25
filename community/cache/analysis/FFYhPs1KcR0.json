@@ -7,7 +7,8 @@
   "inclinePercent": 0,
   "confidence": 0.85,
   "terrain": "road",
-  "note": "The video shows a steady walking pace along a flat urban sidewalk in Tokyo."
+  "note": "The video shows a steady walking pace along a flat urban sidewalk in Tokyo.",
+  "part": "intro"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 0,
   "confidence": 0.9,
   "terrain": "road",
-  "note": "The video shows walking along an urban sidewalk at a normal pace (~4.5 km/h) before coming to a complete stop at a crosswalk around 00:54 for the remaining duration."
+  "note": "The video shows walking along an urban sidewalk at a normal pace (~4.5 km/h) before coming to a complete stop at a crosswalk around 00:54 for the remaining duration.",
+  "part": "running"
  },
  {
   "index": 2,

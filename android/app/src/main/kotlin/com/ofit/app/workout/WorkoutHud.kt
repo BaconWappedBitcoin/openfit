@@ -1,5 +1,6 @@
 package com.ofit.app.workout
 
+import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material.icons.filled.Close
 
 import androidx.compose.material.icons.automirrored.filled.DirectionsRun
@@ -154,6 +155,9 @@ fun WorkoutHud(
     chosenRate: Float = playbackRate,
     matchSpeed: Boolean = false,
     onMatchSpeed: (Boolean) -> Unit = {},
+    /** Skip intro and outro: null when the workout has no suggested start or end. */
+    skipIntro: Boolean? = null,
+    onSkipIntro: (Boolean) -> Unit = {},
     /** Video volume 0..100 (0 = muted). */
     volume: Int = 100,
     onVolume: (Int) -> Unit = {},
@@ -163,6 +167,10 @@ fun WorkoutHud(
     onRunCoach: (CoachChoice) -> Unit = {},
     coachSpeaks: Boolean = true,
     onCoachSpeaks: (Boolean) -> Unit = {},
+    coachCaptions: Boolean = true,
+    onCoachCaptions: (Boolean) -> Unit = {},
+    coachVolume: Float = 1f,
+    onCoachVolume: (Float) -> Unit = {},
     /** How fast the coach moves against the speed it is given: 1 = as is (user request 2026-11-24). */
     coachPace: Float = 1f,
     onCoachPace: (Float) -> Unit = {},
@@ -306,8 +314,10 @@ fun WorkoutHud(
                     )
                 }
 
-                // No treadmill: no machine to control, so no +/- controls. Instead the program's own
-                // speed and incline are shown as a suggestion to match on whatever the runner is using.
+                // No treadmill: before Start, the program's own speed and incline are shown as a
+                // suggestion. Once it runs, the usual +/- cards set the speed the runner is really
+                // going (user request 2026-11-24), which the distance, the video (Match my speed)
+                // and the coach then follow; nothing is sent to a machine.
                 val firstStep = program?.steps?.firstOrNull()
                 val suggestSpeed = if (snapshot.isActive) snapshot.speedKph else firstStep?.speedKph
                 val suggestIncline = if (snapshot.isActive) snapshot.inclinePercent else firstStep?.inclinePercent
@@ -331,7 +341,7 @@ fun WorkoutHud(
                         next = nextSpeed?.let { "Next %.1f".format(units.speedFromKph(it)) },
                     )
                 }
-                if (!preview) { if (swapSides) speedCard() else inclineCard() } else { if (swapSides) suggestedSpeed() else suggestedIncline() }
+                if (!preview || snapshot.isActive) { if (swapSides) speedCard() else inclineCard() } else { if (swapSides) suggestedSpeed() else suggestedIncline() }
 
                 Column(
                     modifier = Modifier.weight(1f),
@@ -375,7 +385,7 @@ fun WorkoutHud(
                     }
                 }
 
-                if (!preview) { if (swapSides) inclineCard() else speedCard() } else { if (swapSides) suggestedIncline() else suggestedSpeed() }
+                if (!preview || snapshot.isActive) { if (swapSides) inclineCard() else speedCard() } else { if (swapSides) suggestedIncline() else suggestedSpeed() }
             }
 
             // 3. Lower area: the chart (R8), then the bottom bar.
@@ -412,6 +422,10 @@ fun WorkoutHud(
                     onRunCoach = onRunCoach,
                     coachSpeaks = coachSpeaks,
                     onCoachSpeaks = onCoachSpeaks,
+                    coachCaptions = coachCaptions,
+                    onCoachCaptions = onCoachCaptions,
+                    coachVolume = coachVolume,
+                    onCoachVolume = onCoachVolume,
                     coachPace = coachPace,
                     onCoachPace = onCoachPace,
                     coachSize = coachSize,
@@ -442,6 +456,8 @@ fun WorkoutHud(
                     chosenRate = chosenRate,
                     matchSpeed = matchSpeed,
                     onMatchSpeed = onMatchSpeed,
+                    skipIntro = skipIntro,
+                    onSkipIntro = onSkipIntro,
                     volume = volume,
                     onVolume = onVolume,
                     hasVideoAudio = hasVideo,
@@ -1493,6 +1509,10 @@ private fun HudBottomControls(
     onRunCoach: (CoachChoice) -> Unit = {},
     coachSpeaks: Boolean = true,
     onCoachSpeaks: (Boolean) -> Unit = {},
+    coachCaptions: Boolean = true,
+    onCoachCaptions: (Boolean) -> Unit = {},
+    coachVolume: Float = 1f,
+    onCoachVolume: (Float) -> Unit = {},
     /** How fast the coach moves against the speed it is given: 1 = as is (user request 2026-11-24). */
     coachPace: Float = 1f,
     onCoachPace: (Float) -> Unit = {},
@@ -1526,6 +1546,9 @@ private fun HudBottomControls(
     chosenRate: Float = playbackRate,
     matchSpeed: Boolean = false,
     onMatchSpeed: (Boolean) -> Unit = {},
+    /** Skip intro and outro: null when the workout has no suggested start or end. */
+    skipIntro: Boolean? = null,
+    onSkipIntro: (Boolean) -> Unit = {},
     volume: Int = 100,
     onVolume: (Int) -> Unit = {},
     hasVideoAudio: Boolean = false,
@@ -1589,11 +1612,30 @@ private fun HudBottomControls(
                     Column(others) {
                     com.ofit.app.ui.theme.OfitMenuHeader("Run with a coach")
                     com.ofit.app.ui.theme.OfitMenuItem(
-                        text = if (coachSpeaks) "Coach speaks: on" else "Coach speaks: off",
+                        text = if (coachSpeaks) "Coach voice: on" else "Coach voice: off",
                         icon = if (coachSpeaks) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeOff,
                         detail = "changes coming up, how hard, time left and facts about the place, out loud",
                         onClick = { onCoachSpeaks(!coachSpeaks) },
                     )
+                    com.ofit.app.ui.theme.OfitMenuItem(
+                        text = if (coachCaptions) "Speech bubbles: on" else "Speech bubbles: off",
+                        icon = Icons.Filled.ChatBubble,
+                        detail = "what the coach says, written above the coach",
+                        onClick = { onCoachCaptions(!coachCaptions) },
+                    )
+                    }
+                    if (coachSpeaks) {
+                        // The voice's own volume: it plays over the video and music without turning them down.
+                        Column(Modifier.width(340.dp).padding(horizontal = 16.dp, vertical = 8.dp)) {
+                            Text("Coach volume  ${(coachVolume * 100).toInt()} %", color = Color.White, fontWeight = FontWeight.SemiBold)
+                            Text("the voice against the video and music", color = Color(0x99FFFFFF), fontSize = 12.sp)
+                            androidx.compose.material3.Slider(
+                                value = coachVolume,
+                                onValueChange = { onCoachVolume((Math.round(it * 20) / 20f).coerceIn(0f, 1f)) },
+                                valueRange = 0f..1f,
+                                steps = 19,
+                            )
+                        }
                     }
                     if (runCoach != CoachChoice.OFF) {
                         // Pace: some videos are filmed faster or slower than they read, so the runner
@@ -1816,6 +1858,14 @@ private fun HudBottomControls(
                             )
                         }
                     }
+                    // Android gives sound to one media app at a time: YouTube's player and a music app
+                    // pause each other, so the video carries on muted while music plays (user report 2026-11-24).
+                    Text(
+                        "Android plays one app's sound at a time: while your music app plays, the video runs muted. The coach's voice plays over both.",
+                        color = Color(0x99FFFFFF),
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(horizontal = 16.dp).width(400.dp),
+                    )
                 }
                 com.ofit.app.ui.theme.OfitMenuDivider()
                 if (apps.isEmpty()) {
@@ -1875,13 +1925,24 @@ private fun HudBottomControls(
                 com.ofit.app.ui.theme.OfitMenuDivider()
                 com.ofit.app.ui.theme.OfitMenuItem(
                     text = if (matchSpeed) "Match my speed: on" else "Match my speed",
-                    detail = if (preview) "needs a treadmill" else "1× on plan; faster or slower belt speeds it up or down",
+                    detail = if (preview) "1× on plan; set a faster or slower speed with + and − to speed it up or down" else "1× on plan; faster or slower belt speeds it up or down",
                     icon = Icons.Filled.Speed,
                     onClick = {
                         onMatchSpeed(!matchSpeed)
                         rateOpen = false
                     },
                 )
+                if (skipIntro != null) {
+                    com.ofit.app.ui.theme.OfitMenuItem(
+                        text = if (skipIntro) "Skip intro and outro: on" else "Skip intro and outro: off",
+                        detail = "start where the run starts and end where it ends",
+                        icon = Icons.Filled.FastForward,
+                        onClick = {
+                            onSkipIntro(!skipIntro)
+                            rateOpen = false
+                        },
+                    )
+                }
             }
         }
         Spacer(Modifier.width(10.dp))

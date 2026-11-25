@@ -7,7 +7,8 @@
   "inclinePercent": -25,
   "confidence": 0.85,
   "terrain": "stairs",
-  "note": "The runner begins on an observation deck before descending a long, steep wooden staircase down the hill."
+  "note": "The runner begins on an observation deck before descending a long, steep wooden staircase down the hill.",
+  "part": "running"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": -25,
   "confidence": 0.85,
   "terrain": "stairs",
-  "note": "Walking down wooden stairs at a scenic lookout at a steady cadence of around 70 steps per minute."
+  "note": "Walking down wooden stairs at a scenic lookout at a steady cadence of around 70 steps per minute.",
+  "part": "running"
  },
  {
   "index": 2,

@@ -7,7 +7,8 @@
   "inclinePercent": 0,
   "confidence": 0.6,
   "terrain": "road",
-  "note": "Intro montage featuring coastal road running clips and scenic views of Portofino."
+  "note": "Intro montage featuring coastal road running clips and scenic views of Portofino.",
+  "part": "intro"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 0,
   "confidence": 0.6,
   "terrain": "road",
-  "note": "Montage intro showing walking around a coastal town with flat paved roads and promenades."
+  "note": "Montage intro showing walking around a coastal town with flat paved roads and promenades.",
+  "part": "intro"
  },
  {
   "index": 2,

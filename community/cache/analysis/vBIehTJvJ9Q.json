@@ -7,7 +7,8 @@
   "inclinePercent": 10,
   "confidence": 0.8,
   "terrain": "trail",
-  "note": "Running uphill on a rocky alpine trail (Alta Via 5 / Cinque Torri)."
+  "note": "Running uphill on a rocky alpine trail (Alta Via 5 / Cinque Torri).",
+  "part": "running"
  },
  {
   "index": 1,
@@ -17,7 +18,8 @@
   "inclinePercent": 3.5,
   "confidence": 0.85,
   "terrain": "trail",
-  "note": "Hiking along a rocky mountain trail at a steady brisk walk on a mild uphill incline."
+  "note": "Hiking along a rocky mountain trail at a steady brisk walk on a mild uphill incline.",
+  "part": "running"
  },
  {
   "index": 2,

@@ -69,6 +69,24 @@ data class CoachLook(
             }.apply()
         }
 
+        /** The name and voice given to the woman or man coach in the designer. */
+        fun persona(context: Context, choice: CoachChoice): CoachPersona {
+            val p = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+            val who = if (choice == CoachChoice.MALE) "male" else "female"
+            return CoachPersona(
+                name = p.getString("coach_name_$who", null)?.takeIf { it.isNotBlank() } ?: CoachPersona.DEFAULT_NAME,
+                voice = p.getString("coach_voice_$who", null),
+            )
+        }
+
+        fun savePersona(context: Context, choice: CoachChoice, persona: CoachPersona) {
+            val who = if (choice == CoachChoice.MALE) "male" else "female"
+            context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().apply {
+                putString("coach_name_$who", CoachPersona.clean(persona.name))
+                if (persona.voice == null) remove("coach_voice_$who") else putString("coach_voice_$who", persona.voice)
+            }.apply()
+        }
+
         /** Which coach (woman, man or off), the same setting the workout screen's coach menu uses. */
         fun choice(context: Context): CoachChoice =
             CoachChoice.fromName(context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString("coach", null))
