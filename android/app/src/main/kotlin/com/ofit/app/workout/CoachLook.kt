@@ -30,8 +30,13 @@ data class CoachLook(
     /** The coach page's URL parameters for this look, with [theme] standing in for a null top. */
     fun query(theme: Int): String = buildString {
         append("&style=").append(style.key)
-        append("&color=").append(hex(top ?: theme))
-        bottom?.let { append("&bottom=").append(hex(it)) }
+        // Clothes never close to the skin tone, so the coach never looks bare (user report
+        // 2026-11-24: brown shorts on brown skin looked nude). The race kit's top is a white singlet
+        // with a coloured band, so only the other tops are checked.
+        val topColour = top ?: theme
+        append("&color=").append(hex(if (style == Style.RACE) topColour else awayFromSkin(topColour, skin)))
+        val shorts = bottom ?: if (style == Style.RACE) topColour else 0x24272E
+        append("&bottom=").append(hex(awayFromSkin(shorts, skin)))
         append("&skin=").append(hex(skin))
         append("&hair=").append(hex(hair))
     }
@@ -46,6 +51,27 @@ data class CoachLook(
         )
 
         fun hex(rgb: Int) = String.format("%06x", rgb and 0xFFFFFF)
+
+        /** How far apart two colours look (a weighted RGB distance; 0 the same, about 765 black to white). */
+        fun distance(a: Int, b: Int): Double {
+            val dr = ((a shr 16) and 0xFF) - ((b shr 16) and 0xFF)
+            val dg = ((a shr 8) and 0xFF) - ((b shr 8) and 0xFF)
+            val db = (a and 0xFF) - (b and 0xFF)
+            val meanR = (((a shr 16) and 0xFF) + ((b shr 16) and 0xFF)) / 2.0
+            return Math.sqrt((2 + meanR / 256) * dr * dr + 4.0 * dg * dg + (2 + (255 - meanR) / 256) * db * db)
+        }
+
+        /** Clothes this close to the skin read as bare skin. */
+        const val SKIN_CLASH = 130.0
+
+        fun tooCloseToSkin(cloth: Int, skin: Int) = distance(cloth, skin) < SKIN_CLASH
+
+        /** [cloth], or a contrasting dark colour when it is too close to [skin]. */
+        fun awayFromSkin(cloth: Int, skin: Int): Int = when {
+            !tooCloseToSkin(cloth, skin) -> cloth
+            !tooCloseToSkin(0x24272E, skin) -> 0x24272E // charcoal
+            else -> 0x1E3A8A // navy, for the darkest skin tones
+        }
 
         fun load(context: Context): CoachLook {
             val p = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)

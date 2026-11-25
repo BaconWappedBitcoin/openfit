@@ -281,9 +281,31 @@ private fun DoneCard(done: AnalysisState.Done, onKeep: (AnalysisState.Done, Bool
     val speeds = program.steps.map { it.speedKph }
     val inclines = program.steps.map { it.inclinePercent }
     var share by remember { mutableStateOf(false) }
+    // Preview the video before saving (user request 2026-11-24), from where the run starts.
+    var previewing by remember { mutableStateOf(false) }
+    val runStart = program.introEndSeconds ?: 0
 
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            if (previewing) {
+                val openedAt = remember { System.currentTimeMillis() }
+                androidx.compose.foundation.layout.Box(
+                    Modifier
+                        .fillMaxWidth(0.7f)
+                        .aspectRatio(16f / 9f)
+                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp))
+                        .background(androidx.compose.ui.graphics.Color.Black),
+                ) {
+                    com.ofit.app.workout.YouTubePlayer(
+                        videoId = done.analysis.videoId,
+                        playing = true,
+                        positionMillis = { runStart * 1000 + (System.currentTimeMillis() - openedAt).toInt() },
+                        seekRequest = 1,
+                        volume = 60,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+            }
             Text(program.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 2)
             Text("${program.steps.size} steps, ${formatClock(program.totalDurationSeconds)}", style = MaterialTheme.typography.bodyMedium)
             Text(
@@ -294,6 +316,15 @@ private fun DoneCard(done: AnalysisState.Done, onKeep: (AnalysisState.Done, Bool
                 "Incline ${inclines.min().fmt()} to ${inclines.max().fmt()} %",
                 style = MaterialTheme.typography.bodyMedium,
             )
+            if (program.introEndSeconds != null || program.outroStartSeconds != null) {
+                Text(
+                    listOfNotNull(
+                        program.introEndSeconds?.let { "Intro until ${formatClock(it)}" },
+                        program.outroStartSeconds?.let { "outro from ${formatClock(it)}" },
+                    ).joinToString(", ") + ": skipped when it runs (change it in the editor).",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
             Text(
                 "These numbers are estimates made by a video model, not measurements " +
                     "(its own confidence: ${(done.analysis.confidence * 100).toInt()} %). " +
@@ -306,6 +337,7 @@ private fun DoneCard(done: AnalysisState.Done, onKeep: (AnalysisState.Done, Bool
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = { onKeep(done, share) }) { Text("Save workout") }
+                OutlinedButton(onClick = { previewing = !previewing }) { Text(if (previewing) "Hide preview" else "Preview video") }
                 OutlinedButton(onClick = onDiscard) { Text("Discard") }
             }
         }

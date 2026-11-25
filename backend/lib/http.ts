@@ -72,5 +72,5 @@ export function userGeminiKey(req: VercelRequest): string | undefined {
   return key && USER_KEY.test(key) ? key : undefined;
 }
 
-/** Google API keys: "AIza" followed by 35 URL-safe characters. */
-export const USER_KEY = /^AIza[0-9A-Za-z_-]{35}$/;
+/** Google API keys: the older "AIza" and 35 URL-safe characters, or the newer "AQ." keys (2026). */
+export const USER_KEY = /^(AIza[0-9A-Za-z_-]{35}|AQ\.[0-9A-Za-z_.-]{20,300})$/;

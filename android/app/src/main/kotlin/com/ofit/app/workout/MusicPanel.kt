@@ -25,10 +25,13 @@ object OutsideMusic {
         "com.audible.application" to "Audible",
     )
 
+    /** Always offered, installed or not (a tap opens its Play Store page when it isn't). */
+    private const val SPOTIFY = "com.spotify.music"
+
     private const val PREFS = "ofit_music"
     private const val KEY_APP = "app"
 
-    data class App(val packageName: String, val label: String)
+    data class App(val packageName: String, val label: String, val installed: Boolean = true)
 
     /** Installed music apps: the known ones, then any other app that says it is a music player. */
     fun installed(context: Context): List<App> {
@@ -38,7 +41,9 @@ object OutsideMusic {
             pm.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_APP_MUSIC), 0)
                 .map { App(it.activityInfo.packageName, it.loadLabel(pm).toString()) }
         }.getOrDefault(emptyList())
-        return (known + others).distinctBy { it.packageName }.filterNot { it.packageName == context.packageName }
+        val all = (known + others).distinctBy { it.packageName }
+            .filterNot { it.packageName == context.packageName }
+        return if (all.any { it.packageName == SPOTIFY }) all else all + App(SPOTIFY, "Spotify", installed = false)
     }
 
     /** The music app last opened from here, or null. */
@@ -46,6 +51,19 @@ object OutsideMusic {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString(KEY_APP, null)
 
     fun open(context: Context, app: App) {
+        if (!app.installed) {
+            // Not on the tablet: its Play Store page, to install it.
+            val store = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("market://details?id=${app.packageName}")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            runCatching { context.startActivity(store) }.onFailure {
+                runCatching {
+                    context.startActivity(
+                        Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://play.google.com/store/apps/details?id=${app.packageName}"))
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                    )
+                }
+            }
+            return
+        }
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putString(KEY_APP, app.packageName).apply()
         context.packageManager.getLaunchIntentForPackage(app.packageName)?.let {
             it.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

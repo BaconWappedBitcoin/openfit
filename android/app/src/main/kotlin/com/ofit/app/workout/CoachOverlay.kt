@@ -79,12 +79,16 @@ fun CoachOverlay(
     scale: Float = 1f,
     /** Outfit, colours, skin and hair, from the coach designer. */
     look: CoachLook = CoachLook(),
-    /** Show what the coach says in a speech bubble (separate from [speaks]). */
+    /** Show what the coach says as captions (separate from [speaks]). */
     captions: Boolean = true,
     /** The spoken voice's volume, 0..1 against the media volume. */
     voiceVolume: Float = 1f,
     /** The coach's name and voice, from the coach designer. */
     persona: CoachPersona = CoachPersona(),
+    /** Warn about coming speed and incline changes (off with no treadmill). */
+    changeTips: Boolean = true,
+    /** Told the caption to show ("Name: line"), or null; drawn by the workout screen above its controls. */
+    onCaption: (String?) -> Unit = {},
 ) {
     if (choice == CoachChoice.OFF) return
     val units = com.ofit.app.settings.LocalUnits.current
@@ -96,6 +100,7 @@ fun CoachOverlay(
         })
     }
     talk.referenceKph = referenceKph
+    talk.changeTips = changeTips
     // The spoken voice, matching the coach; let go when the coach or the screen goes away.
     val voice = remember(choice, speaks, persona.voice) {
         if (speaks) CoachVoice(context, male = choice == CoachChoice.MALE, voiceName = persona.voice) else null
@@ -159,7 +164,7 @@ fun CoachOverlay(
             talk.update(currentSnapshot, now)?.let { said ->
                 line = said
                 shownAt = now
-                showFor = bubbleMillis(said)
+                showFor = captionMillis(said)
                 Log.i(TAG, "says: $said")
                 currentVoice?.say(said)
             }
@@ -169,13 +174,13 @@ fun CoachOverlay(
     }
 
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        // The speech bubble sits above the coach and grows with the line, so nothing is cut off
-        // (user report 2026-11-24); the coach's feet stay where they are.
+        // Captions are drawn by the workout screen just above its bottom controls (user request
+        // 2026-11-24: a bubble over a big coach ran up under the top of the screen).
         val said = line
-        if (captions && said != null) {
-            SpeechBubble(name = persona.name, text = said)
-        }
-        androidx.compose.foundation.layout.Spacer(Modifier.size(4.dp))
+        val shown = if (captions && said != null) "${persona.name}: $said" else null
+        val currentOnCaption by rememberUpdatedState(onCaption)
+        LaunchedEffect(shown) { currentOnCaption(shown) }
+        DisposableEffect(Unit) { onDispose { currentOnCaption(null) } }
         CoachFigure(
             choice = choice,
             look = look,
@@ -188,44 +193,11 @@ fun CoachOverlay(
 }
 
 /** How long a line stays on screen: 6 s, plus about a third of a second a word past 15 words, up to 16 s. */
-internal fun bubbleMillis(line: String): Long {
+internal fun captionMillis(line: String): Long {
     val words = line.split(Regex("\\s+")).count { it.isNotBlank() }
     return (6_000L + (words - 15).coerceAtLeast(0) * 330L).coerceAtMost(16_000L)
 }
 
-/** A comic-style speech bubble with the coach's name, its tail pointing down at the coach. */
-@Composable
-fun SpeechBubble(name: String, text: String, modifier: Modifier = Modifier) {
-    val fill = Color(0xF2FFFFFF)
-    Column(modifier.widthIn(max = 420.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Column(
-            Modifier
-                .clip(RoundedCornerShape(22.dp))
-                .background(fill)
-                .padding(horizontal = 18.dp, vertical = 12.dp),
-        ) {
-            Text(
-                name,
-                color = androidx.compose.material3.MaterialTheme.colorScheme.primary.let { if (it.luminance() > 0.6f) Color(0xFF4A3A8C) else it },
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Text(text, color = Color(0xFF151515), fontSize = 18.sp, fontWeight = FontWeight.Medium, lineHeight = 24.sp)
-        }
-        // The tail.
-        androidx.compose.foundation.Canvas(Modifier.size(width = 28.dp, height = 14.dp)) {
-            val path = androidx.compose.ui.graphics.Path().apply {
-                moveTo(0f, 0f)
-                lineTo(size.width, 0f)
-                lineTo(size.width * 0.5f, size.height)
-                close()
-            }
-            drawPath(path, fill)
-        }
-    }
-}
-
-private fun Color.luminance(): Float = 0.2126f * red + 0.7152f * green + 0.0722f * blue
 
 /**
  * The 3D coach on its own:a WebView with the coach page, dressed in [look], told the speed, whether

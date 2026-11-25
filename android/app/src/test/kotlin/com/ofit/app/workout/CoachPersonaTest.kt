@@ -15,9 +15,9 @@ class CoachPersonaTest {
 
     @Test
     fun `long lines stay up longer, within limits`() {
-        assertEquals(6_000L, bubbleMillis("Nice and steady."))
+        assertEquals(6_000L, captionMillis("Nice and steady."))
         val long = (1..40).joinToString(" ") { "word" }
-        assertTrue(bubbleMillis(long) > 6_000L)
-        assertEquals(16_000L, bubbleMillis((1..200).joinToString(" ") { "word" }))
+        assertTrue(captionMillis(long) > 6_000L)
+        assertEquals(16_000L, captionMillis((1..200).joinToString(" ") { "word" }))
     }
 }

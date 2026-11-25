@@ -15,7 +15,7 @@ import java.util.Locale
  * too much (user report 2026-11-24), so the coach volume slider sets the balance instead.
  */
 class CoachVoice(
-    context: Context,
+    private val context: Context,
     private val male: Boolean,
     /** A voice name from [CoachVoices], or null for the best match for the coach. */
     private val voiceName: String? = null,
@@ -26,8 +26,20 @@ class CoachVoice(
         .build()
     @Volatile private var ready = false
 
-    /** The coach's volume, 0..1, against the tablet's media volume. */
+    /**
+     * The coach's volume against the tablet's media volume: 0..1 quieter, and up to [MAX_VOLUME]
+     * louder than the speech engine allows on its own (user report 2026-11-24: 100 % was not loud
+     * enough over music), by playing the line with a loudness boost.
+     */
     @Volatile var volume: Float = 1f
+
+    // Boosted lines: rendered to a file by the speech engine, then played one at a time.
+    private val main = android.os.Handler(android.os.Looper.getMainLooper())
+    private val pending = java.util.concurrent.ConcurrentHashMap<String, java.io.File>()
+    private val ready_files = ArrayDeque<java.io.File>()
+    private var player: android.media.MediaPlayer? = null
+    private var enhancer: android.media.audiofx.LoudnessEnhancer? = null
+    @Volatile private var closed = false
 
     private val tts: TextToSpeech = TextToSpeech(context.applicationContext) { status ->
         if (status == TextToSpeech.SUCCESS) setUp()
@@ -44,15 +56,63 @@ class CoachVoice(
         // still tells the two coaches apart.
         tts.setPitch(if (voice != null) 1f else if (male) 0.9f else 1.08f)
         tts.setSpeechRate(1f)
+        tts.setOnUtteranceProgressListener(object : android.speech.tts.UtteranceProgressListener() {
+            override fun onStart(id: String?) {}
+            override fun onDone(id: String?) {
+                val file = id?.let { pending.remove(it) } ?: return
+                main.post { ready_files.addLast(file); playNext() }
+            }
+            @Deprecated("old callback")
+            override fun onError(id: String?) { id?.let { pending.remove(it)?.delete() } }
+        })
         ready = true
         Log.i(TAG, "voice ready: ${tts.voice?.name}")
     }
 
     fun say(line: String) {
         if (!ready) return
+        if (volume > 1f) {
+            // Louder than the engine goes: render the line, then play it boosted.
+            val id = "coach-" + System.nanoTime()
+            val file = java.io.File(context.cacheDir, "$id.wav")
+            pending[id] = file
+            if (tts.synthesizeToFile(line, Bundle(), file, id) != TextToSpeech.SUCCESS) pending.remove(id)
+            return
+        }
         val params = Bundle().apply { putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, volume.coerceIn(0f, 1f)) }
         // Queued, never cut off or spoken over: a line waits for the one before it to finish.
         tts.speak(line, TextToSpeech.QUEUE_ADD, params, "coach-" + System.nanoTime())
+    }
+
+    /** Play the next rendered line, boosted by how far [volume] is over 100 %. */
+    private fun playNext() {
+        if (closed || player != null) return
+        val file = ready_files.removeFirstOrNull() ?: return
+        runCatching {
+            val mp = android.media.MediaPlayer()
+            mp.setAudioAttributes(attributes)
+            mp.setDataSource(file.path)
+            mp.prepare()
+            val gainMb = (2000 * kotlin.math.log10(volume.coerceIn(1f, MAX_VOLUME).toDouble())).toInt()
+            enhancer = runCatching {
+                android.media.audiofx.LoudnessEnhancer(mp.audioSessionId).apply { setTargetGain(gainMb); enabled = true }
+            }.getOrNull()
+            mp.setOnCompletionListener { done ->
+                done.release()
+                enhancer?.release(); enhancer = null
+                player = null
+                file.delete()
+                playNext()
+            }
+            player = mp
+            mp.start()
+        }.onFailure {
+            Log.w(TAG, "boosted line failed: ${it.message}")
+            player?.release(); player = null
+            enhancer?.release(); enhancer = null
+            file.delete()
+            playNext()
+        }
     }
 
     /** Say [line] now, dropping anything still queued (the designer's "Hear it"). */
@@ -64,12 +124,23 @@ class CoachVoice(
     }
 
     fun shutdown() {
+        closed = true
         runCatching { tts.stop() }
         runCatching { tts.shutdown() }
+        main.post {
+            runCatching { player?.release() }
+            runCatching { enhancer?.release() }
+            player = null
+            ready_files.forEach { it.delete() }
+            ready_files.clear()
+        }
+        pending.values.forEach { it.delete() }
     }
 
-    private companion object {
-        const val TAG = "OfitCoach"
+    companion object {
+        private const val TAG = "OfitCoach"
+        /** The loudest the coach goes: 250 %, about 8 dB over the speech engine's own maximum. */
+        const val MAX_VOLUME = 2.5f
     }
 }
 

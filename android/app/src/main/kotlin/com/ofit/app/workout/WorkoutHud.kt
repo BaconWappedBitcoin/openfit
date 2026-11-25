@@ -128,6 +128,8 @@ fun WorkoutHud(
     onResetIncline: () -> Unit = onResetToProgram,
     onStart: () -> Unit = {},
     onPause: () -> Unit = {},
+    /** A tap on the video: start, pause or carry on. */
+    onVideoTap: () -> Unit = {},
     onResume: () -> Unit = {},
     onSkip: () -> Unit = {},
     onAbandon: () -> Unit = {},
@@ -161,14 +163,24 @@ fun WorkoutHud(
     /** Video volume 0..100 (0 = muted). */
     volume: Int = 100,
     onVolume: (Int) -> Unit = {},
+    /** The video is muted because another app's music is playing; the volume setting is kept. */
+    videoMutedForMusic: Boolean = false,
+    onMusicStarts: () -> Unit = {},
+    /** Give the sound back to the video now, which pauses the music. */
+    onVideoSoundInstead: () -> Unit = {},
     modifier: Modifier = Modifier,
     /** The virtual coach shown over the video, and choosing it. */
     runCoach: CoachChoice = CoachChoice.OFF,
-    onRunCoach: (CoachChoice) -> Unit = {},
+    /** The saved coaches to choose from, the chosen one, and choosing (null: no coach). */
+    coaches: List<SavedCoach> = emptyList(),
+    activeCoachId: String? = null,
+    onPickCoach: (SavedCoach?) -> Unit = {},
     coachSpeaks: Boolean = true,
     onCoachSpeaks: (Boolean) -> Unit = {},
     coachCaptions: Boolean = true,
     onCoachCaptions: (Boolean) -> Unit = {},
+    /** What the coach is saying, shown as a caption above the bottom controls; null for none. */
+    caption: String? = null,
     coachVolume: Float = 1f,
     onCoachVolume: (Float) -> Unit = {},
     /** How fast the coach moves against the speed it is given: 1 = as is (user request 2026-11-24). */
@@ -268,124 +280,140 @@ fun WorkoutHud(
             // 2. Middle: the incline card on the left and the speed card on the right, with +/-
             //    buttons clamped to the machine's range (the user prefers these to
             //    one-tap columns).
-            Row(
-                modifier = Modifier
+            // The middle, with the coach's captions along its bottom edge, just above the bottom
+            // controls (user request 2026-11-24: standard captions rather than a speech bubble).
+            Box(
+                Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(vertical = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                    // Tapping the video (its middle, where YouTube shows its play button) starts the
+                    // workout, pauses it, or carries on, like the Start/Pause button (user request
+                    // 2026-11-24). The cards and buttons on top keep their own taps.
+                    .pointerInput(snapshot.state) {
+                        detectTapGestures { onVideoTap() }
+                    },
             ) {
-                // Swap sides (R9e) puts speed on the left and incline on the right.
-                val inclineCard: @Composable () -> Unit = {
-                    HudInclineCard(
-                        incline = state.displayedInclinePercent,
-                        targetIncline = snapshot.inclinePercent,
-                        manualOverride = snapshot.inclineOverride,
-                        limits = limits,
-                        isRunning = snapshot.isRunning,
-                        onNudge = { delta ->
-                            val next = Math.round((snapshot.inclinePercent + delta) * 2) / 2.0
-                            onOverrideIncline(
-                                next.coerceIn(limits.machineMinInclinePercent ?: 0.0, limits.effectiveMaxInclinePercent),
-                            )
-                        },
-                        onReset = onResetIncline,
-                        onClickValue = if (snapshot.isRunning) ({ editing = OverrideTarget.INCLINE }) else null,
-                    )
-                }
-                val speedCard: @Composable () -> Unit = {
-                    HudSpeedCard(
-                        speed = state.displayedSpeedKph,
-                        targetSpeed = snapshot.speedKph,
-                        manualOverride = snapshot.speedOverride,
-                        limits = limits,
-                        isRunning = snapshot.isRunning,
-                        onNudge = { delta ->
-                            val shown = units.speedFromKph(snapshot.speedKph + delta)
-                            val next = units.speedToKph(Math.round(shown * 2) / 2.0)
-                            onOverrideSpeed(
-                                next.coerceIn(limits.machineMinSpeedKph ?: 0.0, limits.effectiveMaxSpeedKph),
-                            )
-                        },
-                        onReset = onResetSpeed,
-                        onClickValue = if (snapshot.isRunning) ({ editing = OverrideTarget.SPEED }) else null,
-                        coachOn = coachStatus != null,
-                    )
-                }
-
-                // No treadmill: before Start, the program's own speed and incline are shown as a
-                // suggestion. Once it runs, the usual +/- cards set the speed the runner is really
-                // going (user request 2026-11-24), which the distance, the video (Match my speed)
-                // and the coach then follow; nothing is sent to a machine.
-                val firstStep = program?.steps?.firstOrNull()
-                val suggestSpeed = if (snapshot.isActive) snapshot.speedKph else firstStep?.speedKph
-                val suggestIncline = if (snapshot.isActive) snapshot.inclinePercent else firstStep?.inclinePercent
-                val nextSpeed = if (snapshot.isActive) snapshot.nextSpeedKph else program?.steps?.getOrNull(1)?.speedKph
-                val nextIncline = if (snapshot.isActive) snapshot.nextInclinePercent else program?.steps?.getOrNull(1)?.inclinePercent
-                val suggestedIncline: @Composable () -> Unit = {
-                    HudSuggestedCard(
-                        label = "INCLINE",
-                        accent = HudColors.incline,
-                        value = suggestIncline?.let { "%.1f".format(it) } ?: "--",
-                        unit = "%",
-                        next = nextIncline?.let { "Next %.1f%%".format(it) },
-                    )
-                }
-                val suggestedSpeed: @Composable () -> Unit = {
-                    HudSuggestedCard(
-                        label = "SPEED",
-                        accent = HudColors.speed,
-                        value = suggestSpeed?.let { "%.1f".format(units.speedFromKph(it)) } ?: "--",
-                        unit = units.speedUnit,
-                        next = nextSpeed?.let { "Next %.1f".format(units.speedFromKph(it)) },
-                    )
-                }
-                if (!preview || snapshot.isActive) { if (swapSides) speedCard() else inclineCard() } else { if (swapSides) suggestedSpeed() else suggestedIncline() }
-
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if (engineMessage != null) {
-                        Text(
-                            text = engineMessage,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xCC000000))
-                                .padding(horizontal = 16.dp, vertical = 10.dp),
+                    // Swap sides (R9e) puts speed on the left and incline on the right.
+                    val inclineCard: @Composable () -> Unit = {
+                        HudInclineCard(
+                            incline = state.displayedInclinePercent,
+                            targetIncline = snapshot.inclinePercent,
+                            manualOverride = snapshot.inclineOverride,
+                            limits = limits,
+                            isRunning = snapshot.isRunning,
+                            onNudge = { delta ->
+                                val next = Math.round((snapshot.inclinePercent + delta) * 2) / 2.0
+                                onOverrideIncline(
+                                    next.coerceIn(limits.machineMinInclinePercent ?: 0.0, limits.effectiveMaxInclinePercent),
+                                )
+                            },
+                            onReset = onResetIncline,
+                            onClickValue = if (snapshot.isRunning) ({ editing = OverrideTarget.INCLINE }) else null,
                         )
                     }
-                    // "Hold zone" (spec 003 S6): always visible while on, one tap turns it off.
-                    if (coachStatus != null) {
-                        Text(
-                            text = "♥ Holding zone ${coachStatus.zone} (${coachStatus.level}) · ${coachStatus.band.first}–${coachStatus.band.last} bpm" +
-                                (coachStatus.note?.let { " · $it" } ?: "") + "   (tap to turn off)",
-                            color = Color.White,
-                            fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xCCB71C1C))
-                                .clickable(onClick = onCoachStop)
-                                .padding(horizontal = 16.dp, vertical = 10.dp),
+                    val speedCard: @Composable () -> Unit = {
+                        HudSpeedCard(
+                            speed = state.displayedSpeedKph,
+                            targetSpeed = snapshot.speedKph,
+                            manualOverride = snapshot.speedOverride,
+                            limits = limits,
+                            isRunning = snapshot.isRunning,
+                            onNudge = { delta ->
+                                val shown = units.speedFromKph(snapshot.speedKph + delta)
+                                val next = units.speedToKph(Math.round(shown * 2) / 2.0)
+                                onOverrideSpeed(
+                                    next.coerceIn(limits.machineMinSpeedKph ?: 0.0, limits.effectiveMaxSpeedKph),
+                                )
+                            },
+                            onReset = onResetSpeed,
+                            onClickValue = if (snapshot.isRunning) ({ editing = OverrideTarget.SPEED }) else null,
+                            coachOn = coachStatus != null,
                         )
                     }
-                    if (coachNotice != null && coachStatus == null) {
-                        Text(
-                            text = coachNotice,
-                            color = Color.White,
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xCC000000))
-                                .padding(horizontal = 16.dp, vertical = 10.dp),
-                        )
-                    }
-                }
 
-                if (!preview || snapshot.isActive) { if (swapSides) inclineCard() else speedCard() } else { if (swapSides) suggestedIncline() else suggestedSpeed() }
+                    // No treadmill: before Start, the program's own speed and incline are shown as a
+                    // suggestion. Once it runs, the usual +/- cards set the speed the runner is really
+                    // going (user request 2026-11-24), which the distance, the video (Match my speed)
+                    // and the coach then follow; nothing is sent to a machine.
+                    val firstStep = program?.steps?.firstOrNull()
+                    val suggestSpeed = if (snapshot.isActive) snapshot.speedKph else firstStep?.speedKph
+                    val suggestIncline = if (snapshot.isActive) snapshot.inclinePercent else firstStep?.inclinePercent
+                    val nextSpeed = if (snapshot.isActive) snapshot.nextSpeedKph else program?.steps?.getOrNull(1)?.speedKph
+                    val nextIncline = if (snapshot.isActive) snapshot.nextInclinePercent else program?.steps?.getOrNull(1)?.inclinePercent
+                    val suggestedIncline: @Composable () -> Unit = {
+                        HudSuggestedCard(
+                            label = "INCLINE",
+                            accent = HudColors.incline,
+                            value = suggestIncline?.let { "%.1f".format(it) } ?: "--",
+                            unit = "%",
+                            next = nextIncline?.let { "Next %.1f%%".format(it) },
+                        )
+                    }
+                    val suggestedSpeed: @Composable () -> Unit = {
+                        HudSuggestedCard(
+                            label = "SPEED",
+                            accent = HudColors.speed,
+                            value = suggestSpeed?.let { "%.1f".format(units.speedFromKph(it)) } ?: "--",
+                            unit = units.speedUnit,
+                            next = nextSpeed?.let { "Next %.1f".format(units.speedFromKph(it)) },
+                        )
+                    }
+                    if (!preview || snapshot.isActive) { if (swapSides) speedCard() else inclineCard() } else { if (swapSides) suggestedSpeed() else suggestedIncline() }
+
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+                    ) {
+                        if (engineMessage != null) {
+                            Text(
+                                text = engineMessage,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.White,
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color(0xCC000000))
+                                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                            )
+                        }
+                        // "Hold zone" (spec 003 S6): always visible while on, one tap turns it off.
+                        if (coachStatus != null) {
+                            Text(
+                                text = "♥ Holding zone ${coachStatus.zone} (${coachStatus.level}) · ${coachStatus.band.first}–${coachStatus.band.last} bpm" +
+                                    (coachStatus.note?.let { " · $it" } ?: "") + "   (tap to turn off)",
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color(0xCCB71C1C))
+                                    .clickable(onClick = onCoachStop)
+                                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                            )
+                        }
+                        if (coachNotice != null && coachStatus == null) {
+                            Text(
+                                text = coachNotice,
+                                color = Color.White,
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color(0xCC000000))
+                                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                            )
+                        }
+                    }
+
+                    if (!preview || snapshot.isActive) { if (swapSides) inclineCard() else speedCard() } else { if (swapSides) suggestedIncline() else suggestedSpeed() }
+                }
+                if (caption != null) {
+                    CoachCaption(caption, Modifier.align(Alignment.BottomCenter).padding(bottom = 6.dp))
+                }
             }
 
             // 3. Lower area: the chart (R8), then the bottom bar.
@@ -419,7 +447,9 @@ fun WorkoutHud(
 
                 HudBottomControls(
                     runCoach = runCoach,
-                    onRunCoach = onRunCoach,
+                    coaches = coaches,
+                    activeCoachId = activeCoachId,
+                    onPickCoach = onPickCoach,
                     coachSpeaks = coachSpeaks,
                     onCoachSpeaks = onCoachSpeaks,
                     coachCaptions = coachCaptions,
@@ -461,6 +491,9 @@ fun WorkoutHud(
                     volume = volume,
                     onVolume = onVolume,
                     hasVideoAudio = hasVideo,
+                    videoMutedForMusic = videoMutedForMusic,
+                    onMusicStarts = onMusicStarts,
+                    onVideoSoundInstead = onVideoSoundInstead,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -1506,7 +1539,10 @@ private val HudButtonHeight = 54.dp
 @Composable
 private fun HudBottomControls(
     runCoach: CoachChoice = CoachChoice.OFF,
-    onRunCoach: (CoachChoice) -> Unit = {},
+    /** The saved coaches to choose from, the chosen one, and choosing (null: no coach). */
+    coaches: List<SavedCoach> = emptyList(),
+    activeCoachId: String? = null,
+    onPickCoach: (SavedCoach?) -> Unit = {},
     coachSpeaks: Boolean = true,
     onCoachSpeaks: (Boolean) -> Unit = {},
     coachCaptions: Boolean = true,
@@ -1551,6 +1587,11 @@ private fun HudBottomControls(
     onSkipIntro: (Boolean) -> Unit = {},
     volume: Int = 100,
     onVolume: (Int) -> Unit = {},
+    /** The video is muted because another app's music is playing; the volume setting is kept. */
+    videoMutedForMusic: Boolean = false,
+    onMusicStarts: () -> Unit = {},
+    /** Give the sound back to the video now, which pauses the music. */
+    onVideoSoundInstead: () -> Unit = {},
     hasVideoAudio: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
@@ -1611,31 +1652,26 @@ private fun HudBottomControls(
                     val others = Modifier.alpha(if (adjustingCoach) 0f else 1f)
                     Column(others) {
                     com.ofit.app.ui.theme.OfitMenuHeader("Run with a coach")
-                    com.ofit.app.ui.theme.OfitMenuItem(
-                        text = if (coachSpeaks) "Coach voice: on" else "Coach voice: off",
-                        icon = if (coachSpeaks) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeOff,
-                        detail = "changes coming up, how hard, time left and facts about the place, out loud",
-                        onClick = { onCoachSpeaks(!coachSpeaks) },
-                    )
-                    com.ofit.app.ui.theme.OfitMenuItem(
-                        text = if (coachCaptions) "Speech bubbles: on" else "Speech bubbles: off",
-                        icon = Icons.Filled.ChatBubble,
-                        detail = "what the coach says, written above the coach",
-                        onClick = { onCoachCaptions(!coachCaptions) },
-                    )
+                    // On/off switches (user request 2026-11-24).
+                    CoachSwitchRow("Coach voice", "changes coming up, encouragement and facts about the place, out loud", coachSpeaks, onCoachSpeaks)
+                    CoachSwitchRow("Captions", "what the coach says, written above the controls", coachCaptions, onCoachCaptions)
                     }
-                    if (coachSpeaks) {
-                        // The voice's own volume: it plays over the video and music without turning them down.
-                        Column(Modifier.width(340.dp).padding(horizontal = 16.dp, vertical = 8.dp)) {
-                            Text("Coach volume  ${(coachVolume * 100).toInt()} %", color = Color.White, fontWeight = FontWeight.SemiBold)
-                            Text("the voice against the video and music", color = Color(0x99FFFFFF), fontSize = 12.sp)
-                            androidx.compose.material3.Slider(
-                                value = coachVolume,
-                                onValueChange = { onCoachVolume((Math.round(it * 20) / 20f).coerceIn(0f, 1f)) },
-                                valueRange = 0f..1f,
-                                steps = 19,
-                            )
-                        }
+                    // The voice's own volume, always shown (user report 2026-11-24: it could not be
+                    // found); it plays over the video and music without turning them down.
+                    Column(Modifier.width(340.dp).padding(horizontal = 16.dp, vertical = 8.dp)) {
+                        Text(
+                            if (coachSpeaks) "Coach voice volume  ${(coachVolume * 100).toInt()} %" else "Coach voice volume (voice is off)",
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Text("the voice against the video and music", color = Color(0x99FFFFFF), fontSize = 12.sp)
+                        androidx.compose.material3.Slider(
+                            value = coachVolume,
+                            onValueChange = { onCoachVolume((Math.round(it * 20) / 20f).coerceIn(0f, CoachVoice.MAX_VOLUME)) },
+                            valueRange = 0f..CoachVoice.MAX_VOLUME,
+                            steps = 49,
+                            enabled = coachSpeaks,
+                        )
                     }
                     if (runCoach != CoachChoice.OFF) {
                         // Pace: some videos are filmed faster or slower than they read, so the runner
@@ -1672,22 +1708,24 @@ private fun HudBottomControls(
                     com.ofit.app.ui.theme.OfitMenuItem(
                         text = "Design your coach",
                         icon = Icons.AutoMirrored.Filled.DirectionsRun,
-                        detail = "outfit, colours, skin tone and hair",
+                        detail = "make and save coaches: name, voice, outfit and looks",
                         onClick = { coachMenu = false; onDesignCoach() },
                     )
                     com.ofit.app.ui.theme.OfitMenuDivider()
-                    CoachChoice.entries.forEach { choice ->
+                    // No coach, or one of the saved coaches (made in the coach designer).
+                    com.ofit.app.ui.theme.OfitMenuItem(
+                        text = "No coach" + if (runCoach == CoachChoice.OFF) "  ✓" else "",
+                        icon = Icons.Filled.Close,
+                        detail = "no coach on the video",
+                        onClick = { coachMenu = false; onPickCoach(null) },
+                    )
+                    coaches.forEach { c ->
+                        val chosen = runCoach != CoachChoice.OFF && c.id == activeCoachId
                         com.ofit.app.ui.theme.OfitMenuItem(
-                            text = choice.label + if (choice == runCoach) "  ✓" else "",
-                            icon = if (choice == CoachChoice.OFF) Icons.Filled.Close else Icons.AutoMirrored.Filled.DirectionsRun,
-                            detail = when (choice) {
-                                CoachChoice.OFF -> "no coach on the video"
-                                else -> "runs ahead at your speed and cheers you on"
-                            },
-                            onClick = {
-                                coachMenu = false
-                                onRunCoach(choice)
-                            },
+                            text = c.name + if (chosen) "  ✓" else "",
+                            icon = Icons.AutoMirrored.Filled.DirectionsRun,
+                            detail = (if (c.male) "man" else "woman") + " · runs ahead at your speed and cheers you on",
+                            onClick = { coachMenu = false; onPickCoach(c) },
                         )
                     }
                     }
@@ -1800,6 +1838,43 @@ private fun HudBottomControls(
                         OutsideMusic.key(context, android.view.KeyEvent.KEYCODE_MEDIA_NEXT)
                     })
                 }
+                // The coach's voice volume here too, with the other sounds (user report 2026-11-24).
+                if (runCoach != CoachChoice.OFF && coachSpeaks) {
+                    // With a mute button like the music and video rows (user request 2026-11-24).
+                    var coachBeforeMute by remember { mutableStateOf(1f) }
+                    Row(
+                        Modifier.padding(horizontal = 12.dp, vertical = 2.dp).width(420.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        HudSquareButton(
+                            if (coachVolume <= 0f) Icons.AutoMirrored.Filled.VolumeOff else Icons.AutoMirrored.Filled.VolumeUp,
+                            if (coachVolume <= 0f) "Unmute the coach" else "Mute the coach",
+                            true,
+                            {
+                                if (coachVolume > 0f) {
+                                    coachBeforeMute = coachVolume
+                                    onCoachVolume(0f)
+                                } else {
+                                    onCoachVolume(coachBeforeMute.coerceAtLeast(0.5f))
+                                }
+                            },
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(
+                                if (coachVolume <= 0f) "Coach voice muted" else "Coach voice  ${(coachVolume * 100).toInt()} %",
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            androidx.compose.material3.Slider(
+                                value = coachVolume,
+                                onValueChange = { onCoachVolume((Math.round(it * 20) / 20f).coerceIn(0f, CoachVoice.MAX_VOLUME)) },
+                                valueRange = 0f..CoachVoice.MAX_VOLUME,
+                                steps = 49,
+                            )
+                        }
+                    }
+                }
                 // Music volume: the tablet's media volume, which the music app plays at.
                 var musicVolume by remember { mutableStateOf(OutsideMusic.volume(context)) }
                 var beforeMute by remember { mutableStateOf(0.5f) }
@@ -1839,16 +1914,27 @@ private fun HudBottomControls(
                         Modifier.padding(horizontal = 12.dp, vertical = 2.dp).width(420.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
+                        val silent = volume <= 0 || videoMutedForMusic
                         HudSquareButton(
-                            if (volume <= 0) Icons.AutoMirrored.Filled.VolumeOff else Icons.AutoMirrored.Filled.VolumeUp,
-                            if (volume <= 0) "Turn the video's sound on" else "Mute the video",
+                            if (silent) Icons.AutoMirrored.Filled.VolumeOff else Icons.AutoMirrored.Filled.VolumeUp,
+                            if (silent) "Turn the video's sound on" else "Mute the video",
                             true,
-                            { onVolume(if (volume <= 0) 60 else 0) },
+                            {
+                                when {
+                                    videoMutedForMusic -> onVideoSoundInstead()
+                                    volume <= 0 -> onVolume(60)
+                                    else -> onVolume(0)
+                                }
+                            },
                         )
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) {
                             Text(
-                                if (volume <= 0) "Video sound off" else "Video sound  $volume %",
+                                when {
+                                    videoMutedForMusic -> "Video sound $volume %: muted while your music plays"
+                                    volume <= 0 -> "Video sound off"
+                                    else -> "Video sound  $volume %"
+                                },
                                 color = Color.White,
                                 fontWeight = FontWeight.SemiBold,
                             )
@@ -1861,7 +1947,12 @@ private fun HudBottomControls(
                     // Android gives sound to one media app at a time: YouTube's player and a music app
                     // pause each other, so the video carries on muted while music plays (user report 2026-11-24).
                     Text(
-                        "Android plays one app's sound at a time: while your music app plays, the video runs muted. The coach's voice plays over both.",
+                        if (videoMutedForMusic) {
+                            "Your music has the sound. The slider sets the video's level for when the music stops; " +
+                                "tap the speaker to hear the video instead (Android then pauses your music)."
+                        } else {
+                            "Android plays one app's sound at a time: while your music plays, the video runs muted. The coach's voice plays over both."
+                        },
                         color = Color(0x99FFFFFF),
                         fontSize = 12.sp,
                         modifier = Modifier.padding(horizontal = 16.dp).width(400.dp),
@@ -1871,19 +1962,47 @@ private fun HudBottomControls(
                 if (apps.isEmpty()) {
                     com.ofit.app.ui.theme.OfitMenuHeader("No music app found")
                 } else {
-                    apps.forEach { app ->
-                        com.ofit.app.ui.theme.OfitMenuItem(
-                            text = "Open ${app.label}",
-                            icon = Icons.Filled.MusicNote,
-                            detail = if (app.packageName == target) "the buttons above control it" else "start your music there",
-                            onClick = {
-                                musicOpen = false
-                                target = app.packageName
-                                // Mute the video so the music is heard; the workout carries on.
-                                if (hasVideoAudio && volume > 0) onVolume(0)
-                                OutsideMusic.open(context, app)
-                            },
-                        )
+                    // Small pills in a row (user request 2026-11-24), not a full-width item each.
+                    com.ofit.app.ui.theme.OfitMenuHeader("Open a music app")
+                    androidx.compose.foundation.layout.FlowRow(
+                        Modifier.width(420.dp).padding(horizontal = 12.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        apps.forEach { app ->
+                            val current = app.installed && app.packageName == target
+                            Row(
+                                Modifier
+                                    .height(36.dp)
+                                    .clip(RoundedCornerShape(18.dp))
+                                    .background(if (current) MaterialTheme.colorScheme.primary else Color(0x26FFFFFF))
+                                    .clickable {
+                                        musicOpen = false
+                                        if (app.installed) {
+                                            target = app.packageName
+                                            // Mute the video so the music is heard; the workout carries on.
+                                            if (hasVideoAudio) onMusicStarts()
+                                        }
+                                        OutsideMusic.open(context, app)
+                                    }
+                                    .padding(horizontal = 14.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Icon(
+                                    if (app.installed) Icons.Filled.MusicNote else Icons.Filled.Add,
+                                    contentDescription = null,
+                                    tint = if (current) Color(0xFF111111) else Color.White,
+                                    modifier = Modifier.size(16.dp),
+                                )
+                                Spacer(Modifier.width(6.dp))
+                                Text(
+                                    if (app.installed) app.label else "Get ${app.label}",
+                                    color = if (current) Color(0xFF111111) else Color.White,
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -2324,5 +2443,42 @@ private fun AlbumArt(now: OutsideMusic.NowPlaying, modifier: Modifier) {
         } else {
             Icon(Icons.Filled.MusicNote, contentDescription = null, tint = Color.White)
         }
+    }
+}
+
+/** A standard caption: the coach's name and line, white on a dark band, at most three lines. */
+@Composable
+fun CoachCaption(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text,
+        color = Color.White,
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Medium,
+        lineHeight = 26.sp,
+        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+        maxLines = 3,
+        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+        modifier = modifier
+            .widthIn(max = 900.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color(0xB3000000))
+            .padding(horizontal = 18.dp, vertical = 8.dp),
+    )
+}
+
+@Composable
+private fun CoachSwitchRow(label: String, detail: String, checked: Boolean, onChange: (Boolean) -> Unit) {
+    Row(
+        Modifier
+            .width(340.dp)
+            .clickable { onChange(!checked) }
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            Text(label, color = Color.White, fontWeight = FontWeight.SemiBold)
+            Text(detail, color = Color(0x99FFFFFF), fontSize = 12.sp)
+        }
+        androidx.compose.material3.Switch(checked = checked, onCheckedChange = onChange)
     }
 }

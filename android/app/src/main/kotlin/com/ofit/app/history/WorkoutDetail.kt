@@ -100,7 +100,12 @@ fun WorkoutDetail(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                OutlinedButton(onClick = onClose) { Text(if (title != null) "Done" else "Close") }
+                // Back at the top left, as on every screen; after a workout, Done as well.
+                com.ofit.app.ui.BackButton(onClick = onClose)
+                if (title != null) {
+                    Spacer(Modifier.width(12.dp))
+                    OutlinedButton(onClick = onClose) { Text("Done") }
+                }
                 Spacer(Modifier.width(16.dp))
                 Column(Modifier.weight(1f)) {
                     title?.let { Text(it.uppercase(), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary) }

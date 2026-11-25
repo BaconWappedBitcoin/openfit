@@ -127,10 +127,10 @@ class WorkoutManager(
     val engine = WorkoutEngine(
         { if (previewMode) NO_TREADMILL_LIMITS else limitsProvider() },
         switchingSink,
-        // A treadmill slows down over a 10-minute cool-down when a workout ends; with no
-        // treadmill there is no belt to slow, so it just ends.
+        // A workout ends with a 10-minute cool-down, the speed easing down. With no treadmill the
+        // same cool-down is suggested on screen (user request 2026-11-24: the same path as with one).
         coolDownFor = { snapshot ->
-            if (previewMode) null else com.ofit.protocol.CoolDown.build(snapshot.speedKph, limitsProvider())
+            com.ofit.protocol.CoolDown.build(snapshot.speedKph, if (previewMode) NO_TREADMILL_LIMITS else limitsProvider())
         },
     )
 

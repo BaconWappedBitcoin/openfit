@@ -89,7 +89,9 @@ class HistoryManager(
             consoleState.value
         }
         if (snapshot.isActive) {
-            if (!active || snapshot.totalElapsedMillis + 2_000 < lastElapsed) begin(snapshot)
+            // A new record only when a workout starts: a seek back (into the intro, or -10 s) is the
+            // same workout and must not start the record again (user report 2026-11-24).
+            if (!active) begin(snapshot)
             noTreadmill = preview.value || demo.value
             val wall = System.currentTimeMillis()
             if (snapshot.isRunning && lastActiveWall > 0) activeMillis += (wall - lastActiveWall).coerceIn(0, 5_000)
@@ -136,7 +138,9 @@ class HistoryManager(
 
     private fun begin(snapshot: WorkoutEngineSnapshot) {
         active = true
-        startedAt = System.currentTimeMillis() - snapshot.totalElapsedMillis
+        // The wall clock when it began: the workout clock can already be ahead (an intro skipped at
+        // the start), which made the summary miss the entry (user report 2026-11-24).
+        startedAt = System.currentTimeMillis() - snapshot.totalElapsedMillis.coerceAtMost(2_000)
         name = snapshot.programName
         distance = 0.0
         calories = null
@@ -151,7 +155,6 @@ class HistoryManager(
     private fun finish(snapshot: WorkoutEngineSnapshot) {
         // Time actually spent; the program position would count skipped or fast-forwarded time.
         val seconds = (if (activeMillis > 0) activeMillis else snapshot.totalElapsedMillis) / 1000
-        if (seconds < HistoryCodec.MIN_DURATION_SECONDS) return
         val hr = heartSummary.value
         val entry = HistoryEntry(
             startedAtMillis = startedAt,
@@ -167,6 +170,24 @@ class HistoryManager(
             zoneSeconds = hr.zoneSeconds,
             samples = samples.toList(),
         )
+        // Under a minute: not kept unless the runner taps "Save anyway" on the summary.
+        if (seconds < HistoryCodec.MIN_DURATION_SECONDS) {
+            _unsaved.value = entry
+            return
+        }
+        _unsaved.value = null
+        save(listOf(entry) + _entries.value)
+    }
+
+    private val _unsaved = MutableStateFlow<HistoryEntry?>(null)
+
+    /** The last workout, when it ran under a minute and so was not saved (user request 2026-11-24). */
+    val unsaved: StateFlow<HistoryEntry?> = _unsaved.asStateFlow()
+
+    /** Keep the short workout after all. */
+    fun saveUnsaved() {
+        val entry = _unsaved.value ?: return
+        _unsaved.value = null
         save(listOf(entry) + _entries.value)
     }
 

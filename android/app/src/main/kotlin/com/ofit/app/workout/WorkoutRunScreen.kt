@@ -146,16 +146,40 @@ fun WorkoutRunScreen(
     val current by rememberUpdatedState(snapshot)
     // Video volume, remembered for next time. Seeking bumps the video to the new point at once.
     var volume by remember { mutableStateOf(videoPrefs.getInt("volume", 100)) }
+    // Muted only while another app's music plays (user report 2026-11-24): the video sound setting
+    // is kept, and comes back by itself when the music pauses (when OpenFit can see the music app).
+    var mutedForMusic by remember { mutableStateOf(false) }
+    LaunchedEffect(mutedForMusic) {
+        // Only a music app that is really paused or stopped, twice in a row, gives the sound back:
+        // while it loads (buffering) it is not "playing" yet, and unmuting then stopped the music a
+        // second after it started (user report 2026-11-24).
+        var stoppedChecks = 0
+        while (mutedForMusic) {
+            kotlinx.coroutines.delay(2_000)
+            val state = runCatching { OutsideMusic.controller(context) }.getOrNull()?.playbackState?.state
+            val stopped = state == android.media.session.PlaybackState.STATE_PAUSED ||
+                state == android.media.session.PlaybackState.STATE_STOPPED
+            stoppedChecks = if (stopped) stoppedChecks + 1 else 0
+            if (stoppedChecks >= 2) mutedForMusic = false
+        }
+    }
+    val playerVolume = if (mutedForMusic) 0 else volume
     // The virtual coach: off unless chosen, remembered for next time.
-    var coach by remember { mutableStateOf(CoachChoice.fromName(videoPrefs.getString("coach", null))) }
+    // The coach: off, or one of the saved coaches (user request 2026-11-24). The "coach" setting
+    // still says whether a coach runs; which one, and how it looks and sounds, is the saved coach.
+    var coachOn by remember { mutableStateOf(CoachChoice.fromName(videoPrefs.getString("coach", null)) != CoachChoice.OFF) }
+    var coaches by remember { mutableStateOf(CoachRoster.list(context)) }
+    var activeCoach by remember { mutableStateOf(CoachRoster.active(context)) }
+    val coach = if (coachOn) activeCoach.choice else CoachChoice.OFF
     // The coach's look from the coach designer, and whether the designer is open over the workout.
-    var coachLook by remember { mutableStateOf(CoachLook.load(context)) }
+    val coachLook = activeCoach.look
     var designingCoach by remember { mutableStateOf(false) }
     var coachSpeaks by remember { mutableStateOf(videoPrefs.getBoolean("coach_speaks", true)) }
     // Captions and the voice are separate switches, and the voice has its own volume (user request 2026-11-24).
     var coachCaptions by remember { mutableStateOf(videoPrefs.getBoolean("coach_captions", true)) }
     var coachVolume by remember { mutableStateOf(videoPrefs.getFloat("coach_volume", 1f)) }
-    var coachPersona by remember(coach) { mutableStateOf(CoachLook.persona(context, coach)) }
+    val coachPersona = activeCoach.persona
+    var coachCaption by remember { mutableStateOf<String?>(null) }
     // The coach's pace against the speed it is given, kept per workout (user request 2026-11-24).
     var coachPace by remember(saved.id) { mutableStateOf(videoPrefs.getFloat("coach_pace:" + saved.id, 1f)) }
     // The coach's size, one setting for every workout (user request 2026-11-24).
@@ -339,12 +363,9 @@ fun WorkoutRunScreen(
                 modifier = Modifier.fillMaxSize(),
                 seekRequest = videoSeek,
                 rate = playbackRate,
-                volume = volume,
-                // Another app took the audio (music): the video carries on muted; show it muted.
-                onTakenOver = {
-                    volume = 0
-                    videoPrefs.edit().putInt("volume", 0).apply()
-                },
+                volume = playerVolume,
+                // Another app took the audio (music): the video carries on muted while it plays.
+                onTakenOver = { mutedForMusic = true },
                 onVideoPosition = { seconds ->
                     lastVideoSeconds = seconds
                     checkHold(seconds)
@@ -358,7 +379,7 @@ fun WorkoutRunScreen(
                 modifier = Modifier.fillMaxSize(),
                 seekRequest = videoSeek,
                 rate = playbackRate,
-                volume = volume,
+                volume = playerVolume,
             )
         }
 
@@ -437,6 +458,8 @@ fun WorkoutRunScreen(
             captions = coachCaptions,
             voiceVolume = coachVolume,
             persona = coachPersona,
+            changeTips = !preview,
+            onCaption = { coachCaption = it },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 // Feet at the bottom edge of the screen (user request 2026-11-24): the feet sit about
@@ -462,6 +485,7 @@ fun WorkoutRunScreen(
                 coachSpeaks = on
                 videoPrefs.edit().putBoolean("coach_speaks", on).apply()
             },
+            caption = coachCaption.takeIf { coach != CoachChoice.OFF },
             coachCaptions = coachCaptions,
             onCoachCaptions = { on ->
                 coachCaptions = on
@@ -472,9 +496,15 @@ fun WorkoutRunScreen(
                 coachVolume = v
                 videoPrefs.edit().putFloat("coach_volume", v).apply()
             },
-            onRunCoach = { choice ->
-                coach = choice
-                videoPrefs.edit().putString("coach", choice.name).apply()
+            coaches = coaches,
+            activeCoachId = activeCoach.id,
+            onPickCoach = { picked ->
+                coachOn = picked != null
+                if (picked != null) {
+                    activeCoach = picked
+                    CoachRoster.setActive(context, picked.id)
+                }
+                videoPrefs.edit().putString("coach", if (picked == null) CoachChoice.OFF.name else picked.choice.name).apply()
             },
             program = saved.program,
             snapshot = shownSnapshot,
@@ -516,15 +546,29 @@ fun WorkoutRunScreen(
             matchSpeed = matchSpeed,
             onMatchSpeed = onMatchSpeed,
             skipIntro = if (hasBounds) skipIntro else null,
+            onVideoTap = {
+                when {
+                    awaitingStart || countdown > 0 -> Unit
+                    !snapshot.isActive && !snapshot.isFinished -> startWithCountdown()
+                    snapshot.state == WorkoutEngineState.RUNNING -> onPause()
+                    snapshot.state == WorkoutEngineState.PAUSED -> onResume()
+                }
+            },
             onSkipIntro = { on ->
                 skipIntro = on
                 videoPrefs.edit().putBoolean("skip_intro_outro", on).apply()
             },
             volume = volume,
+            videoMutedForMusic = mutedForMusic,
+            onMusicStarts = { mutedForMusic = true },
             onVolume = { v ->
+                // While music plays this only sets the level the video comes back at: turning the
+                // video up would give it the sound and Android would stop the music (user report 2026-11-24).
                 volume = v.coerceIn(0, 100)
                 videoPrefs.edit().putInt("volume", volume).apply()
             },
+            // On purpose: the video takes the sound back (and the music pauses).
+            onVideoSoundInstead = { mutedForMusic = false },
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
@@ -538,23 +582,14 @@ fun WorkoutRunScreen(
                 onDismissRequest = { designingCoach = false },
                 properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false),
             ) {
-                CoachDesigner(
-                    choice = if (coach == CoachChoice.OFF) CoachChoice.FEMALE else coach,
-                    look = coachLook,
-                    onChoice = { c ->
-                        coach = c
-                        videoPrefs.edit().putString("coach", c.name).apply()
-                    },
-                    onLook = { l ->
-                        coachLook = l
-                        CoachLook.save(context, l)
-                    },
-                    persona = coachPersona,
-                    onPersona = { p ->
-                        coachPersona = p
-                        CoachLook.savePersona(context, if (coach == CoachChoice.OFF) CoachChoice.FEMALE else coach, p)
-                    },
+                CoachRosterDesigner(
                     onDone = { designingCoach = false },
+                    onSaved = { c ->
+                        coaches = CoachRoster.list(context)
+                        activeCoach = c
+                        coachOn = true
+                        videoPrefs.edit().putString("coach", c.choice.name).apply()
+                    },
                 )
             }
         }
@@ -594,6 +629,7 @@ fun WorkoutRunScreen(
         // The cool-down after the workout: what is happening, the time left, and a way to stop now.
         if (snapshot.isCoolingDown) {
             CoolDownBanner(
+                noTreadmill = preview,
                 snapshot = snapshot,
                 onEnd = onAbandon,
                 modifier = Modifier
@@ -642,7 +678,13 @@ fun WorkoutRunScreen(
 
 /** "Cooling down · 8:41 left", the easy pace, and End cool-down (the belt stops). */
 @Composable
-private fun CoolDownBanner(snapshot: com.ofit.protocol.WorkoutEngineSnapshot, onEnd: () -> Unit, modifier: Modifier = Modifier) {
+private fun CoolDownBanner(
+    snapshot: com.ofit.protocol.WorkoutEngineSnapshot,
+    onEnd: () -> Unit,
+    modifier: Modifier = Modifier,
+    /** No treadmill: there is no belt, so the wording says the walk ends instead. */
+    noTreadmill: Boolean = false,
+) {
     val units = com.ofit.app.settings.LocalUnits.current
     androidx.compose.foundation.layout.Row(
         modifier
@@ -672,7 +714,8 @@ private fun CoolDownBanner(snapshot: com.ofit.protocol.WorkoutEngineSnapshot, on
                 fontSize = 34.sp,
             )
             Text(
-                "Easy walk at ${units.speedText(snapshot.speedKph)}, flat. Slows each minute, then the belt stops.",
+                "Easy walk at ${units.speedText(snapshot.speedKph)}, flat. Slows each minute, then " +
+                    if (noTreadmill) "the workout ends." else "the belt stops.",
                 color = androidx.compose.ui.graphics.Color(0xCCFFFFFF),
             )
         }

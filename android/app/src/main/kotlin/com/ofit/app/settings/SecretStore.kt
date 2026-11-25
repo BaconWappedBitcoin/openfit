@@ -70,6 +70,26 @@ class SecretStore(context: Context) {
         _hasYouTubeKey.value = false
     }
 
+    // The project owner's token (user request 2026-11-24): with it, community workouts can be
+    // removed from the library at once. Kept encrypted like the keys; nobody else needs one.
+    private val _hasOwnerToken = MutableStateFlow(prefs.contains(KEY_OWNER))
+    val hasOwnerToken: StateFlow<Boolean> = _hasOwnerToken.asStateFlow()
+
+    fun ownerToken(): String? = open(KEY_OWNER)
+
+    fun setOwnerToken(token: String): Boolean {
+        val clean = token.trim()
+        if (clean.length < 24 || clean.any { it.isWhitespace() }) return false
+        seal(KEY_OWNER, clean)
+        _hasOwnerToken.value = true
+        return true
+    }
+
+    fun clearOwnerToken() {
+        prefs.edit().remove(KEY_OWNER).apply()
+        _hasOwnerToken.value = false
+    }
+
     private fun open(name: String): String? {
         val stored = prefs.getString(name, null) ?: return null
         return runCatching {
@@ -135,6 +155,7 @@ class SecretStore(context: Context) {
         private const val PREFS = "ofit_secrets"
         private const val KEY_GEMINI = "gemini_key"
         private const val KEY_YOUTUBE = "youtube_key"
+        private const val KEY_OWNER = "owner_token"
         private const val KEY_USE_SERVER = "use_server"
         private const val KEY_SERVER_URL = "server_url"
         private const val ALIAS = "openfit_secrets"
@@ -144,7 +165,11 @@ class SecretStore(context: Context) {
         /** Google API keys: "AIza" followed by 35 URL-safe characters (same rule as the backend). */
         private val KEY_SHAPE = Regex("^AIza[0-9A-Za-z_-]{35}$")
 
-        fun looksLikeGeminiKey(key: String): Boolean = KEY_SHAPE.matches(key.trim())
+        /** Google's newer keys (AI Studio from 2026): "AQ." and then letters, digits, "_", "-" and ".". */
+        private val AUTH_KEY_SHAPE = Regex("^AQ[.][0-9A-Za-z_.-]{20,300}$")
+
+        /** A Google API key in either form: the older "AIza…" or the newer "AQ.…" (user report 2026-11-24). */
+        fun looksLikeGeminiKey(key: String): Boolean = key.trim().let { KEY_SHAPE.matches(it) || AUTH_KEY_SHAPE.matches(it) }
 
         /** For display: the first and last four characters only. */
         fun masked(key: String): String = if (key.length < 12) "••••" else key.take(4) + "••••••••" + key.takeLast(4)

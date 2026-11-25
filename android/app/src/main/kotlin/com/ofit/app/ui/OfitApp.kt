@@ -355,6 +355,7 @@ fun OfitApp(
                     controller.heart.setSex(h.sex)
                     controller.settings.setUnits(h.units)
                 },
+                onBack = { onNavigate(AppScreen.Home) },
             )
 
             AppScreen.Browse -> com.ofit.app.browse.BrowseScreen(
@@ -507,6 +508,17 @@ fun OfitApp(
                 onReport = controller.library::report,
                 onBack = { onNavigate(AppScreen.Workouts) },
                 savedNames = workouts.map { it.program.name }.toSet(),
+                onPlay = { entry ->
+                    workouts.firstOrNull { it.program.name == entry.name }?.let { saved ->
+                        controller.workouts.clearFinished()
+                        onNavigate(AppScreen.Run(saved))
+                    }
+                },
+                onRemove = if (controller.secrets.hasOwnerToken.collectAsState().value) {
+                    { entry -> controller.secrets.ownerToken()?.let { controller.library.remove(entry, it) } }
+                } else {
+                    null
+                },
             )
 
             is AppScreen.Editor -> WorkoutEditorScreen(
@@ -550,6 +562,9 @@ fun OfitApp(
                     controller.history.delete(e)
                     onNavigate(AppScreen.Home)
                 },
+                unsaved = controller.history.unsaved.collectAsState().value
+                    ?.takeIf { it.name == screen.name && it.startedAtMillis >= screen.startedAfterMillis - com.ofit.protocol.SummaryLookup.SLACK_MILLIS },
+                onSaveAnyway = controller.history::saveUnsaved,
             )
 
             is AppScreen.Run -> {
@@ -1252,6 +1267,9 @@ private fun WorkoutSummaryScreen(
     onHistory: () -> Unit,
     onRepeat: (() -> Unit)? = null,
     onDiscard: ((com.ofit.protocol.HistoryEntry) -> Unit)? = null,
+    /** A workout under a minute that was not saved, offered with "Save anyway". */
+    unsaved: com.ofit.protocol.HistoryEntry? = null,
+    onSaveAnyway: () -> Unit = {},
 ) {
     // The History entry is written a moment after the workout ends; wait briefly for it.
     var waited by remember { mutableStateOf(false) }
@@ -1269,7 +1287,9 @@ private fun WorkoutSummaryScreen(
         !waited -> androidx.compose.foundation.layout.Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             androidx.compose.material3.CircularProgressIndicator()
         }
-        else -> Column(
+        else -> androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
+          com.ofit.app.ui.BackButton(onClick = onDone, modifier = Modifier.align(Alignment.TopStart).statusBarsPadding().padding(16.dp))
+          Column(
             Modifier.fillMaxSize().padding(32.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -1277,11 +1297,16 @@ private fun WorkoutSummaryScreen(
             Text(name, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(8.dp))
             Text("Workout ended. It ran under a minute, so it was not saved to History.")
+            if (unsaved != null) {
+                Spacer(Modifier.height(12.dp))
+                androidx.compose.material3.OutlinedButton(onClick = onSaveAnyway) { Text("Save anyway") }
+            }
             Spacer(Modifier.height(16.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 androidx.compose.material3.Button(onClick = onDone) { Text("Done") }
                 androidx.compose.material3.OutlinedButton(onClick = onHistory) { Text("History") }
             }
+        }
         }
     }
 }

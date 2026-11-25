@@ -1,5 +1,6 @@
 package com.ofit.app.settings
 
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,6 +52,8 @@ fun AiKeyScreen(secrets: SecretStore, onBack: () -> Unit) {
     var youtubeError by remember { mutableStateOf<String?>(null) }
     var input by remember { mutableStateOf("") }
     var error by remember { mutableStateOf<String?>(null) }
+    var checkResult by remember { mutableStateOf<String?>(null) }
+    val checkScope = androidx.compose.runtime.rememberCoroutineScope()
     val uri = LocalUriHandler.current
 
     Column(
@@ -155,7 +159,7 @@ fun AiKeyScreen(secrets: SecretStore, onBack: () -> Unit) {
                 }
                 KeyStep("2", "Sign in with your Google account and accept Google's terms if asked.")
                 KeyStep("3", "Tap \"Create API key\". If it asks for a project, pick the default one or create one.")
-                KeyStep("4", "Copy the key. It starts with AIza and is 39 characters long.")
+                KeyStep("4", "Copy the key. It starts with AQ. (newer keys) or AIza (older keys).")
                 KeyStep("5", "Paste it below and tap Save key.")
                 Text(
                     "Keep the key private, like a password. You can delete it any time in Google AI Studio, " +
@@ -166,7 +170,7 @@ fun AiKeyScreen(secrets: SecretStore, onBack: () -> Unit) {
                 OutlinedTextField(
                     value = input,
                     onValueChange = { input = it.trim(); error = null },
-                    label = { Text("Gemini API key (starts with AIza)") },
+                    label = { Text("Gemini API key (starts with AQ. or AIza)") },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -176,14 +180,20 @@ fun AiKeyScreen(secrets: SecretStore, onBack: () -> Unit) {
                 )
                 Button(
                     onClick = {
-                        if (secrets.setGeminiKey(input)) {
+                        val typed = input
+                        if (secrets.setGeminiKey(typed)) {
                             input = ""
+                            // Ask Google whether the key works, so a key Google refuses is caught now,
+                            // not halfway through making a workout.
+                            checkResult = "Checking the key with Google…"
+                            checkScope.launch { checkResult = checkGeminiKey(typed) }
                         } else {
-                            error = "That doesn't look like a Gemini key: it should start with AIza and be 39 characters."
+                            error = "That doesn't look like a Gemini key: it should start with AQ. or AIza."
                         }
                     },
                     enabled = input.isNotBlank(),
                 ) { Text("Save key") }
+                checkResult?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
             }
         }
 
@@ -223,6 +233,46 @@ fun AiKeyScreen(secrets: SecretStore, onBack: () -> Unit) {
                 ) { Text("Save YouTube key") }
             }
         }
+
+        // The project owner only: removing community workouts at once.
+        val hasOwner by secrets.hasOwnerToken.collectAsState()
+        var ownerInput by remember { mutableStateOf("") }
+        var ownerError by remember { mutableStateOf<String?>(null) }
+        Card(Modifier.widthIn(max = 1000.dp).fillMaxWidth()) {
+            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text("Owner token (project owner only)", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    "With the server's owner token, community workouts show \"Remove it now\" under their report flag. " +
+                        "Nobody else needs this.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                if (hasOwner) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text("Owner token saved.", fontWeight = FontWeight.SemiBold)
+                        OutlinedButton(onClick = { secrets.clearOwnerToken() }) { Text("Remove token") }
+                    }
+                } else {
+                    OutlinedTextField(
+                        value = ownerInput,
+                        onValueChange = { ownerInput = it.trim(); ownerError = null },
+                        label = { Text("Owner token") },
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        isError = ownerError != null,
+                        supportingText = { ownerError?.let { Text(it) } },
+                        modifier = Modifier.widthIn(max = 700.dp).fillMaxWidth(),
+                    )
+                    Button(
+                        onClick = {
+                            if (secrets.setOwnerToken(ownerInput)) ownerInput = ""
+                            else ownerError = "That doesn't look like the owner token."
+                        },
+                        enabled = ownerInput.isNotBlank(),
+                    ) { Text("Save token") }
+                }
+            }
+        }
     }
 }
 
@@ -243,4 +293,26 @@ private fun KeyStep(number: String, text: String) {
         )
         Text(text, style = MaterialTheme.typography.bodyLarge)
     }
+}
+
+/**
+ * Ask Google whether a Gemini key works (lists one model; nothing is charged). Returns a line for
+ * the runner: it works, or why not.
+ */
+private suspend fun checkGeminiKey(key: String): String = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+    runCatching {
+        val c = java.net.URL("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1").openConnection() as java.net.HttpURLConnection
+        c.setRequestProperty("x-goog-api-key", key.trim())
+        c.connectTimeout = 15_000
+        c.readTimeout = 15_000
+        val code = c.responseCode
+        c.disconnect()
+        when (code) {
+            200 -> "Key saved, and Google accepts it."
+            400, 401, 403 -> "Key saved, but Google refused it (HTTP $code). Some new AQ. keys are not accepted yet: " +
+                "if this stays, create another key in Google AI Studio, or use the OpenFit server."
+            429 -> "Key saved. Google says it is over its limit for now; it should work later."
+            else -> "Key saved. Google answered HTTP $code; try making a workout to see if it works."
+        }
+    }.getOrElse { "Key saved. It could not be checked (no connection?)." }
 }

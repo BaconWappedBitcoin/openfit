@@ -13,7 +13,10 @@ export function summary(p: StoredProgram) {
     steps: p.program.steps.length,
     durationSeconds: totalSeconds(p.program),
     ...effort(p.program),
-    rating: Math.round(ratingScore(p.ratingSum, p.ratingCount) * 10) / 10,
+    // The real average of the stars given (user report 2026-11-24: one 1-star vote showed 3.1);
+    // "score", smoothed towards 3.5 so one vote can't top the list, is for ranking only.
+    rating: p.ratingCount > 0 ? Math.round((p.ratingSum / p.ratingCount) * 10) / 10 : 0,
+    score: Math.round(ratingScore(p.ratingSum, p.ratingCount) * 100) / 100,
     ratings: p.ratingCount,
     origin: p.origin,
     createdAt: p.createdAt,

@@ -25,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Flag
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
@@ -108,6 +109,10 @@ fun LibraryScreen(
     modifier: Modifier = Modifier,
     /** Names already in My workouts, to mark those as saved. */
     savedNames: Set<String> = emptySet(),
+    /** Start a workout that is already in My workouts (user request 2026-11-24). */
+    onPlay: (LibraryEntry) -> Unit = {},
+    /** The owner can remove a workout from the library at once; null for everyone else. */
+    onRemove: ((LibraryEntry) -> Unit)? = null,
 ) {
     var top by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
@@ -167,14 +172,30 @@ fun LibraryScreen(
             contentPadding = PaddingValues(bottom = 24.dp),
         ) {
             items(shown, key = { it.id }) { entry ->
-                CommunityGridCard(entry, saved = entry.name in savedNames, onSave = { onSave(entry) }, onRate = { onRate(entry, it) }, onReport = { onReport(entry, it) })
+                CommunityGridCard(
+                    entry,
+                    saved = entry.name in savedNames,
+                    onSave = { onSave(entry) },
+                    onRate = { onRate(entry, it) },
+                    onReport = { onReport(entry, it) },
+                    onPlay = { onPlay(entry) },
+                    onRemove = onRemove?.let { remove -> { remove(entry) } },
+                )
             }
         }
     }
 }
 
 @Composable
-private fun CommunityGridCard(entry: LibraryEntry, saved: Boolean, onSave: () -> Unit, onRate: (Int) -> Unit, onReport: (String) -> Unit = {}) {
+private fun CommunityGridCard(
+    entry: LibraryEntry,
+    saved: Boolean,
+    onSave: () -> Unit,
+    onRate: (Int) -> Unit,
+    onReport: (String) -> Unit = {},
+    onPlay: () -> Unit = {},
+    onRemove: (() -> Unit)? = null,
+) {
     var tapped by remember { mutableStateOf(false) }
     var reporting by remember { mutableStateOf(false) }
     if (reporting) {
@@ -199,7 +220,15 @@ private fun CommunityGridCard(entry: LibraryEntry, saved: Boolean, onSave: () ->
                 }
             },
             confirmButton = {},
-            dismissButton = { androidx.compose.material3.TextButton(onClick = { reporting = false }) { Text("Cancel") } },
+            dismissButton = {
+                Row {
+                    // The owner: take it out at once, no reports needed.
+                    if (onRemove != null) {
+                        androidx.compose.material3.TextButton(onClick = { reporting = false; onRemove() }) { Text("Remove it now (owner)") }
+                    }
+                    androidx.compose.material3.TextButton(onClick = { reporting = false }) { Text("Cancel") }
+                }
+            },
         )
     }
     val isSaved = saved || tapped
@@ -253,22 +282,23 @@ private fun CommunityGridCard(entry: LibraryEntry, saved: Boolean, onSave: () ->
             Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 // Save: a wide pill, then the stars to rate it.
+                // Saved already: Play starts it from My workouts (user request 2026-11-24).
                 Row(
                     Modifier
                         .height(44.dp)
                         .clip(RoundedCornerShape(22.dp))
-                        .background(if (isSaved) Color(0x334ADE80) else accent)
-                        .clickable(enabled = !isSaved) { tapped = true; onSave() }
+                        .background(accent)
+                        .clickable { if (isSaved) onPlay() else { tapped = true; onSave() } }
                         .padding(horizontal = 18.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(if (isSaved) Icons.Filled.Check else Icons.Filled.Add, contentDescription = null, tint = if (isSaved) Color(0xFF4ADE80) else Color(0xFF111111))
+                    Icon(if (isSaved) Icons.Filled.PlayArrow else Icons.Filled.Add, contentDescription = null, tint = Color(0xFF111111))
                     Spacer(Modifier.width(6.dp))
-                    Text(
-                        if (isSaved) "In your workouts" else "Save",
-                        color = if (isSaved) Color(0xFF4ADE80) else Color(0xFF111111),
-                        fontWeight = FontWeight.SemiBold,
-                    )
+                    Text(if (isSaved) "Play" else "Save", color = Color(0xFF111111), fontWeight = FontWeight.SemiBold)
+                }
+                if (isSaved) {
+                    Spacer(Modifier.width(8.dp))
+                    Icon(Icons.Filled.Check, contentDescription = "In your workouts", tint = Color(0xFF4ADE80), modifier = Modifier.size(20.dp))
                 }
                 Spacer(Modifier.weight(1f))
                 for (star in 1..5) {

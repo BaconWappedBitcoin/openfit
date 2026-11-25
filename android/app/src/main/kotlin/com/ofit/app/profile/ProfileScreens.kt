@@ -85,6 +85,8 @@ fun ProfileSelectionScreen(
     /** The profile in use's health details and units, edited with it. */
     health: HealthDetails = HealthDetails(),
     onHealth: (HealthDetails) -> Unit = {},
+    /** Back to where the runner came from (user report 2026-11-24: there was no way back). */
+    onBack: (() -> Unit)? = null,
 ) {
     var editMode by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<Profile?>(null) }
@@ -98,7 +100,16 @@ fun ProfileSelectionScreen(
             .fillMaxSize()
             .background(androidx.compose.ui.graphics.Brush.radialGradient(listOf(glow.copy(alpha = 0.20f), Color.Transparent), radius = 1400f)),
     ) {
-    androidx.compose.foundation.layout.Box(Modifier.statusBarsPadding().padding(16.dp)) { com.ofit.app.ui.MenuButton() }
+    androidx.compose.foundation.layout.Row(
+        Modifier.statusBarsPadding().padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        com.ofit.app.ui.MenuButton()
+        // In edit mode, back leaves editing; otherwise it goes back.
+        if (editMode) com.ofit.app.ui.BackButton(onClick = { editMode = false })
+        else onBack?.let { com.ofit.app.ui.BackButton(onClick = it) }
+    }
     Column(
         modifier = Modifier.fillMaxSize().statusBarsPadding().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -278,7 +289,13 @@ fun ProfileEditDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(title) },
+        // A back arrow beside the title, as on every screen (same as Cancel).
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                com.ofit.app.ui.BackButton(onClick = onDismiss)
+                Text(title)
+            }
+        },
         text = {
             Column(
                 Modifier.verticalScroll(androidx.compose.foundation.rememberScrollState()),

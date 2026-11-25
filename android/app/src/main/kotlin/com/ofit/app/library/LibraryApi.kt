@@ -32,6 +32,8 @@ data class LibraryEntry(
     val origin: String,
     /** Easy/Medium/Hard and Walk/Run, from the effort numbers the server sends (null from an older server). */
     val effort: com.ofit.protocol.WorkoutRating.Rating? = null,
+    /** For ranking: the rating smoothed towards 3.5, so one vote can't top the list. [rating] is the real average. */
+    val score: Double = rating,
 )
 
 /** What the analysis of a video produced, before the user has decided to keep it. */
@@ -144,7 +146,7 @@ class LibraryApi(
         if (!useServer()) {
             // Hidden by moderation (reports, or a video gone bad): kept in the file, never shown.
             val all = CommunityRepo.programs().objects().filter { !it.has("hidden") }.map { repoEntry(it) to it.optLong("createdAt") }
-            val sorted = if (top) all.sortedByDescending { it.first.rating } else all.sortedByDescending { it.second }
+            val sorted = if (top) all.sortedByDescending { it.first.score } else all.sortedByDescending { it.second }
             return sorted.take(30).map { it.first }
         }
         val json = request("GET", "/api/programs?sort=" + (if (top) "top" else "new") + "&limit=30")
@@ -186,6 +188,13 @@ class LibraryApi(
         if (!useServer()) noServer("Reporting")
         val path = "/api/programs/" + URLEncoder.encode(id, "UTF-8") + "/report"
         return request("POST", path, JSONObject().put("reason", reason)).optBoolean("hidden")
+    }
+
+    /** The owner takes a workout out of the community library (server checks [token]). */
+    suspend fun remove(id: String, token: String) {
+        if (!useServer()) noServer("Removing")
+        val path = "/api/programs/" + URLEncoder.encode(id, "UTF-8")
+        request("DELETE", path, extraHeaders = mapOf("x-admin-token" to token))
     }
 
     suspend fun rate(id: String, stars: Int): LibraryEntry {
@@ -271,15 +280,17 @@ class LibraryApi(
     private fun repoEntry(json: JSONObject): LibraryEntry {
         val program = parseProgram(json.getJSONObject("program"))
         val count = json.optInt("ratingCount")
-        val score = (json.optDouble("ratingSum", 0.0) + 3.5 * 5) / (count + 5)
+        val sum = json.optDouble("ratingSum", 0.0)
+        val score = (sum + 3.5 * 5) / (count + 5)
         return LibraryEntry(
             id = json.getString("id"),
             name = program.name,
             videoId = if (json.isNull("videoId")) null else json.optString("videoId").ifEmpty { null },
             steps = program.steps.size,
             durationSeconds = program.totalDurationSeconds,
-            rating = Math.round(score * 10) / 10.0,
+            rating = if (count > 0) Math.round(sum / count * 10) / 10.0 else 0.0,
             ratings = count,
+            score = score,
             origin = json.optString("origin", "manual"),
             effort = com.ofit.protocol.WorkoutRating.of(program),
         )
@@ -293,6 +304,7 @@ class LibraryApi(
         durationSeconds = json.getInt("durationSeconds"),
         rating = json.getDouble("rating"),
         ratings = json.getInt("ratings"),
+        score = json.optDouble("score").takeIf { !it.isNaN() } ?: json.getDouble("rating"),
         origin = json.optString("origin", "manual"),
         effort = json.optDouble("mets").takeIf { !it.isNaN() && it > 0 }?.let { mets ->
             com.ofit.protocol.WorkoutRating.classify(mets, json.optDouble("runShare", 0.0), json.getInt("durationSeconds"))

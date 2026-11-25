@@ -172,8 +172,13 @@ setInterval(function(){if(ready&&window.OfitBridge){try{OfitBridge.position(play
 // Watchdog (user report 2026-11-24: starting music froze the video): a music app can pause the
 // video twice in a row, and the second pause fell inside onStateChange's 3 s guard and stuck.
 // Every 2 s, a video that should play but sits paused is muted and played again.
-setInterval(function(){if(!ready||!wantPlaying)return;try{if(player.getPlayerState()===2){
-  player.mute();wantVol=0;player.playVideo();if(window.OfitBridge){try{OfitBridge.takenOver();}catch(x){}}}}catch(e){}},2000);</script>
+setInterval(function(){if(!ready||!wantPlaying)return;try{if(player.getPlayerState()===2){ofitYield();}}catch(e){}},2000);
+// Another app (music) took the audio: mute first, and only play on once the mute has taken effect.
+// Played at once, the video was still audible, took the audio straight back and stopped the music
+// (audio focus log, 2026-11-24: about 40 ms after each loss).
+function ofitYield(){lastResume=Date.now();try{player.mute();player.setVolume(0);}catch(e){}wantVol=0;
+  if(window.OfitBridge){try{OfitBridge.takenOver();}catch(x){}}
+  setTimeout(function(){try{if(wantPlaying&&player.isMuted())player.playVideo();else if(wantPlaying)setTimeout(function(){player.playVideo();},700);}catch(e){}},600);}</script>
 <script src="https://www.youtube.com/iframe_api" onerror="console.log('iframe_api failed to load')"></script>
 <script>
 function onYouTubeIframeAPIReady(){console.log('api ready');ofitFit();
@@ -184,9 +189,7 @@ function onYouTubeIframeAPIReady(){console.log('api ready');ofitFit();
             onStateChange:function(e){
               // Paused, but not by us: Android paused it because another app (music) took the
               // audio. Mute it (so it never takes the audio back) and play on, at most every 3 s.
-              if(e.data===2&&wantPlaying&&Date.now()-lastResume>3000){lastResume=Date.now();
-                player.mute();wantVol=0;player.playVideo();
-                if(window.OfitBridge){try{OfitBridge.takenOver();}catch(x){}}}}}});
+              if(e.data===2&&wantPlaying&&Date.now()-lastResume>3000){ofitYield();}}}});
 }
 </script></body></html>
 """.trimIndent()

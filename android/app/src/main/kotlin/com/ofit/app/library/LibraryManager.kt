@@ -139,6 +139,19 @@ class LibraryManager(
         }
     }
 
+    /** The owner removes a workout from the community library at once. */
+    fun remove(entry: LibraryEntry, token: String) {
+        scope.launch {
+            try {
+                api.remove(entry.id, token)
+                _entries.value = _entries.value.filterNot { it.id == entry.id }
+                onMessage("${entry.name} is removed from the community library.")
+            } catch (e: LibraryException) {
+                onMessage(e.message)
+            }
+        }
+    }
+
     fun report(entry: LibraryEntry, reason: String) {
         scope.launch {
             try {

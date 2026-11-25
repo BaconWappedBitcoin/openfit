@@ -16,6 +16,10 @@ class SecretStoreTest {
         assertTrue(SecretStore.looksLikeGeminiKey("  $good "))
         assertFalse(SecretStore.looksLikeGeminiKey(good.dropLast(1)))
         assertFalse(SecretStore.looksLikeGeminiKey("sk-" + "a".repeat(36)))
+        // Google's newer keys (user report 2026-11-24).
+        assertTrue(SecretStore.looksLikeGeminiKey("AQ.Ab8RN6" + "x_Y-z.".repeat(8)))
+        assertFalse(SecretStore.looksLikeGeminiKey("AQ.short"))
+        assertFalse(SecretStore.looksLikeGeminiKey("AQ.has space" + "a".repeat(30)))
         assertFalse(SecretStore.looksLikeGeminiKey(""))
     }
 

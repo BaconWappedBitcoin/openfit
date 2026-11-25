@@ -282,6 +282,8 @@ class TreadmillController(context: Context) {
         const val DEVICE_PREFS = "ofit_device"
         const val KEY_WORKOUT_RUNNING = "workout_running"
         const val KEY_DEMO = "demo_treadmill"
+        /** No treadmill mode, kept across restarts and updates (user request 2026-11-24). */
+        const val KEY_NO_TREADMILL = "no_treadmill"
         const val DEMO_TICK_MILLIS = 250L
         const val SAVED_ADDRESS = "address"
         const val SAVED_NAME = "name"
@@ -722,6 +724,8 @@ class TreadmillController(context: Context) {
     init {
         // The demo survives a restart, like the choice of treadmill.
         if (_demo.value) setDemoTreadmill(true)
+        // So is No treadmill mode.
+        else if (devicePrefs.getBoolean(KEY_NO_TREADMILL, false)) setNoTreadmill(true)
         // A workout deleted from History is taken out of Health Connect too.
         history.onDeleted = { entry -> health.remove(entry.startedAtMillis) }
     }
@@ -731,6 +735,7 @@ class TreadmillController(context: Context) {
      * of a connected treadmill, so nothing can be sent to it.
      */
     fun setNoTreadmill(on: Boolean) {
+        devicePrefs.edit().putBoolean(KEY_NO_TREADMILL, on).apply()
         if (on && _demo.value) setDemoTreadmill(false)
         workouts.setPreview(on, byUser = true)
         if (on && holder.state.value.connectionState == ConnectionState.CONNECTED && !workouts.snapshot.value.isActive) {

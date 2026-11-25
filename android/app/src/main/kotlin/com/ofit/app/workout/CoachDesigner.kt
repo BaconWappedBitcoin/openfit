@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -44,25 +45,90 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/**
- * The coach designer (user request 2026-11-24): woman or man, the outfit, its colours, skin tone
- * and hair, with the coach running in a live preview. Every change is kept at once.
- */
+/** The coach designer from the menu: the saved coaches, edited and saved here. */
 @Composable
 fun CoachDesignerScreen(onBack: () -> Unit) {
+    CoachRosterDesigner(onDone = onBack, doneLabel = "Back")
+}
+
+/**
+ * The coach designer with saved coaches (user request 2026-11-24): pick a saved coach to edit, or
+ * start a new one; changes are kept when Save is tapped, and the saved coach is the one that runs
+ * with you. [onSaved] is told about each save (and pick), so a workout under it can follow.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun CoachRosterDesigner(onDone: () -> Unit, doneLabel: String = "Done", onSaved: (SavedCoach) -> Unit = {}) {
     val context = LocalContext.current
-    var choice by remember { mutableStateOf(CoachLook.choice(context).let { if (it == CoachChoice.OFF) CoachChoice.FEMALE else it }) }
-    var look by remember { mutableStateOf(CoachLook.load(context)) }
-    var persona by remember(choice) { mutableStateOf(CoachLook.persona(context, choice)) }
+    var coaches by remember { mutableStateOf(CoachRoster.list(context)) }
+    var saved by remember { mutableStateOf(CoachRoster.active(context)) }
+    var draft by remember { mutableStateOf(saved) }
+    val changed = draft != saved || coaches.none { it.id == draft.id }
+    var confirmDelete by remember { mutableStateOf(false) }
+    if (confirmDelete) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            title = { Text("Delete ${saved.name}?") },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    confirmDelete = false
+                    coaches = CoachRoster.delete(context, saved.id)
+                    saved = CoachRoster.active(context)
+                    draft = saved
+                    onSaved(saved)
+                }) { Text("Delete") }
+            },
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { confirmDelete = false }) { Text("Keep") } },
+        )
+    }
     CoachDesigner(
-        choice = choice,
-        look = look,
-        onChoice = { choice = it; CoachLook.saveChoice(context, it) },
-        onLook = { look = it; CoachLook.save(context, it) },
-        persona = persona,
-        onPersona = { persona = it; CoachLook.savePersona(context, choice, it) },
-        onDone = onBack,
-        doneLabel = "Back",
+        choice = draft.choice,
+        look = draft.look,
+        onChoice = { draft = draft.copy(male = it == CoachChoice.MALE) },
+        onLook = { draft = draft.copy(look = it) },
+        persona = draft.persona,
+        onPersona = { draft = draft.copy(name = it.name, voice = it.voice) },
+        onDone = onDone,
+        doneLabel = doneLabel,
+        subtitle = if (changed) "Unsaved changes: tap Save to keep them." else "Pick a saved coach, or make a new one.",
+        editorKey = draft.id,
+        header = {
+            // The saved coaches, to pick from.
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                coaches.forEach { c ->
+                    FilterChip(
+                        selected = c.id == draft.id,
+                        onClick = {
+                            draft = c
+                            saved = c
+                            CoachRoster.setActive(context, c.id)
+                            onSaved(c)
+                        },
+                        label = { Text(c.name) },
+                        shape = RoundedCornerShape(50),
+                    )
+                }
+                if (coaches.none { it.id == draft.id }) {
+                    FilterChip(selected = true, onClick = {}, label = { Text("New: ${draft.name}") }, shape = RoundedCornerShape(50))
+                }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                androidx.compose.material3.Button(onClick = {
+                    coaches = CoachRoster.upsert(context, draft)
+                    saved = draft
+                    onSaved(draft)
+                }, enabled = changed) { Text("Save") }
+                OutlinedButton(onClick = {
+                    draft = SavedCoach(CoachRoster.newId(), name = "Coach ${coaches.size + 1}", male = draft.male, look = draft.look)
+                }) { Text("New coach") }
+                if (changed && coaches.any { it.id == draft.id }) {
+                    androidx.compose.material3.TextButton(onClick = { draft = saved }) { Text("Undo changes") }
+                }
+                if (coaches.size > 1 && coaches.any { it.id == draft.id }) {
+                    androidx.compose.material3.TextButton(onClick = { confirmDelete = true }) { Text("Delete") }
+                }
+            }
+        },
     )
 }
 
@@ -79,6 +145,11 @@ fun CoachDesigner(
     onPersona: (CoachPersona) -> Unit = {},
     doneLabel: String = "Done",
     modifier: Modifier = Modifier,
+    subtitle: String = "Changes are saved as you go.",
+    /** Saved coaches and Save, above the tabs. */
+    header: @Composable () -> Unit = {},
+    /** Changes when another coach is opened, so typed fields start from that coach. */
+    editorKey: Any? = null,
 ) {
     val theme = MaterialTheme.colorScheme.primary.toArgb() and 0xFFFFFF
     var preview by remember { mutableStateOf(8.0) } // km/h: a jog
@@ -117,72 +188,100 @@ fun CoachDesigner(
                 .padding(28.dp),
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                // Back at the top left, as on every screen.
+                com.ofit.app.ui.BackButton(onClick = onDone)
                 Column(Modifier.weight(1f)) {
                     Text("Coach designer", fontSize = 30.sp, fontWeight = FontWeight.Bold)
-                    Text("Changes are saved as you go.", color = Color(0x99FFFFFF))
+                    Text(subtitle, color = Color(0x99FFFFFF))
                 }
-                OutlinedButton(onClick = onDone) { Text(doneLabel) }
             }
+            header()
 
-            Section("Coach") {
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(CoachChoice.FEMALE to "Woman", CoachChoice.MALE to "Man").forEach { (c, label) ->
-                        FilterChip(selected = choice == c, onClick = { onChoice(c) }, label = { Text(label) })
-                    }
+            // Tabs, so each part of the coach has its own page (user request 2026-11-24).
+            var tab by remember { mutableStateOf(DesignerTab.COACH) }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                DesignerTab.entries.forEach { t ->
+                    FilterChip(
+                        selected = tab == t,
+                        onClick = { tab = t },
+                        label = { Text(t.label, fontWeight = if (tab == t) FontWeight.Bold else FontWeight.Normal) },
+                        shape = RoundedCornerShape(50),
+                    )
                 }
             }
-            Section("Name") {
-                // The typed text is kept as typed; a tidied copy is saved.
-                var typed by remember(choice) { mutableStateOf(persona.name) }
-                androidx.compose.material3.OutlinedTextField(
-                    value = typed,
-                    onValueChange = { t ->
-                        typed = t.take(CoachPersona.MAX_NAME)
-                        onPersona(persona.copy(name = CoachPersona.clean(typed)))
-                    },
-                    singleLine = true,
-                    placeholder = { Text(CoachPersona.DEFAULT_NAME) },
-                    supportingText = { Text("Shown on the coach's speech bubbles") },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-            Section("Voice") {
-                VoicePicker(choice = choice, persona = persona, onPersona = onPersona)
-            }
-            Section("Outfit") {
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    CoachLook.Style.entries.forEach { s ->
-                        FilterChip(selected = look.style == s, onClick = { onLook(look.copy(style = s)) }, label = { Text(s.label) })
+            when (tab) {
+                DesignerTab.COACH -> {
+                    Section("Coach") {
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            listOf(CoachChoice.FEMALE to "Woman", CoachChoice.MALE to "Man").forEach { (c, label) ->
+                                FilterChip(selected = choice == c, onClick = { onChoice(c) }, label = { Text(label) })
+                            }
+                        }
+                    }
+                    Section("Name") {
+                        // The typed text is kept as typed; a tidied copy is saved.
+                        var typed by remember(editorKey, choice) { mutableStateOf(persona.name) }
+                        androidx.compose.material3.OutlinedTextField(
+                            value = typed,
+                            onValueChange = { t ->
+                                typed = t.take(CoachPersona.MAX_NAME)
+                                onPersona(persona.copy(name = CoachPersona.clean(typed)))
+                            },
+                            singleLine = true,
+                            placeholder = { Text(CoachPersona.DEFAULT_NAME) },
+                            supportingText = { Text("Shown with the coach's captions") },
+                            modifier = Modifier.fillMaxWidth(),
+                        )
                     }
                 }
+                DesignerTab.VOICE -> {
+                    Section("Voice") {
+                        VoicePicker(choice = choice, persona = persona, onPersona = onPersona)
+                    }
+                }
+                DesignerTab.OUTFIT -> {
+                    Section("Outfit") {
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            CoachLook.Style.entries.forEach { s ->
+                                FilterChip(selected = look.style == s, onClick = { onLook(look.copy(style = s)) }, label = { Text(s.label) })
+                            }
+                        }
+                    }
+                    // The race kit's singlet stays white: this colour is its band and, on Auto, its shorts.
+                    Section(if (look.style == CoachLook.Style.RACE) "Kit colour" else "Top") {
+                        Swatches(
+                            colours = CoachLook.CLOTH_COLOURS,
+                            selected = look.top,
+                            first = Triple("Theme", theme, look.top == null),
+                            onFirst = { onLook(look.copy(top = null)) },
+                            onPick = { onLook(look.copy(top = it)) },
+                            // Too close to the skin tone would look bare (the race kit's singlet is white).
+                            unavailable = { look.style != CoachLook.Style.RACE && CoachLook.tooCloseToSkin(it, look.skin) },
+                        )
+                    }
+                    Section(if (look.style == CoachLook.Style.TIGHTS) "Tights" else "Shorts") {
+                        Swatches(
+                            colours = CoachLook.CLOTH_COLOURS,
+                            selected = look.bottom,
+                            first = Triple("Auto", CoachLook.awayFromSkin(if (look.style == CoachLook.Style.RACE) (look.top ?: theme) else 0x24272E, look.skin), look.bottom == null),
+                            onFirst = { onLook(look.copy(bottom = null)) },
+                            onPick = { onLook(look.copy(bottom = it)) },
+                            unavailable = { CoachLook.tooCloseToSkin(it, look.skin) },
+                        )
+                        Text("Colours too close to the skin tone are greyed out, so the coach never looks bare.", fontSize = 12.sp, color = Color(0x99FFFFFF))
+                    }
+                }
+                DesignerTab.LOOK -> {
+                    Section("Skin tone") {
+                        Swatches(colours = CoachLook.SKIN_TONES, selected = look.skin, onPick = { onLook(look.copy(skin = it)) })
+                    }
+                    Section("Hair") {
+                        Swatches(colours = CoachLook.HAIR_COLOURS, selected = look.hair, onPick = { onLook(look.copy(hair = it)) })
+                    }
+                    OutlinedButton(onClick = { onLook(CoachLook()) }) { Text("Reset to the standard look") }
+                }
             }
-            // The race kit's singlet stays white: this colour is its band and, on Auto, its shorts.
-            Section(if (look.style == CoachLook.Style.RACE) "Kit colour" else "Top") {
-                Swatches(
-                    colours = CoachLook.CLOTH_COLOURS,
-                    selected = look.top,
-                    first = Triple("Theme", theme, look.top == null),
-                    onFirst = { onLook(look.copy(top = null)) },
-                    onPick = { onLook(look.copy(top = it)) },
-                )
-            }
-            Section(if (look.style == CoachLook.Style.TIGHTS) "Tights" else "Shorts") {
-                Swatches(
-                    colours = CoachLook.CLOTH_COLOURS,
-                    selected = look.bottom,
-                    first = Triple("Auto", if (look.style == CoachLook.Style.RACE) (look.top ?: theme) else 0x24272E, look.bottom == null),
-                    onFirst = { onLook(look.copy(bottom = null)) },
-                    onPick = { onLook(look.copy(bottom = it)) },
-                )
-            }
-            Section("Skin tone") {
-                Swatches(colours = CoachLook.SKIN_TONES, selected = look.skin, onPick = { onLook(look.copy(skin = it)) })
-            }
-            Section("Hair") {
-                Swatches(colours = CoachLook.HAIR_COLOURS, selected = look.hair, onPick = { onLook(look.copy(hair = it)) })
-            }
-            OutlinedButton(onClick = { onLook(CoachLook()) }) { Text("Reset to the standard look") }
             Spacer(Modifier.height(24.dp))
         }
     }
@@ -205,6 +304,8 @@ private fun Swatches(
     onPick: (Int) -> Unit,
     first: Triple<String, Int, Boolean>? = null,
     onFirst: () -> Unit = {},
+    /** Colours that can't be picked (too close to the skin tone): shown faded, not tappable. */
+    unavailable: (Int) -> Boolean = { false },
 ) {
     FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         if (first != null) {
@@ -213,7 +314,12 @@ private fun Swatches(
                 Text(first.first, fontSize = 11.sp, color = Color(0x99FFFFFF))
             }
         }
-        colours.forEach { c -> Swatch(c, first?.third != true && selected == c, { onPick(c) }) }
+        colours.forEach { c ->
+            val off = unavailable(c)
+            Box(Modifier.alpha(if (off) 0.25f else 1f)) {
+                Swatch(c, !off && first?.third != true && selected == c, { if (!off) onPick(c) })
+            }
+        }
     }
 }
 
@@ -309,4 +415,12 @@ private fun VoiceRow(label: String, detail: String, selected: Boolean, onPick: (
         if (selected) Icon(Icons.Filled.Check, contentDescription = "Chosen", modifier = Modifier.padding(end = 8.dp))
         OutlinedButton(onClick = onHear) { Text("Hear it") }
     }
+}
+
+/** The coach designer's tabs. */
+private enum class DesignerTab(val label: String) {
+    COACH("Coach"),
+    VOICE("Voice"),
+    OUTFIT("Outfit"),
+    LOOK("Skin & hair"),
 }

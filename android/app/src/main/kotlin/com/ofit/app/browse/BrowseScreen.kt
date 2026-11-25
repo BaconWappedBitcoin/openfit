@@ -224,7 +224,7 @@ fun BrowseScreen(
             when {
                 community.isNotEmpty() -> Shelf(
                     "Community favourites",
-                    community.filter { it.effort.matches(levelFilter, kindFilter) }.sortedByDescending { it.rating },
+                    community.filter { it.effort.matches(levelFilter, kindFilter) }.sortedByDescending { it.score },
                 ) { entry ->
                     CommunityCard(entry, saved = entry.name in savedNames, accent = accent) { onSaveCommunity(entry) }
                 }
