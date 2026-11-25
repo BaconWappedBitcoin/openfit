@@ -60,9 +60,9 @@ may need work (see [Adding a treadmill](android/docs/adding-a-treadmill.md)).
 
 ## Get started
 
-1. Download the latest APK from [Releases](../../releases) (the first release is coming soon; until then,
-   build it as below) and install it on an Android tablet (Android 9 or later; a 10-inch or larger
-   landscape tablet works best).
+1. Download `OpenFit-<version>.apk` from the [latest release](../../releases/latest) and install it on an
+   Android tablet (Android 9 or later; a 10-inch or larger landscape tablet works best). Android asks you
+   to allow installs from your browser or file manager the first time.
 2. Clip on the treadmill's safety key, open OpenFit and tap **Devices** to find the console. No pairing is
    needed.
 3. Pick a workout on **Home** or **Browse** and tap **Start**.

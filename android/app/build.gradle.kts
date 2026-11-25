@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -15,8 +17,26 @@ android {
         versionName = "0.1.0"
     }
 
+    // Release signing: the key and its passwords live outside the repository. Point
+    // OFIT_SIGNING (or the default ../private/signing/signing.properties) at a properties file
+    // with storeFile, storePassword, keyAlias and keyPassword. Without one, release builds are unsigned.
+    val signingProps = file(System.getenv("OFIT_SIGNING") ?: "../../private/signing/signing.properties")
+    if (signingProps.exists()) {
+        val keyProps = Properties()
+        signingProps.inputStream().use { keyProps.load(it) }
+        signingConfigs {
+            create("release") {
+                storeFile = File(signingProps.parentFile, keyProps.getProperty("storeFile"))
+                storePassword = keyProps.getProperty("storePassword")
+                keyAlias = keyProps.getProperty("keyAlias")
+                keyPassword = keyProps.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (signingProps.exists()) signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
