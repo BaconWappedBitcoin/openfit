@@ -84,6 +84,13 @@ class WorkoutManager(
     @Volatile
     private var previewMode: Boolean = false
 
+    /**
+     * The demo treadmill's sink while the demo is on (TreadmillController.setDemoTreadmill): a
+     * program then runs against the simulated machine instead of the real one.
+     */
+    @Volatile
+    var demoSink: com.ofit.protocol.WorkoutCommandSink? = null
+
     private val _preview = MutableStateFlow(false)
 
     /**
@@ -103,7 +110,7 @@ class WorkoutManager(
     private val switchingSink = object : WorkoutCommandSink {
 
         override suspend fun startWorkout(speedKph: Double, inclinePercent: Double): Boolean {
-            val sink = if (previewMode) previewSink else machineSink
+            val sink = if (previewMode) previewSink else (demoSink ?: machineSink)
             activeSink = sink
             return sink.startWorkout(speedKph, inclinePercent)
         }

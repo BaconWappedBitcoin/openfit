@@ -1,6 +1,10 @@
 package com.ofit.app.heart
 
 import com.ofit.app.ui.MenuButton
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -75,36 +79,69 @@ fun HeartRateScreen(manager: HeartRateManager, onBack: () -> Unit, embedded: Boo
             Spacer(Modifier.height(8.dp))
         }
 
-        Card(Modifier.fillMaxWidth()) {
-            Column(Modifier.padding(16.dp)) {
+        // The strap as a hero card, in Home's style (Lane 1b "exciting screen" pass).
+        val live = link == HeartRateMonitor.LinkState.CONNECTED
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clip(androidx.compose.foundation.shape.RoundedCornerShape(24.dp))
+                .background(androidx.compose.ui.graphics.Brush.horizontalGradient(listOf(Color(0xFF5C1A2B), Color(0xFF1C1A22))))
+                .padding(24.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
+            androidx.compose.foundation.layout.Box(
+                Modifier.size(80.dp).clip(androidx.compose.foundation.shape.CircleShape).background(Color(0x33FF5A7A)),
+                contentAlignment = Alignment.Center,
+            ) {
+                androidx.compose.material3.Icon(
+                    androidx.compose.material.icons.Icons.Filled.Favorite, contentDescription = null,
+                    tint = Color(0xFFFF5A7A), modifier = Modifier.size(40.dp),
+                )
+            }
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 if (savedName == null) {
-                    Text("No strap chosen. Any Bluetooth heart-rate strap or a watch in \"broadcast heart rate\" mode works.")
+                    Text("No strap yet", fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        "Any Bluetooth heart-rate strap, or a watch that broadcasts heart rate, works. Tap Find a strap below.",
+                        color = Color(0xCCFFFFFF),
+                    )
                 } else {
                     val linkText = when (link) {
-                        HeartRateMonitor.LinkState.CONNECTED -> "connected"
-                        HeartRateMonitor.LinkState.CONNECTING -> "connecting…"
-                        HeartRateMonitor.LinkState.LOST -> "out of range; reconnects by itself"
-                        HeartRateMonitor.LinkState.IDLE -> "not connected"
+                        HeartRateMonitor.LinkState.CONNECTED -> "Connected"
+                        HeartRateMonitor.LinkState.CONNECTING -> "Connecting…"
+                        HeartRateMonitor.LinkState.LOST -> "Out of range · reconnects by itself"
+                        HeartRateMonitor.LinkState.IDLE -> "Not connected"
                     }
-                    Text("$savedName — $linkText", style = MaterialTheme.typography.titleMedium)
-                    Spacer(Modifier.height(8.dp))
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            shown.bpm?.toString() ?: "--",
-                            fontSize = 40.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (shown.bpm != null) zoneColor(shown.zone) else MaterialTheme.colorScheme.onSurface,
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        val from = when (shown.source) {
-                            HeartRateSource.STRAP -> "bpm from the strap"
-                            HeartRateSource.CONSOLE -> "bpm from the treadmill's grips"
-                            HeartRateSource.NONE -> "no reading yet"
-                        }
-                        Text(from + (shown.zone?.let { " · zone $it" } ?: ""))
+                    Text(savedName ?: "", fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        linkText,
+                        color = if (live) Color(0xFF4ADE80) else Color(0xCCFFFFFF),
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier
+                            .clip(androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
+                            .background(Color(0x22FFFFFF))
+                            .padding(horizontal = 12.dp, vertical = 4.dp),
+                    )
+                    val from = when (shown.source) {
+                        HeartRateSource.STRAP -> "from the strap"
+                        HeartRateSource.CONSOLE -> "from the treadmill's grips"
+                        HeartRateSource.NONE -> "no reading yet"
                     }
-                    Spacer(Modifier.height(8.dp))
-                    OutlinedButton(onClick = manager::forget) { Text("Forget this strap") }
+                    Text(from + (shown.zone?.let { " · zone $it" } ?: ""), color = Color(0x99FFFFFF))
+                }
+            }
+            if (savedName != null) {
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        shown.bpm?.toString() ?: "--",
+                        fontSize = 64.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (shown.bpm != null) zoneColor(shown.zone) else Color(0x66FFFFFF),
+                    )
+                    Text("bpm", color = Color(0x99FFFFFF))
+                    Spacer(Modifier.height(6.dp))
+                    OutlinedButton(onClick = manager::forget) { Text("Forget") }
                 }
             }
         }
@@ -117,13 +154,26 @@ fun HeartRateScreen(manager: HeartRateManager, onBack: () -> Unit, embedded: Boo
                     "Your age, max heart rate, weight and sex are in your profile (tap your avatar, then Edit profiles).",
                     style = MaterialTheme.typography.bodySmall,
                 )
-                Spacer(Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                    val zones = HeartRateZones.of(maxHr, age)
-                    Text(
-                        if (zones == null) "No zones yet" else
-                            (1..5).joinToString("  ") { "Z$it ${zones.lowerBound(it)}+" },
-                    )
+                Spacer(Modifier.height(10.dp))
+                val zones = HeartRateZones.of(maxHr, age)
+                if (zones == null) {
+                    Text("No zones yet")
+                } else {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        (1..5).forEach { z ->
+                            Column(
+                                Modifier
+                                    .weight(1f)
+                                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp))
+                                    .background(zoneColor(z).copy(alpha = 0.22f))
+                                    .padding(vertical = 10.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                Text("Zone $z", color = zoneColor(z), fontWeight = FontWeight.Bold)
+                                Text("${zones.lowerBound(z)}+ bpm", color = Color(0xCCFFFFFF), fontSize = 13.sp)
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -10,6 +10,8 @@ import androidx.compose.foundation.background
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -136,34 +138,53 @@ fun VideoSearchScreen(
             }
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        // The search, as a lit panel in Home's style (Lane 1b "exciting screen" pass).
+        val accent = MaterialTheme.colorScheme.primary
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clip(androidx.compose.foundation.shape.RoundedCornerShape(24.dp))
+                .background(androidx.compose.ui.graphics.Brush.horizontalGradient(listOf(accent.copy(alpha = 0.35f), androidx.compose.ui.graphics.Color(0xFF1A1A1F))))
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
-                label = { Text("Where do you want to run?") },
+                placeholder = { Text("Where do you want to run? A city, a trail, a coastline…") },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
                 singleLine = true,
+                shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(onSearch = { onSearch(query) }),
                 modifier = Modifier.weight(1f),
             )
-            IconButton(onClick = { onSearch(query) }, enabled = query.trim().length >= 2 && !searching) {
-                Icon(Icons.Filled.Search, contentDescription = "Search")
+            Button(
+                onClick = { onSearch(query) },
+                enabled = query.trim().length >= 2 && !searching,
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = androidx.compose.ui.graphics.Color.White, contentColor = androidx.compose.ui.graphics.Color.Black),
+                modifier = Modifier.height(56.dp),
+            ) {
+                Icon(Icons.Filled.Search, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("Search", fontWeight = FontWeight.Bold)
             }
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
 
         if (searching) {
-            CircularProgressIndicator()
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                CircularProgressIndicator()
+                Text("Looking for running videos…", style = MaterialTheme.typography.bodyLarge)
+            }
         }
         if (error != null) {
             Text(error, style = MaterialTheme.typography.bodyMedium)
         }
         if (results.isEmpty() && !searching && error == null) {
-            Text(
-                "Try a place or a route, for example Interlaken or forest trail. " +
-                    "Only videos that can be played in other apps are listed.",
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            SearchIdeas(onPick = { place -> query = place; onSearch(place) })
+            return@Column
         }
 
         LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -339,5 +360,73 @@ private fun VideoPreviewDialog(video: VideoHit, onClose: () -> Unit, onMakeWorko
                 androidx.compose.material3.TextButton(onClick = onClose) { Text("Close") }
             }
         }
+    }
+}
+
+/** Places to try, as colour tiles: one tap searches. */
+private val IDEAS = listOf(
+    Triple("Swiss Alps", "Lakes and mountain paths", listOf(0xFF1E6091, 0xFF52B69A)),
+    Triple("Tokyo", "City streets and rivers", listOf(0xFF7B2CBF, 0xFFE0AAFF)),
+    Triple("Paris", "Along the Seine", listOf(0xFF3A0CA3, 0xFF4CC9F0)),
+    Triple("Beach run", "Sand, surf and sun", listOf(0xFFF77F00, 0xFFFCBF49)),
+    Triple("Forest trail", "Shade and soft ground", listOf(0xFF2D6A4F, 0xFF95D5B2)),
+    Triple("Snowy trail", "Winter woods", listOf(0xFF457B9D, 0xFFE0FBFC)),
+    Triple("New York", "Parks and avenues", listOf(0xFFD00000, 0xFFFFBA08)),
+    Triple("Coastal path", "Cliffs and sea views", listOf(0xFF006D77, 0xFF83C5BE)),
+)
+
+@Composable
+private fun SearchIdeas(onPick: (String) -> Unit) {
+    Column(
+        Modifier.fillMaxWidth().verticalScroll(androidx.compose.foundation.rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        Text("Where to today?", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        IDEAS.chunked(4).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                row.forEach { (place, detail, colors) ->
+                    Column(
+                        Modifier
+                            .weight(1f)
+                            .height(120.dp)
+                            .clip(androidx.compose.foundation.shape.RoundedCornerShape(20.dp))
+                            .background(androidx.compose.ui.graphics.Brush.linearGradient(colors.map { androidx.compose.ui.graphics.Color(it) }))
+                            .clickable { onPick(place) }
+                            .padding(18.dp),
+                        verticalArrangement = Arrangement.Bottom,
+                    ) {
+                        Text(place, color = androidx.compose.ui.graphics.Color.White, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleLarge)
+                        Text(detail, color = androidx.compose.ui.graphics.Color(0xE6FFFFFF), style = MaterialTheme.typography.bodyMedium)
+                    }
+                }
+            }
+        }
+        Text("How it works", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            listOf(
+                Triple("1", "Find a video", "Any walking or running video on YouTube that can be played in other apps."),
+                Triple("2", "Let AI read it", "It watches the video and works out the pace and the hills, step by step."),
+                Triple("3", "Run it", "The treadmill follows the video, and the video can follow your speed."),
+            ).forEach { (n, title, text) ->
+                Row(
+                    Modifier
+                        .weight(1f)
+                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f))
+                        .padding(18.dp),
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                ) {
+                    androidx.compose.foundation.layout.Box(
+                        Modifier.size(44.dp).clip(androidx.compose.foundation.shape.CircleShape).background(MaterialTheme.colorScheme.primary),
+                        contentAlignment = Alignment.Center,
+                    ) { Text(n, color = androidx.compose.ui.graphics.Color.Black, fontWeight = FontWeight.Bold) }
+                    Column {
+                        Text(title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                        Text(text, style = MaterialTheme.typography.bodyMedium, color = androidx.compose.ui.graphics.Color(0xB3FFFFFF))
+                    }
+                }
+            }
+        }
+        Text("Only videos that can be played in other apps are listed.", style = MaterialTheme.typography.bodySmall, color = androidx.compose.ui.graphics.Color(0x99FFFFFF))
     }
 }

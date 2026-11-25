@@ -57,6 +57,17 @@ class TreadmillController(context: Context) {
     /** The current machine state. */
     val holder = TreadmillStateHolder()
 
+    /**
+     * The demo treadmill: a simulated machine for trying, showing and filming OpenFit with the
+     * full workout screen and nothing real moving. While it is on, nothing talks to Bluetooth.
+     */
+    val demoTreadmill = com.ofit.protocol.SimulatedTreadmill()
+    private val _demo = MutableStateFlow(
+        appContext.getSharedPreferences(DEVICE_PREFS, android.content.Context.MODE_PRIVATE).getBoolean(KEY_DEMO, false),
+    )
+    val demo: StateFlow<Boolean> = _demo.asStateFlow()
+    private var demoJob: kotlinx.coroutines.Job? = null
+
     /** The session log, for diagnosis. */
     val log = SessionLog()
 
@@ -120,6 +131,7 @@ class TreadmillController(context: Context) {
         workout = workouts.snapshot,
         heartSummary = heart.summary,
         preview = workouts.preview,
+        demo = demo,
         fileName = profiles.fileName("history", "json"),
         program = workouts.runningProgram,
         estimatedCalories = heart.calories,
@@ -191,7 +203,7 @@ class TreadmillController(context: Context) {
             // Poll while connected. The machine answers one request at a time, so the poll waits
             // for the previous one to finish rather than overlapping.
             while (true) {
-                if (holder.state.value.connectionState == ConnectionState.CONNECTED) {
+                if (!_demo.value && holder.state.value.connectionState == ConnectionState.CONNECTED) {
                     runCatching { session.poll() }
                         .onFailure { android.util.Log.i("ofit-ble", "poll failed: $it") }
                 }
@@ -269,6 +281,8 @@ class TreadmillController(context: Context) {
         /** The remembered treadmill. */
         const val DEVICE_PREFS = "ofit_device"
         const val KEY_WORKOUT_RUNNING = "workout_running"
+        const val KEY_DEMO = "demo_treadmill"
+        const val DEMO_TICK_MILLIS = 250L
         const val SAVED_ADDRESS = "address"
         const val SAVED_NAME = "name"
 
@@ -454,6 +468,7 @@ class TreadmillController(context: Context) {
      * control away from the physical buttons.
      */
     fun connect(device: Scanner.Device) {
+        if (_demo.value) setDemoTreadmill(false)
         // Any scan running now would slow or block the connect.
         stopScan()
         heart.stopScan()
@@ -543,7 +558,7 @@ class TreadmillController(context: Context) {
         // Note while a workout runs on the treadmill, so a restart can tell it was cut short.
         scope.launch {
             workouts.snapshot.collect { snapshot ->
-                val onTreadmill = snapshot.isActive && !workouts.preview.value
+                val onTreadmill = snapshot.isActive && !workouts.preview.value && !_demo.value
                 if (devicePrefs.getBoolean(KEY_WORKOUT_RUNNING, false) != onTreadmill) {
                     devicePrefs.edit().putBoolean(KEY_WORKOUT_RUNNING, onTreadmill).commit()
                 }
@@ -609,6 +624,7 @@ class TreadmillController(context: Context) {
     }
 
     fun connectToSaved() {
+        if (_demo.value) return
         // The strap reconnects on its own link, whatever happens with the treadmill.
         connectStrap()
         val device = savedDevice() ?: return
@@ -658,9 +674,56 @@ class TreadmillController(context: Context) {
         ) {
             _message.value = null
         }
-        if (open && !workouts.noTreadmill.value && holder.state.value.connectionState != ConnectionState.CONNECTED) {
+        if (open && !workouts.noTreadmill.value && !_demo.value && holder.state.value.connectionState != ConnectionState.CONNECTED) {
             connectToSaved()
         }
+    }
+
+    /**
+     * The demo treadmill on or off. On: a real treadmill is let go of, "No treadmill" is turned
+     * off, and the simulated machine is what the workout screen shows and the engine drives. Off:
+     * the simulated machine is gone and the app is disconnected, as after a real disconnect.
+     */
+    fun setDemoTreadmill(on: Boolean) {
+        if (_demo.value == on && (demoJob != null) == on) return
+        devicePrefs.edit().putBoolean(KEY_DEMO, on).apply()
+        if (on) {
+            if (workouts.snapshot.value.isActive) workouts.abandon()
+            if (holder.state.value.connectionState == ConnectionState.CONNECTED) {
+                scope.launch {
+                    runCatching { session.releaseControl() }
+                    runCatching { session.disconnect() }
+                    TreadmillService.stop(appContext)
+                }
+            }
+            _demo.value = true
+            workouts.setPreview(false, byUser = true)
+            workouts.demoSink = demoTreadmill
+            demoTreadmill.reset()
+            demoJob = scope.launch {
+                while (true) {
+                    delay(DEMO_TICK_MILLIS)
+                    demoTreadmill.tick(DEMO_TICK_MILLIS)
+                    holder.update { demoTreadmill.state.value }
+                }
+            }
+            _message.value = "Demo treadmill: the workout screen works as with a real treadmill, but nothing moves."
+        } else {
+            demoJob?.cancel()
+            demoJob = null
+            if (workouts.snapshot.value.isActive) workouts.abandon()
+            workouts.demoSink = null
+            _demo.value = false
+            holder.update { TreadmillState() }
+            _message.value = null
+        }
+    }
+
+    init {
+        // The demo survives a restart, like the choice of treadmill.
+        if (_demo.value) setDemoTreadmill(true)
+        // A workout deleted from History is taken out of Health Connect too.
+        history.onDeleted = { entry -> health.remove(entry.startedAtMillis) }
     }
 
     /**
@@ -668,6 +731,7 @@ class TreadmillController(context: Context) {
      * of a connected treadmill, so nothing can be sent to it.
      */
     fun setNoTreadmill(on: Boolean) {
+        if (on && _demo.value) setDemoTreadmill(false)
         workouts.setPreview(on, byUser = true)
         if (on && holder.state.value.connectionState == ConnectionState.CONNECTED && !workouts.snapshot.value.isActive) {
             scope.launch {
@@ -711,6 +775,7 @@ class TreadmillController(context: Context) {
      *  - No workout for 5 min (connected from Devices, or on the workout screen): give control back, disconnect.
      */
     private suspend fun handsOffCheck() {
+        if (_demo.value) return
         val state = holder.state.value
         if (state.connectionState != ConnectionState.CONNECTED) {
             idleSinceMillis = null
@@ -816,6 +881,10 @@ class TreadmillController(context: Context) {
 
     /** Stop the workout. */
     fun stopWorkout() {
+        if (_demo.value) {
+            scope.launch { demoTreadmill.stopWorkout(); _message.value = "Stopped." }
+            return
+        }
         scope.launch {
             // Stop is the one command that must get through: try it up to three times.
             var stopped = false

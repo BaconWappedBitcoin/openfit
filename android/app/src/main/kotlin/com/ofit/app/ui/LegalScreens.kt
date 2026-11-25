@@ -38,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -129,24 +130,40 @@ fun LegalScreen(versionName: String, onBack: () -> Unit) {
     ) {
         com.ofit.app.ui.ScreenHeader("About & legal", "Version, licence and safety", onBack = onBack)
         Spacer(Modifier.height(12.dp))
-        AboutCard(versionName)
-        DonateCard()
-        Spacer(Modifier.height(16.dp))
-        Column(Modifier.widthIn(max = 1000.dp)) { LegalSections() }
-        Spacer(Modifier.height(16.dp))
-        Text("No ads", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-        Text(
-            "OpenFit never shows ads. YouTube's own player may show YouTube's ads on some videos; OpenFit can't " +
-                "remove those under YouTube's terms, but they can never change your workout: while the video is stopped " +
-                "for an ad, the workout holds at its current speed and incline. For no ads at all, use a video file on the tablet or no video.",
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        Spacer(Modifier.height(16.dp))
-        Text(
-            "Credits: protocol knowledge from public projects including DavisGoglin/treadmill, ianchi/ifit, " +
-                "mikepugh/NordicFTMS and cagnulein's QZ; layout ideas from NuvioMobile.",
-            style = MaterialTheme.typography.bodySmall,
-        )
+        // Two columns on the tablet (Lane 1b "exciting screen" pass): the app and support on the
+        // left, safety and legal on the right, so the whole width is used.
+        Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                AboutCard(versionName)
+                DonateCard()
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(Brush.horizontalGradient(listOf(Color(0x3334D399), Color(0x0FFFFFFF))))
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Text("No ads. Ever.", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = Color(0xFF4ADE80))
+                    Text(
+                        "OpenFit never shows ads. YouTube's own player may show YouTube's ads on some videos; OpenFit can't " +
+                            "remove those under YouTube's terms, but they can never change your workout: while the video is stopped " +
+                            "for an ad, the workout holds at its current speed and incline. For no ads at all, use a video file on the tablet or no video.",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
+                Text(
+                    "Credits: protocol knowledge from public projects including DavisGoglin/treadmill, ianchi/ifit, " +
+                        "mikepugh/NordicFTMS and cagnulein's QZ; layout ideas from NuvioMobile.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0x99FFFFFF),
+                )
+            }
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text("Safety and legal", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                LegalSections()
+            }
+        }
     }
 }
 

@@ -43,6 +43,7 @@ may need work (see [Adding a treadmill](android/docs/adding-a-treadmill.md)).
   one tap away, and ending a workout starts a cool-down.
 - OpenFit connects only while a workout runs and lets go when idle, so the console's own buttons keep working.
 - Local profiles, no sign-in. Your keys stay encrypted on the tablet. Backups to a file or Google's Android backup.
+- **No treadmill yet?** Turn on **No treadmill** in Devices to run workouts on screen only.
 
 ## Screenshots
 
@@ -133,6 +134,21 @@ More: [DEVELOPMENT.md](DEVELOPMENT.md) (layout, build, rules), [CONTRIBUTING.md]
 |---------|---------|--------|
 | NordicTrack T 6.5 | `I_TL` | Tested: speed, incline, stop, heart rate |
 | Other iFit-compatible treadmills | various | Untested; may need a console name or unlock tweak. Reports welcome. |
+
+### 🙋 Help test other treadmills
+
+OpenFit has only been tested on one machine so far. **If you have another iFit-compatible treadmill
+(NordicTrack, ProForm and similar), you can help bring it to everyone**, even without writing code:
+
+1. Install OpenFit and open **Devices**. Does your console show up, and under what name?
+2. Standing beside the belt with the safety key on, follow the checks in
+   [Adding a treadmill](android/docs/adding-a-treadmill.md): stop, speed, incline, a short workout.
+3. [Open an issue](../../issues/new) with your machine's model, the console name, and what worked
+   and what didn't. Bluetooth captures help a lot (remove serial numbers first).
+
+Developers: the protocol lives in `android/protocol` with unit tests, so most of the work can be done
+on a desktop. See [CONTRIBUTING.md](CONTRIBUTING.md). Every machine that works gets added to the table
+above.
 
 ## Safety
 

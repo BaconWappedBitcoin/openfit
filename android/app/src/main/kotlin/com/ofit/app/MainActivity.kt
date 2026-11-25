@@ -56,9 +56,27 @@ class MainActivity : ComponentActivity() {
     /** Where the application is. */
     private var screen by mutableStateOf<AppScreen>(AppScreen.Home)
 
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        applyDemoExtra(intent)
+    }
+
+    /**
+     * The demo treadmill is for the project's own use (filming, testing) and is not in any menu.
+     * On a debuggable build it is turned on or off from adb:
+     * `adb shell am start -n com.ofit.app/.MainActivity --ez demo_treadmill true` (or false).
+     */
+    private fun applyDemoExtra(intent: android.content.Intent?) {
+        val key = "demo_treadmill"
+        if (intent?.hasExtra(key) != true) return
+        if (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE == 0) return
+        controller.setDemoTreadmill(intent.getBooleanExtra(key, false))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        applyDemoExtra(intent)
 
         // Go straight back to the treadmill used last time, with no scan or tap.
         if (hasBluetoothPermissions()) controller.connectStrap()

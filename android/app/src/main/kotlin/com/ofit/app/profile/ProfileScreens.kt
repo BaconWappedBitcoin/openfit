@@ -91,24 +91,30 @@ fun ProfileSelectionScreen(
     var adding by remember { mutableStateOf(false) }
 
     // The menu stays reachable here too (top left), like every other screen.
-    androidx.compose.foundation.layout.Box(Modifier.fillMaxSize()) {
+    // A soft glow in the theme colour behind the picker (Lane 1b "exciting screen" pass).
+    val glow = MaterialTheme.colorScheme.primary
+    androidx.compose.foundation.layout.Box(
+        Modifier
+            .fillMaxSize()
+            .background(androidx.compose.ui.graphics.Brush.radialGradient(listOf(glow.copy(alpha = 0.20f), Color.Transparent), radius = 1400f)),
+    ) {
     androidx.compose.foundation.layout.Box(Modifier.statusBarsPadding().padding(16.dp)) { com.ofit.app.ui.MenuButton() }
     Column(
         modifier = Modifier.fillMaxSize().statusBarsPadding().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text("OpenFit", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-        Spacer(Modifier.height(18.dp))
+        Text("OpenFit", fontSize = 32.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+        Spacer(Modifier.height(12.dp))
         Text(
             if (editMode) "Edit profiles" else "Who's running?",
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.SemiBold,
+            fontSize = 56.sp,
+            fontWeight = FontWeight.Bold,
         )
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(48.dp))
         FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+            horizontalArrangement = Arrangement.spacedBy(32.dp, Alignment.CenterHorizontally),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
             profiles.forEach { profile ->
                 ProfileCard(
@@ -122,7 +128,7 @@ fun ProfileSelectionScreen(
                 AddProfileCard(onClick = { adding = true })
             }
         }
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(48.dp))
         Text(
             if (editMode) "Done" else "Edit profiles",
             color = if (editMode) MaterialTheme.colorScheme.primary else Color(0xCCFFFFFF),
@@ -171,33 +177,35 @@ fun ProfileSelectionScreen(
 private fun ProfileCard(profile: Profile, selected: Boolean, editMode: Boolean, onClick: () -> Unit) {
     Column(
         modifier = Modifier
-            .width(150.dp)
-            .clip(RoundedCornerShape(20.dp))
+            .width(210.dp)
+            .clip(RoundedCornerShape(24.dp))
             .clickable(onClick = onClick)
-            .padding(8.dp),
+            .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(Modifier.size(110.dp), contentAlignment = Alignment.Center) {
+        Box(Modifier.size(186.dp), contentAlignment = Alignment.Center) {
             if (selected) {
+                // A glow and a ring in the profile's own colour.
                 Box(
                     Modifier
-                        .size(110.dp)
+                        .size(186.dp)
                         .clip(CircleShape)
-                        .border(BorderStroke(3.dp, profile.accent.primary), CircleShape),
+                        .background(androidx.compose.ui.graphics.Brush.radialGradient(listOf(profile.accent.primary.copy(alpha = 0.45f), Color.Transparent)))
+                        .border(BorderStroke(4.dp, profile.accent.primary), CircleShape),
                 )
             }
-            ProfileAvatar(profile, 100.dp)
+            ProfileAvatar(profile, 156.dp)
             if (editMode) {
                 Box(
-                    Modifier.size(100.dp).clip(CircleShape).background(Color(0x88000000)),
+                    Modifier.size(156.dp).clip(CircleShape).background(Color(0x88000000)),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(Icons.Filled.Edit, contentDescription = "Edit ${profile.name}", tint = Color.White, modifier = Modifier.size(32.dp))
+                    Icon(Icons.Filled.Edit, contentDescription = "Edit ${profile.name}", tint = Color.White, modifier = Modifier.size(44.dp))
                 }
             }
         }
-        Spacer(Modifier.height(10.dp))
-        Text(profile.name, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
+        Spacer(Modifier.height(14.dp))
+        Text(profile.name, fontSize = 24.sp, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
     }
 }
 
@@ -205,24 +213,26 @@ private fun ProfileCard(profile: Profile, selected: Boolean, editMode: Boolean, 
 private fun AddProfileCard(onClick: () -> Unit) {
     Column(
         modifier = Modifier
-            .width(150.dp)
-            .clip(RoundedCornerShape(20.dp))
+            .width(210.dp)
+            .clip(RoundedCornerShape(24.dp))
             .clickable(onClick = onClick)
-            .padding(8.dp),
+            .padding(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Box(
-            Modifier
-                .size(100.dp)
-                .padding(5.dp)
-                .clip(CircleShape)
-                .border(BorderStroke(2.dp, Color(0x55FFFFFF)), CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(Icons.Filled.Add, contentDescription = null, tint = Color(0xCCFFFFFF), modifier = Modifier.size(40.dp))
+        Box(Modifier.size(186.dp), contentAlignment = Alignment.Center) {
+            Box(
+                Modifier
+                    .size(156.dp)
+                    .clip(CircleShape)
+                    .background(Color(0x0FFFFFFF))
+                    .border(BorderStroke(2.dp, Color(0x55FFFFFF)), CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = null, tint = Color(0xCCFFFFFF), modifier = Modifier.size(56.dp))
+            }
         }
-        Spacer(Modifier.height(10.dp))
-        Text("Add profile", fontSize = 18.sp, color = Color(0xCCFFFFFF))
+        Spacer(Modifier.height(14.dp))
+        Text("Add profile", fontSize = 24.sp, color = Color(0xCCFFFFFF))
     }
 }
 

@@ -44,6 +44,11 @@ class HealthConnectSync(context: Context, private val scope: CoroutineScope) {
         HealthPermission.getWritePermission(SpeedRecord::class),
     )
 
+    private val KINDS = listOf(
+        "session" to ExerciseSessionRecord::class, "distance" to DistanceRecord::class, "calories" to TotalCaloriesBurnedRecord::class,
+        "climb" to ElevationGainedRecord::class, "heart" to HeartRateRecord::class, "speed" to SpeedRecord::class,
+    )
+
     private val _enabled = MutableStateFlow(prefs.getBoolean("enabled", false))
     val enabled: StateFlow<Boolean> = _enabled
 
@@ -88,6 +93,17 @@ class HealthConnectSync(context: Context, private val scope: CoroutineScope) {
         if (newest != null && newest > prefs.getLong("sentUpTo", 0)) prefs.edit().putLong("sentUpTo", newest).apply()
         if (written > 0) _status.value = "Sent $written workout${if (written == 1) "" else "s"} to Health Connect."
         return written
+    }
+
+    /** Delete what was written for the workout that started at [startedAtMillis] (a deleted History entry). */
+    fun remove(startedAtMillis: Long) {
+        scope.launch {
+            val c = client() ?: return@launch
+            val id = "openfit-$startedAtMillis"
+            KINDS.forEach { (kind, type) ->
+                runCatching { c.deleteRecords(type, recordIdsList = emptyList(), clientRecordIdsList = listOf("$id-$kind")) }
+            }
+        }
     }
 
     private fun records(s: HealthExport.Session): List<Record> {

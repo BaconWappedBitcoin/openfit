@@ -28,6 +28,8 @@ class HistoryManager(
     private val workout: StateFlow<WorkoutEngineSnapshot>,
     private val heartSummary: StateFlow<HeartRateSummary>,
     private val preview: StateFlow<Boolean>,
+    /** The demo treadmill is on: its workouts are recorded as no-treadmill ones (nothing real moved). */
+    private val demo: StateFlow<Boolean> = MutableStateFlow(false),
     fileName: String = "history.json",
     /** The program running, for working out distance in a no-treadmill workout. */
     private val program: StateFlow<com.ofit.protocol.WorkoutProgram?> = MutableStateFlow(null),
@@ -88,7 +90,7 @@ class HistoryManager(
         }
         if (snapshot.isActive) {
             if (!active || snapshot.totalElapsedMillis + 2_000 < lastElapsed) begin(snapshot)
-            noTreadmill = preview.value
+            noTreadmill = preview.value || demo.value
             val wall = System.currentTimeMillis()
             if (snapshot.isRunning && lastActiveWall > 0) activeMillis += (wall - lastActiveWall).coerceIn(0, 5_000)
             lastActiveWall = wall
@@ -173,9 +175,13 @@ class HistoryManager(
         save(_entries.value.map { if (it.startedAtMillis == startedAtMillis) it.copy(stars = stars, feel = feel) else it })
     }
 
+    /** Told when an entry is deleted, so what was sent elsewhere (Health Connect) goes too. */
+    var onDeleted: ((HistoryEntry) -> Unit)? = null
+
     /** Delete one entry. */
     fun delete(entry: HistoryEntry) {
         save(_entries.value.filterNot { it.startedAtMillis == entry.startedAtMillis })
+        onDeleted?.invoke(entry)
     }
 
     private fun save(list: List<HistoryEntry>) {

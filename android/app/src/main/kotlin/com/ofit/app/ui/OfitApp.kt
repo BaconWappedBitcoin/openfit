@@ -773,7 +773,7 @@ private fun HomeScreen(
         val planKey = controller.profiles.fileName("plan", "json")
         HomeDashboard(
             state = state,
-            treadmillName = controller.savedDevice()?.name,
+            treadmillName = if (controller.demo.collectAsState().value) "Demo treadmill" else controller.savedDevice()?.name,
             history = historyEntries,
             workouts = savedWorkouts,
             onConnect = controller::connectToSaved,
@@ -1290,6 +1290,7 @@ private fun DevicesScreen(
     onBack: () -> Unit,
 ) {
     val noTreadmill by controller.workouts.noTreadmill.collectAsStateWithLifecycle()
+    val demo by controller.demo.collectAsStateWithLifecycle()
     val saved = controller.savedDevice()
     val connected = state.connectionState == ConnectionState.CONNECTED
     Column(
@@ -1304,20 +1305,34 @@ private fun DevicesScreen(
         Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
             Column(Modifier.weight(1f).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("TREADMILL", style = MaterialTheme.typography.labelLarge, color = androidx.compose.ui.graphics.Color(0x99FFFFFF))
-                Card(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                // The treadmill as a hero card, in Home's style (Lane 1b "exciting screen" pass).
+                val accent = MaterialTheme.colorScheme.primary
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(androidx.compose.foundation.shape.RoundedCornerShape(24.dp))
+                        .background(androidx.compose.ui.graphics.Brush.horizontalGradient(listOf(accent.copy(alpha = 0.40f), androidx.compose.ui.graphics.Color(0xFF1C1A22))))
+                        .padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            androidx.compose.material3.Icon(
-                                if (connected) androidx.compose.material.icons.Icons.Filled.BluetoothConnected else androidx.compose.material.icons.Icons.Filled.Bluetooth,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(36.dp),
-                            )
-                            Spacer(Modifier.width(12.dp))
+                            androidx.compose.foundation.layout.Box(
+                                Modifier.size(80.dp).clip(androidx.compose.foundation.shape.CircleShape).background(accent.copy(alpha = 0.25f)),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                androidx.compose.material3.Icon(
+                                    if (connected) androidx.compose.material.icons.Icons.Filled.BluetoothConnected else androidx.compose.material.icons.Icons.Filled.Bluetooth,
+                                    contentDescription = null,
+                                    tint = accent,
+                                    modifier = Modifier.size(40.dp),
+                                )
+                            }
+                            Spacer(Modifier.width(20.dp))
                             Column(Modifier.weight(1f)) {
-                                Text(saved?.name ?: "No treadmill set up", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                                Text(if (demo) "Demo treadmill" else saved?.name ?: "No treadmill set up", fontSize = 26.sp, fontWeight = FontWeight.Bold)
                                 Text(
                                     when {
+                                        demo -> "Simulated: the workout screen behaves as with a real treadmill, and nothing moves."
                                         saved == null -> "Look for it below; OpenFit remembers it."
                                         connected -> "Connected"
                                         state.connectionState == ConnectionState.CONNECTING -> "Connecting…"
@@ -1326,8 +1341,14 @@ private fun DevicesScreen(
                                     style = MaterialTheme.typography.bodyMedium,
                                 )
                             }
-                            if (saved != null && !connected && !noTreadmill) {
-                                Button(onClick = controller::connectToSaved) { Text("Connect now") }
+                            if (saved != null && !connected && !noTreadmill && !demo) {
+                                Button(
+                                    onClick = controller::connectToSaved,
+                                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                        containerColor = androidx.compose.ui.graphics.Color.White,
+                                        contentColor = androidx.compose.ui.graphics.Color.Black,
+                                    ),
+                                ) { Text("Connect now", fontWeight = FontWeight.Bold) }
                             }
                         }
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1338,9 +1359,19 @@ private fun DevicesScreen(
                                     style = MaterialTheme.typography.bodySmall,
                                 )
                             }
-                            androidx.compose.material3.Switch(checked = noTreadmill, onCheckedChange = { controller.setNoTreadmill(it) })
+                            androidx.compose.material3.Switch(checked = noTreadmill, enabled = !demo, onCheckedChange = { controller.setNoTreadmill(it) })
                         }
-                    }
+                        // The demo treadmill has no switch here (it is turned on from adb); while it is
+                        // on, this lets it be turned off.
+                        if (demo) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Column(Modifier.weight(1f)) {
+                                    Text("Demo treadmill", style = MaterialTheme.typography.titleMedium)
+                                    Text("Simulated; nothing real moves. Turn off to use a real treadmill.", style = MaterialTheme.typography.bodySmall)
+                                }
+                                androidx.compose.material3.Switch(checked = true, onCheckedChange = { controller.setDemoTreadmill(false) })
+                            }
+                        }
                 }
                 Text("Another treadmill", style = MaterialTheme.typography.titleMedium)
                 ConnectScreen(
