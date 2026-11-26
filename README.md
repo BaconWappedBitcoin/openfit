@@ -82,6 +82,21 @@ may need work (see [Adding a treadmill](android/docs/adding-a-treadmill.md)).
 | ![Coach designer: outfit, colours, skin tone and hair](docs/screenshots/coach.jpg) | |
 | **Coach designer** | |
 
+### Virtual trails
+
+Run through a 3D landscape with no video: pick the place, the time of day and the weather. These are real runs on a tablet.
+
+| | |
+|---|---|
+| ![Forest trail, day: sun shafts and shadows through the trees](docs/screenshots/3d-forest.jpg) | ![Pine forest at sunset](docs/screenshots/3d-pine.jpg) |
+| **Forest trail, day: sun shafts and shadows through the trees** | **Pine forest at sunset** |
+| ![Mountain pass: a ridged range with snow on the crests](docs/screenshots/3d-mountains.jpg) | ![Autumn woods](docs/screenshots/3d-autumn.jpg) |
+| **Mountain pass: a ridged range with snow on the crests** | **Autumn woods** |
+| ![Meadow in the morning, with fences and a barn on the hill](docs/screenshots/3d-meadow.jpg) | ![Desert: buttes, cacti and drifting dust](docs/screenshots/3d-desert.jpg) |
+| **Meadow in the morning, with fences and a barn on the hill** | **Desert: buttes, cacti and drifting dust** |
+| ![Coast path with a lighthouse and the sea](docs/screenshots/3d-coast.jpg) | ![Old town at night, with lit windows and street lamps](docs/screenshots/3d-town.jpg) |
+| **Coast path with a lighthouse and the sea** | **Old town at night, with lit windows and street lamps** |
+
 ## Get started
 
 1. Download `OpenFit-<version>.apk` from the [latest release](../../releases/latest) and install it on an
