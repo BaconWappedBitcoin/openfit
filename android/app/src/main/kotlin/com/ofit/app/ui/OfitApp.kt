@@ -141,6 +141,33 @@ fun OfitApp(
     // "Quit workout?": asked before a running workout is ended, from End, Back or the screen's back.
     var askQuit by remember { mutableStateOf(false) }
 
+    // An update was found (user request 2026-11-25): asked on Home only, never during a workout,
+    // and only installed on the runner's yes (Android then asks too).
+    val updateState by controller.updater.state.collectAsStateWithLifecycle()
+    val offered = (updateState as? com.ofit.app.settings.AppUpdater.State.Available)?.release
+    var updateAnswered by remember { mutableStateOf<String?>(null) }
+    if (offered != null && screen == AppScreen.Home && !engine.isActive && !engine.isFinished &&
+        updateAnswered != offered.version && controller.updater.wantsAsking(offered) && !controller.updater.isDevelopmentBuild
+    ) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { updateAnswered = offered.version },
+            title = { Text("OpenFit ${offered.version} is available") },
+            text = { Text("Update now? OpenFit downloads it, checks it, and Android asks you to confirm the install. The app restarts afterwards.") },
+            confirmButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    updateAnswered = offered.version
+                    controller.updater.install(offered)
+                }) { Text("Update") }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = {
+                    updateAnswered = offered.version
+                    controller.updater.laterFor(offered.version)
+                }) { Text("Later") }
+            },
+        )
+    }
+
     // System Back goes up one level instead of closing the app. While a workout is running it does
     // nothing: leaving the screen would hide the controls of a moving belt, so the workout has to
     // be ended (or paused) on screen first.
@@ -156,6 +183,7 @@ fun OfitApp(
             AppScreen.ManualControl -> onNavigate(AppScreen.Home)
             AppScreen.Legal -> onNavigate(AppScreen.Home)
             AppScreen.QuickStart -> onNavigate(AppScreen.Home)
+            is AppScreen.Trails -> onNavigate(AppScreen.Home)
             AppScreen.AiKey -> onNavigate(AppScreen.Home)
             AppScreen.Profiles -> onNavigate(AppScreen.Home)
             AppScreen.Browse -> onNavigate(AppScreen.Home)
@@ -324,10 +352,27 @@ fun OfitApp(
                 onBack = { onNavigate(AppScreen.Home) },
             )
 
+            is AppScreen.Trails -> com.ofit.app.workout.TrailsScreen(
+                initialKey = screen.key,
+                limits = limits,
+                onGo = { trail, program ->
+                    // A one-off like Quick start; History still records it when run.
+                    val oneOff = com.ofit.app.data.SavedWorkout(
+                        id = "trail-" + trail.key,
+                        program = program.fitTo(limits),
+                        updatedAtMillis = System.currentTimeMillis(),
+                    )
+                    controller.workouts.clearFinished()
+                    onNavigate(AppScreen.Run(oneOff, land = trail.key))
+                },
+                onBack = { onNavigate(AppScreen.Home) },
+            )
+
             AppScreen.Legal -> LegalScreen(
                 versionName = runCatching {
                     context.packageManager.getPackageInfo(context.packageName, 0).versionName
                 }.getOrNull() ?: "",
+                updater = controller.updater,
                 onBack = { onNavigate(AppScreen.Home) },
             )
 
@@ -359,6 +404,7 @@ fun OfitApp(
             )
 
             AppScreen.Browse -> com.ofit.app.browse.BrowseScreen(
+                onTrail = { key -> onNavigate(AppScreen.Trails(key)) },
                 workouts = workouts,
                 community = libraryEntries,
                 communityLoading = libraryLoading,
@@ -630,8 +676,11 @@ fun OfitApp(
                     com.ofit.protocol.Intensity.suggest(controller.history.entries.value, screen.saved.program.name, intensity)
                 }
                 val runSaved = remember(screen.saved, intensity, limits) {
-                    if (intensity == com.ofit.protocol.Intensity.Level.STANDARD) screen.saved
+                    val base = if (intensity == com.ofit.protocol.Intensity.Level.STANDARD) screen.saved
                     else screen.saved.copy(program = com.ofit.protocol.Intensity.apply(screen.saved.program, intensity).fitTo(limits))
+                    // A video workout's last ten minutes are its cool-down, so it cools down inside its video
+                    // (user 2026-11-25), whatever its length; the engine adds no second one after it.
+                    if (controller.workouts.youtubeIdFor(base.id) != null) base.copy(program = com.ofit.protocol.CoolDown.withTail(base.program, limits)) else base
                 }
                 WorkoutRunScreen(
                 saved = runSaved,
@@ -642,6 +691,7 @@ fun OfitApp(
                     com.ofit.app.workout.IntensityStore.save(context, intensityKey, level)
                 },
                 resumeAtMillis = screen.resumeAtMillis,
+                land = screen.land,
                 snapshot = engine,
                 state = state,
                 limits = limits,
@@ -649,6 +699,7 @@ fun OfitApp(
                 onPreviewChange = { on -> controller.workouts.setPreview(on) },
                 onNoTreadmill = controller::setNoTreadmill,
                 onVideoHeld = controller.workouts::setVideoHeld,
+                onHasVideo = { controller.workouts.hasVideo = it },
                 startProblem = startProblem,
                 onStart = {
                     if (preview) controller.workouts.start(runSaved.program)
@@ -842,6 +893,18 @@ private fun HomeScreen(
             },
             community = communityEntries,
             onLoadCommunity = { controller.library.loadLibrary(false) },
+            onPlayTemplate = { template ->
+                // A one-off like Quick start: not saved to My workouts, History records it when run. No
+                // video, so it runs as a 3D trail and the scenery is chosen on the run screen before Start.
+                val oneOff = com.ofit.app.data.SavedWorkout(
+                    id = "template-" + template.name.lowercase().replace(' ', '-'),
+                    program = com.ofit.protocol.WorkoutProgram(template.name, template.steps).fitTo(limits),
+                    updatedAtMillis = System.currentTimeMillis(),
+                )
+                controller.workouts.clearFinished()
+                onNavigate(AppScreen.Run(oneOff))
+            },
+            onTrail = { key -> onNavigate(AppScreen.Trails(key)) },
             onTemplate = { template ->
                 onNavigate(
                     AppScreen.VisualEditor(

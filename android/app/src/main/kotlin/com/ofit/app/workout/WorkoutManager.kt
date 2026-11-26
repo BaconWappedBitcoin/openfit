@@ -130,7 +130,10 @@ class WorkoutManager(
         // A workout ends with a 10-minute cool-down, the speed easing down. With no treadmill the
         // same cool-down is suggested on screen (user request 2026-11-24: the same path as with one).
         coolDownFor = { snapshot ->
-            com.ofit.protocol.CoolDown.build(snapshot.speedKph, if (previewMode) NO_TREADMILL_LIMITS else limitsProvider())
+            // A program that cools down inside its video has no second cool-down once it is in that part.
+            val from = runningProgram.value?.coolDownFromSeconds
+            if (from != null && snapshot.totalElapsedMillis / 1000 >= from - 1) null
+            else com.ofit.protocol.CoolDown.build(snapshot.speedKph, if (previewMode) NO_TREADMILL_LIMITS else limitsProvider())
         },
     )
 
@@ -351,6 +354,10 @@ class WorkoutManager(
 
     private val _effectiveRate = MutableStateFlow(1f)
 
+    /** Whether the workout on screen has a video; without one (a virtual trail) the rate stays 1. */
+    @Volatile
+    var hasVideo: Boolean = true
+
     /** The rate actually in use: the chosen speed, or the matched one. */
     val effectiveRate: StateFlow<Float> = _effectiveRate.asStateFlow()
 
@@ -362,6 +369,13 @@ class WorkoutManager(
         val programmed = runningProgram.value?.let { com.ofit.protocol.MatchSpeed.referenceKph(it) }
         // The cool-down's clock runs at real time (its video is paused), so its ten minutes are ten real minutes.
         if (snapshot.isCoolingDown) {
+            _effectiveRate.value = 1f
+            return
+        }
+        // 3D workouts (no video) have a fixed time: the clock is real time whatever speed you set, so a
+        // different speed changes the distance, not the time left (user 2026-11-25: "make the 3d
+        // workouts fixed time"). Only a video's time follows your speed (Match my speed).
+        if (!hasVideo) {
             _effectiveRate.value = 1f
             return
         }

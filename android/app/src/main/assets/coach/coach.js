@@ -183,10 +183,11 @@ function dress(model, height) {
       const back = v.z < headZ;
       let c = null, p = 0, g = null;
       if (name.includes("eye") || name.includes("brow")) c = eyes;
-      else if (t > 0.955) c = hair;
+      // Hair: part 4, a layer of its own with a strand texture (see addHair).
+      else if (t > 0.955) { p = 4; g = hair; }
       // Back of the head only, behind the ears, so the ears and face keep the skin colour.
-      else if (t > hairLow && side < 0.06 && (v.z - headZ) / height < -0.012) c = hair;
-      else if (t > 0.93 && side < 0.06 && (v.z - headZ) / height < 0.0) c = hair;
+      else if (t > hairLow && side < 0.06 && (v.z - headZ) / height < -0.012) { p = 4; g = hair; }
+      else if (t > 0.93 && side < 0.06 && (v.z - headZ) / height < 0.0) { p = 4; g = hair; }
       else if (t > 0.86 || (t > 0.8 && side < 0.055)) c = skin;      // head and neck (shoulders stay in the shirt)
       else if (side > 0.12 && t > 0.70) {                             // arms
         const sleeveEnd = style === "tights" ? 0.40 : style === "tank" || style === "race" ? 0 : 0.2;
@@ -230,6 +231,7 @@ function dress(model, height) {
     addGarment(o, part, cloth, 2, 0.013 * perMetre, shortsFabric); // shorts, a little looser
     addGarment(o, part, cloth, 3, 0.005 * perMetre, rubber);   // shoes
     if (style === "race") addBib(o, posed, height, headZ, 0.017 * perMetre);
+    addHair(o, part, posed, height, headZ, hairLow, 0.004 * perMetre);
   }
 }
 
@@ -270,6 +272,86 @@ function addGarment(body, part, cloth, which, offset, material) {
 }
 
 let hairColour = new THREE.Color(0x2b2018);
+
+/**
+ * Hair that reads as hair, not clay (user 2026-11-25). The owner's wicklight answer for its trees:
+ * a painted texture with real detail on its own layer, matte, never one flat colour. So: many fine
+ * strands in lighter and darker shades of the hair colour, running from the hairline to the crown,
+ * with a soft sheen band where light catches hair, on a thin layer over the scalp.
+ */
+function hairTexture(colour) {
+  const c = document.createElement("canvas");
+  c.width = 256; c.height = 256;
+  const g = c.getContext("2d");
+  const hex = (k) => "#" + colour.clone().multiplyScalar(k).getHexString();
+  g.fillStyle = hex(0.7);
+  g.fillRect(0, 0, 256, 256);
+  let r = 7;
+  const rnd = () => ((r = (r * 9301 + 49297) % 233280) / 233280);
+  for (let i = 0; i < 900; i++) {
+    const x = rnd() * 256, w = 0.6 + rnd() * 1.6, k = 0.45 + rnd() * 1.1, sway = (rnd() - 0.5) * 10;
+    g.strokeStyle = hex(k);
+    g.globalAlpha = 0.35 + rnd() * 0.5;
+    g.lineWidth = w;
+    g.beginPath();
+    g.moveTo(x, 256);
+    g.bezierCurveTo(x + sway, 170, x - sway, 90, x + sway * 0.5, 0);
+    g.stroke();
+  }
+  // The sheen: a soft light band a third of the way down from the crown.
+  const band = g.createLinearGradient(0, 40, 0, 140);
+  band.addColorStop(0, "rgba(255,255,255,0)");
+  band.addColorStop(0.5, "rgba(255,240,220,0.16)");
+  band.addColorStop(1, "rgba(255,255,255,0)");
+  g.globalAlpha = 1;
+  g.fillStyle = band;
+  g.fillRect(0, 0, 256, 256);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.anisotropy = 4;
+  return t;
+}
+// Matte, like wicklight's foliage (no shine), and white so the texture carries the colour.
+const hairMaterial = () => new THREE.MeshStandardMaterial({ map: hairTexture(hairColour), roughness: 0.85, metalness: 0 });
+
+/** The hair layer: the scalp's triangles pushed out a little, wearing the strand texture. */
+function addHair(body, part, posed, height, headZ, hairLow, offset) {
+  const src = body.geometry;
+  if (!src.index || !src.attributes.normal) return;
+  const index = src.index.array, kept = [];
+  for (let i = 0; i < index.length; i += 3) {
+    const a = index[i], b = index[i + 1], c = index[i + 2];
+    if (part[a] === 4 && part[b] === 4 && part[c] === 4) kept.push(a, b, c);
+  }
+  if (!kept.length) return;
+  const pos = src.attributes.position, nrm = src.attributes.normal;
+  const out = new Float32Array(pos.count * 3), uv = new Float32Array(pos.count * 2);
+  for (let i = 0; i < pos.count; i++) {
+    out[i * 3] = pos.getX(i) + nrm.getX(i) * offset;
+    out[i * 3 + 1] = pos.getY(i) + nrm.getY(i) * offset;
+    out[i * 3 + 2] = pos.getZ(i) + nrm.getZ(i) * offset;
+    // Round the head (three repeats) and from the hairline (v 0) up to the crown (v 1).
+    const ang = Math.atan2(posed[i * 3], posed[i * 3 + 2] - headZ);
+    uv[i * 2] = (ang / (Math.PI * 2) + 0.5) * 3;
+    uv[i * 2 + 1] = Math.min(1, Math.max(0, (posed[i * 3 + 1] / height - hairLow) / (1 - hairLow)));
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.BufferAttribute(out, 3));
+  geo.setAttribute("normal", nrm);
+  geo.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+  geo.setAttribute("skinIndex", src.attributes.skinIndex);
+  geo.setAttribute("skinWeight", src.attributes.skinWeight);
+  geo.setIndex(kept);
+  const mesh = new THREE.SkinnedMesh(geo, hairMaterial());
+  mesh.frustumCulled = false;
+  mesh.position.copy(body.position);
+  mesh.quaternion.copy(body.quaternion);
+  mesh.scale.copy(body.scale);
+  body.parent.add(mesh);
+  mesh.bind(body.skeleton, body.bindMatrix);
+  console.log("hair: " + kept.length / 3 + " triangles");
+}
 
 /**
  * The race kit's number bib (user 2026-11-24: the painted one looked smudged). A thin layer over the
@@ -349,14 +431,32 @@ function addPonytail(model, height) {
   const head = model.getObjectByName("Head");
   if (!head) return;
   model.updateMatrixWorld(true);
-  const material = new THREE.MeshStandardMaterial({ color: hairColour, roughness: 0.7 });
+  // The same strands as the scalp, running down the tail, and a hair tie in the kit colour.
+  const material = hairMaterial();
+  material.map.repeat.set(2, 1);
   const group = new THREE.Group();
-  const tie = new THREE.Mesh(new THREE.SphereGeometry(height * 0.03, 16, 12), material);
-  const tail = new THREE.Mesh(new THREE.CylinderGeometry(height * 0.03, height * 0.012, height * 0.13, 16), material);
-  tail.position.y = -height * 0.065;
-  const tip = new THREE.Mesh(new THREE.SphereGeometry(height * 0.012, 12, 8), material);
-  tip.position.y = -height * 0.13;
-  group.add(tie, tail, tip);
+  const tie = new THREE.Mesh(new THREE.TorusGeometry(height * 0.022, height * 0.008, 8, 20),
+    new THREE.MeshStandardMaterial({ color: bottomColour || suit, roughness: 0.6 }));
+  tie.rotation.x = Math.PI / 2;
+  // A tail that tapers to a point, in a few locks a little apart (a single smooth cone with a
+  // ball on the end read as clay), each with a slight bend.
+  group.add(tie);
+  const lock = (r, len, x, z, bend) => {
+    const g = new THREE.CylinderGeometry(r, r * 0.08, len, 12, 8, true);
+    const p = g.attributes.position;
+    for (let i = 0; i < p.count; i++) {
+      const t = 0.5 - p.getY(i) / len; // 0 at the tie, 1 at the tip
+      p.setZ(i, p.getZ(i) + bend * t * t);
+    }
+    g.translate(x, -len / 2, z);
+    g.computeVertexNormals();
+    const m = new THREE.Mesh(g, material);
+    m.material.side = THREE.DoubleSide;
+    group.add(m);
+  };
+  lock(height * 0.024, height * 0.15, 0, 0, height * 0.012);
+  lock(height * 0.014, height * 0.13, height * 0.008, height * 0.004, height * 0.018);
+  lock(height * 0.013, height * 0.12, -height * 0.008, -height * 0.002, height * 0.006);
   // Behind the crown, tilted so the end hangs back and down.
   group.position.set(0, height * 0.925, headBack - height * 0.012);
   group.rotation.x = 0.7;

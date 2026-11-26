@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Terrain
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Key
@@ -120,11 +121,12 @@ fun AppDrawerContent(
             Section("Train")
             Item("Home", Icons.Filled.Home, current == AppScreen.Home) { onGo(AppScreen.Home) }
             Item("Quick start", Icons.Filled.Bolt, current == AppScreen.QuickStart) { onGo(AppScreen.QuickStart) }
-            Item("Browse", Icons.Filled.Movie, current == AppScreen.Browse) { onGo(AppScreen.Browse) }
             Item("My workouts", Icons.AutoMirrored.Filled.List, current == AppScreen.Workouts) { onGo(AppScreen.Workouts) }
+            Item("Virtual trails", Icons.Filled.Terrain, current is AppScreen.Trails) { onGo(AppScreen.Trails()) }
             Item("Manual control", Icons.Filled.Tune, current == AppScreen.ManualControl) { onGo(AppScreen.ManualControl) }
 
             Section("Discover")
+            Item("Browse", Icons.Filled.Movie, current == AppScreen.Browse) { onGo(AppScreen.Browse) }
             Item("Find a video", Icons.Filled.Search, current == AppScreen.VideoSearch) { onGo(AppScreen.VideoSearch) }
             Item("Community library", Icons.Filled.Groups, current == AppScreen.Library) { onGo(AppScreen.Library) }
 

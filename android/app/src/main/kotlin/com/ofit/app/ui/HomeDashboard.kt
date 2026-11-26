@@ -57,6 +57,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -113,6 +114,10 @@ fun HomeDashboard(
     community: List<LibraryEntry> = emptyList(),
     onLoadCommunity: () -> Unit = {},
     onTemplate: (WorkoutTemplates.Template) -> Unit = {},
+    /** Play a template as it is (a 3D run with the scenery choices before Start), instead of editing it. */
+    onPlayTemplate: (WorkoutTemplates.Template) -> Unit = {},
+    /** Open Virtual trails with this landscape picked. */
+    onTrail: (String) -> Unit = {},
 ) {
     LaunchedEffect(Unit) { if (community.isEmpty()) onLoadCommunity() }
     val accent = MaterialTheme.colorScheme.primary
@@ -213,9 +218,21 @@ fun HomeDashboard(
                 }
             }
         }
+        // 3D landscapes to run through, no video needed.
+        Shelf("Virtual trails", onSeeAll = { onTrail(com.ofit.protocol.TrailProgram.TRAILS.first().key) }) {
+            items(com.ofit.protocol.TrailProgram.TRAILS, key = { it.key }) { trail ->
+                PosterCard(title = trail.name, detail = trail.blurb, onClick = { onTrail(trail.key) }) { TrailPicture(trail.key) }
+            }
+        }
+        // Tap to play (3D, pick the scenery before Start); the pencil edits it instead (user 2026-11-25).
         Shelf("Start something new", onSeeAll = null) {
             items(WorkoutTemplates.all, key = { it.name }) { template ->
-                PosterCard(title = template.name, detail = template.description, onClick = { onTemplate(template) }) {
+                val blank = template.name == "Blank" // nothing to play: it is for building
+                PosterCard(
+                    title = template.name, detail = template.description,
+                    onClick = { if (blank) onTemplate(template) else onPlayTemplate(template) },
+                    corner = if (blank) null else ({ EditCorner { onTemplate(template) } }),
+                ) {
                     WorkoutArt(null, template.steps, accent, Modifier.fillMaxSize())
                 }
             }
@@ -411,7 +428,13 @@ private fun Shelf(title: String, onSeeAll: (() -> Unit)?, content: androidx.comp
 
 /** A landscape poster: the picture with a subtle lit edge, then the title and a line under it. */
 @Composable
-private fun PosterCard(title: String, detail: String, onClick: () -> Unit, art: @Composable () -> Unit) {
+private fun PosterCard(
+    title: String,
+    detail: String,
+    onClick: () -> Unit,
+    corner: (@Composable androidx.compose.foundation.layout.BoxScope.() -> Unit)? = null,
+    art: @Composable () -> Unit,
+) {
     Column(Modifier.width(300.dp).clickable(onClick = onClick)) {
         Box(
             Modifier
@@ -422,7 +445,10 @@ private fun PosterCard(title: String, detail: String, onClick: () -> Unit, art: 
                     BorderStroke(1.dp, Brush.verticalGradient(listOf(Color(0x47FFFFFF), Color(0x05FFFFFF)))),
                     RoundedCornerShape(14.dp),
                 ),
-        ) { art() }
+        ) {
+            art()
+            corner?.invoke(this)
+        }
         Spacer(Modifier.height(8.dp))
         Text(title, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Text(detail, style = MaterialTheme.typography.bodySmall, color = Color(0x99FFFFFF), maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -578,3 +604,34 @@ private fun relativeDay(millis: Long): String {
 
 /** "39 min", or "30 s" for a workout under a minute. */
 private fun lengthText(seconds: Int): String = if (seconds < 60) "$seconds s" else "${seconds / 60} min"
+
+/** A small pencil in the corner of a poster: edit instead of play. */
+@Composable
+private fun androidx.compose.foundation.layout.BoxScope.EditCorner(onClick: () -> Unit) {
+    Box(
+        Modifier
+            .align(Alignment.TopEnd)
+            .padding(8.dp)
+            .size(40.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xAA0D0D0D))
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(androidx.compose.material.icons.Icons.Filled.Edit, contentDescription = "Edit", tint = Color.White, modifier = Modifier.size(20.dp))
+    }
+}
+
+/** A virtual trail's picture (assets/world/preview/<key>.jpg), or a plain colour if it is missing. */
+@Composable
+private fun TrailPicture(key: String) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val picture = remember(key) {
+        runCatching { context.assets.open("world/preview/$key.jpg").use { android.graphics.BitmapFactory.decodeStream(it) }?.asImageBitmap() }.getOrNull()
+    }
+    if (picture != null) {
+        androidx.compose.foundation.Image(picture, contentDescription = null, contentScale = androidx.compose.ui.layout.ContentScale.Crop, modifier = Modifier.fillMaxSize())
+    } else {
+        Box(Modifier.fillMaxSize().background(Color(0xFF2E7D6B)))
+    }
+}

@@ -49,6 +49,34 @@ object GpxRoute {
         return Route(name, points)
     }
 
+    /**
+     * The route's outline for the 3D trail map (2026-11-25): about [count] points evenly spaced
+     * along it, flattened (equirectangular, fine at route scale), centred and scaled so the longer
+     * side spans 1, north up (y grows southward, as on a screen), as "x,y;x,y;..." with 3 decimals.
+     */
+    fun outline(route: Route, count: Int = 160): String {
+        val pts = route.points
+        val lat0 = pts.sumOf { it.lat } / pts.size * PI / 180
+        val xy = pts.map { (it.lon * cos(lat0)) to -it.lat }
+        val dist = DoubleArray(pts.size)
+        for (i in 1 until pts.size) dist[i] = dist[i - 1] + distance(pts[i - 1], pts[i])
+        val total = dist.last().coerceAtLeast(1e-9)
+        val sampled = (0 until count).map { k ->
+            val d = total * k / (count - 1)
+            var i = dist.indexOfFirst { it >= d }.let { if (it <= 0) 1 else it }
+            if (i >= dist.size) i = dist.size - 1
+            val span = dist[i] - dist[i - 1]
+            val t = if (span <= 0) 0.0 else ((d - dist[i - 1]) / span).coerceIn(0.0, 1.0)
+            (xy[i - 1].first + (xy[i].first - xy[i - 1].first) * t) to (xy[i - 1].second + (xy[i].second - xy[i - 1].second) * t)
+        }
+        val minX = sampled.minOf { it.first }; val maxX = sampled.maxOf { it.first }
+        val minY = sampled.minOf { it.second }; val maxY = sampled.maxOf { it.second }
+        val span = maxOf(maxX - minX, maxY - minY).takeIf { it > 0 } ?: 1.0
+        return sampled.joinToString(";") { (x, y) ->
+            "%.3f,%.3f".format(java.util.Locale.ROOT, (x - (minX + maxX) / 2) / span, (y - (minY + maxY) / 2) / span)
+        }
+    }
+
     /** Great-circle distance in metres. */
     fun distance(a: Point, b: Point): Double {
         val r = 6_371_000.0

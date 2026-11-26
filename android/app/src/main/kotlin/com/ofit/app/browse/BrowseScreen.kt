@@ -92,6 +92,8 @@ fun BrowseScreen(
     onFindVideo: () -> Unit,
     onBack: () -> Unit,
     onFindTopic: (String) -> Unit = { onFindVideo() },
+    /** Opens Virtual trails with this landscape picked. */
+    onTrail: (String) -> Unit = {},
 ) {
     LaunchedEffect(Unit) { if (community.isEmpty()) onLoadCommunity() }
     val accent = MaterialTheme.colorScheme.primary
@@ -219,6 +221,12 @@ fun BrowseScreen(
         if (workoutsShown.isNotEmpty()) {
             val withVideoFirst = workoutsShown.sortedWith(compareByDescending<SavedWorkout> { youtubeIdFor(it.id) != null }.thenByDescending { it.updatedAtMillis })
             item { Shelf("Your workouts", withVideoFirst) { WorkoutCard(it, youtubeIdFor(it.id), accent) { onRun(it) } } }
+        }
+        // Virtual trails: 3D landscapes, no video needed (user request 2026-11-25).
+        item {
+            Shelf("Virtual trails", com.ofit.protocol.TrailProgram.TRAILS) { t ->
+                com.ofit.app.workout.TrailCard(t, selected = false, onClick = { onTrail(t.key) }, modifier = Modifier.width(240.dp))
+            }
         }
         item {
             when {

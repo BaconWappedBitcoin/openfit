@@ -1,0 +1,28 @@
+OpenFit virtual trails: credits
+
+Trees, bushes, cacti, rocks, mountains, crops and grass: made in code. Trees and grass wear the
+project owner's own textures, created for the owner's game "wicklight" (bark and leaf sheets, grass
+clump cards; owner-generated, used here with the owner's permission and released with OpenFit).
+Files: flora/*.png. The tree, rock and grass techniques follow wicklight's art notes.
+
+Ground textures from wicklight (owner-generated, same permission): ground/rock_*, ground/grass_*,
+ground/dry_heather_*, ground/leaf_litter_*.
+
+Skies and light, all Poly Haven, CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/):
+- sky/forest.*: "Forest Slope" by Andreas Mischok (https://polyhaven.com/a/forest_slope)
+- sky/mountain.*: "Fouriesburg Mountain Midday" by Dimitrios Savva and Jarod Guest (https://polyhaven.com/a/fouriesburg_mountain_midday)
+- sky/clear.*: "Citrus Orchard Road (Pure Sky)" by Dimitrios Savva and Jarod Guest (https://polyhaven.com/a/citrus_orchard_road_puresky)
+- sky/sunset.*: "Belfast Sunset (Pure Sky)" by Greg Zaal, Dimitrios Savva and Jarod Guest (https://polyhaven.com/a/belfast_sunset_puresky)
+- sky/overcast.*: "Kloofendal Overcast (Pure Sky)" by Greg Zaal (https://polyhaven.com/a/kloofendal_overcast_puresky)
+- sky/beach.*: "Secluded Beach" by Greg Zaal and Rico Cilliers (https://polyhaven.com/a/secluded_beach)
+- sky/desert.*: "Goegap" by Greg Zaal (https://polyhaven.com/a/goegap)
+The night sky, the sea, rain and snow are drawn in code.
+
+Ground, Poly Haven, CC0 1.0:
+- ground/forest_ground_04_*: "Forest Ground 04" by Rob Tuytel and Rico Cilliers (https://polyhaven.com/a/forest_ground_04)
+- ground/sand_*: "Aerial Sand" by Rob Tuytel (https://polyhaven.com/a/aerial_sand)
+
+The Poly Haven files were taken from Patch (patch.gg), which selected the 1K versions, added a JPEG
+background and wrote the credit into each file.
+
+Engine: three.js r160 (https://threejs.org), MIT licence, bundled in assets/three/ (licence: assets/three/LICENSE).

@@ -67,5 +67,8 @@ sealed interface AppScreen {
     data class Summary(val startedAfterMillis: Long, val name: String) : AppScreen
 
     /** Running a workout. */
-    data class Run(val saved: SavedWorkout, val resumeAtMillis: Long = 0) : AppScreen
+    data class Run(val saved: SavedWorkout, val resumeAtMillis: Long = 0, /** A virtual trail's landscape, fixed. */ val land: String? = null) : AppScreen
+
+    /** Virtual trails: a 3D landscape, a length and an effort, then go. */
+    data class Trails(val key: String? = null) : AppScreen
 }

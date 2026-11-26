@@ -48,4 +48,25 @@ class GpxRouteTest {
         val spiky = GpxRoute.steps(GpxRoute.parse(gpx(listOf(0.0, 100.0, 200.0))), 5.0)
         assertTrue(spiky.all { it.inclinePercent <= GpxRoute.MAX_GRADE })
     }
+
+    @Test
+    fun `the outline runs north up, fits in a unit box and keeps its shape`() {
+        // An L: 1 km north, then 0.5 km east (lon steps scaled for latitude 51).
+        val xml = buildString {
+            append("<gpx><trk><trkseg>")
+            for (i in 0..9) append("""<trkpt lat="${51.0 + i * 0.001}" lon="0.0"><ele>1</ele></trkpt>""")
+            for (i in 1..5) append("""<trkpt lat="51.009" lon="${i * 0.00143}"><ele>1</ele></trkpt>""")
+            append("</trkseg></trk></gpx>")
+        }
+        val pts = GpxRoute.outline(GpxRoute.parse(xml), count = 30).split(";").map { p -> p.split(",").map { it.toDouble() } }
+        assertEquals(30, pts.size)
+        assertTrue(pts.all { (x, y) -> x in -0.5..0.5 && y in -0.5..0.5 }, pts.toString())
+        // Starts at the bottom (south), goes up the screen, then turns right (east).
+        val (x0, y0) = pts.first(); val (x1, y1) = pts.last()
+        assertTrue(y0 > 0.4 && y1 < -0.4, "north is up: $y0 -> $y1")
+        assertTrue(x1 - x0 > 0.4, "ends east of the start: $x0 -> $x1")
+        // About twice as tall as it is wide.
+        val w = pts.maxOf { it[0] } - pts.minOf { it[0] }
+        assertEquals(0.5, w, 0.06)
+    }
 }

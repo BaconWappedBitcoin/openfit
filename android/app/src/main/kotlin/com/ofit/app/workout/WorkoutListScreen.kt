@@ -96,6 +96,8 @@ fun WorkoutListScreen(
             val text = gpxContext.contentResolver.openInputStream(uri)!!.use { it.readBytes().decodeToString() }
             val fileName = uri.lastPathSegment?.substringAfterLast('/')?.substringBeforeLast('.') ?: "Imported route"
             val route = com.ofit.protocol.GpxRoute.parse(text, fallbackName = fileName)
+            // Its real shape for the 3D trail map, kept under the workout's name (WorldRoute).
+            WorldRoute.save(gpxContext, route.name, com.ofit.protocol.GpxRoute.outline(route))
             com.ofit.protocol.WorkoutTemplates.Template(route.name, "From a GPX route", com.ofit.protocol.GpxRoute.steps(route, speedKph = 5.0))
         }.onSuccess { onNew(it) }.onFailure { e ->
             android.widget.Toast.makeText(

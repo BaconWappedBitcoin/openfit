@@ -191,6 +191,8 @@ fun WorkoutHud(
     onCoachSize: (Float) -> Unit = {},
     /** Open the coach designer over the workout. */
     onDesignCoach: () -> Unit = {},
+    /** 3D scenery (null with a video): the HUD's scenery button. */
+    onScenery: (() -> Unit)? = null,
 ) {
     val landscape = LocalConfiguration.current.screenWidthDp > LocalConfiguration.current.screenHeightDp
     var editing by remember { mutableStateOf<OverrideTarget?>(null) }
@@ -315,7 +317,7 @@ fun WorkoutHud(
                                 )
                             },
                             onReset = onResetIncline,
-                            onClickValue = if (snapshot.isRunning) ({ editing = OverrideTarget.INCLINE }) else null,
+                            onClickValue = null, // no pop-up editor: the +/- buttons only (user request 2026-11-25)
                         )
                     }
                     val speedCard: @Composable () -> Unit = {
@@ -333,7 +335,7 @@ fun WorkoutHud(
                                 )
                             },
                             onReset = onResetSpeed,
-                            onClickValue = if (snapshot.isRunning) ({ editing = OverrideTarget.SPEED }) else null,
+                            onClickValue = null, // no pop-up editor: the +/- buttons only (user request 2026-11-25)
                             coachOn = coachStatus != null,
                         )
                     }
@@ -422,9 +424,9 @@ fun WorkoutHud(
                 verticalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 // No treadmill: no speed/incline chart (nothing to follow), just how far through you are.
-                if (preview) {
-                    HudProgressBar(snapshot, Modifier.fillMaxWidth(), onSeek = onSeek, rate = playbackRate)
-                } else {
+                // The speed and incline profile in No treadmill mode too (user 2026-11-25: to set them by hand as
+                // you go, with the program's plan in view).
+                run {
                     // Tap the chart to jump to that point.
                     val total = (snapshot.totalElapsedMillis + snapshot.totalRemainingMillis).coerceAtLeast(1)
                     val currentTotal by androidx.compose.runtime.rememberUpdatedState(total)
@@ -461,6 +463,7 @@ fun WorkoutHud(
                     coachSize = coachSize,
                     onCoachSize = onCoachSize,
                     onDesignCoach = onDesignCoach,
+                    onScenery = onScenery,
                     onSwapSides = onSwapSides,
                     coachOn = coachStatus != null,
                     coachLevel = coachLevel,
@@ -537,7 +540,7 @@ fun WorkoutHud(
                             onOverrideSpeed(clamped)
                         },
                         onReset = onResetSpeed,
-                        onClickValue = if (snapshot.isRunning) ({ editing = OverrideTarget.SPEED }) else null,
+                        onClickValue = null, // no pop-up editor: the +/- buttons only (user request 2026-11-25)
                             coachOn = coachStatus != null,
                         modifier = Modifier.weight(1f),
                     )
@@ -557,7 +560,7 @@ fun WorkoutHud(
                             onOverrideIncline(clamped)
                         },
                         onReset = onResetIncline,
-                        onClickValue = if (snapshot.isRunning) ({ editing = OverrideTarget.INCLINE }) else null,
+                        onClickValue = null, // no pop-up editor: the +/- buttons only (user request 2026-11-25)
                         modifier = Modifier.weight(1f),
                     )
                 } else {
@@ -576,7 +579,7 @@ fun WorkoutHud(
                             onOverrideIncline(clamped)
                         },
                         onReset = onResetIncline,
-                        onClickValue = if (snapshot.isRunning) ({ editing = OverrideTarget.INCLINE }) else null,
+                        onClickValue = null, // no pop-up editor: the +/- buttons only (user request 2026-11-25)
                         modifier = Modifier.weight(1f),
                     )
 
@@ -595,14 +598,14 @@ fun WorkoutHud(
                             onOverrideSpeed(clamped)
                         },
                         onReset = onResetSpeed,
-                        onClickValue = if (snapshot.isRunning) ({ editing = OverrideTarget.SPEED }) else null,
+                        onClickValue = null, // no pop-up editor: the +/- buttons only (user request 2026-11-25)
                             coachOn = coachStatus != null,
                         modifier = Modifier.weight(1f),
                     )
                 }
             }
 
-            if (preview) HudProgressBar(snapshot, Modifier.fillMaxWidth()) else HudProfileRibbon(
+            HudProfileRibbon(
                 program = program,
                 snapshot = snapshot,
                 history = history,
@@ -984,6 +987,11 @@ private fun HudStatDivider() {
 /**
  * Left: the incline card.
  */
+/** The control cards' fixed size: 20 padding + 18 header + 6 + (72 + 6 + 64 + 6 + 72) + 6 + 56 footer. */
+private val HUD_CARD_WIDTH = 128.dp
+private val HUD_FOOTER_HEIGHT = 56.dp
+private val HUD_CARD_HEIGHT = 326.dp
+
 @Composable
 private fun HudInclineCard(
     incline: Double?,
@@ -1001,17 +1009,23 @@ private fun HudInclineCard(
 
     Column(
         modifier = modifier
-            // Just wider than the 72 dp square buttons: a narrow card, not a wide box.
-            .width(128.dp)
+            // Just wider than the 72 dp square buttons: a narrow card, not a wide box. One fixed
+            // size whatever the card shows, so no button ever moves (user 2026-11-25: a card that
+            // grew in manual mode shifted the buttons, and the next tap hit Rejoin or the video).
+            .width(HUD_CARD_WIDTH)
+            .height(HUD_CARD_HEIGHT)
             .clip(RoundedCornerShape(20.dp))
             .background(HudColors.glassPanel)
             .border(BorderStroke(1.dp, borderCol), RoundedCornerShape(20.dp))
+            // A tap on the card's own gaps is the card's: it must not reach the video and pause the workout.
+            .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) {}
             .padding(horizontal = 12.dp, vertical = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         // Header
         Row(
+            Modifier.height(18.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
@@ -1048,10 +1062,11 @@ private fun HudInclineCard(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(64.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .let { if (onClickValue != null) it.clickable(onClick = onClickValue) else it }
-                    .padding(vertical = 4.dp),
+                    .let { if (onClickValue != null) it.clickable(onClick = onClickValue) else it },
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
             ) {
                 Text(
                     text = displayValue,
@@ -1077,33 +1092,30 @@ private fun HudInclineCard(
             )
         }
 
-        // Footer Target or Follow Program
-        if (manualOverride) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                HudPill(text = "MANUAL", tint = HudColors.incline, bg = Color(0x33FB923C))
+        // Footer: always the same slot, holding the target or the Rejoin button.
+        Box(Modifier.fillMaxWidth().height(HUD_FOOTER_HEIGHT), contentAlignment = Alignment.Center) {
+            if (manualOverride) {
                 // The manual value holds across steps until this is tapped (user request 2026-11-24).
                 Text(
                     "Rejoin program",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF0D0D0D),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
                         .background(HudColors.incline)
                         .clickable(onClick = onReset)
                         .padding(horizontal = 10.dp, vertical = 6.dp),
                 )
+            } else {
+                Text(
+                    text = if (targetIncline != 0.0) "Target %.1f%%".format(targetIncline) else "Program 0.0%",
+                    fontSize = 11.sp,
+                    color = Color(0x99FFFFFF),
+                    maxLines = 1,
+                )
             }
-        } else {
-            Text(
-                text = if (targetIncline != 0.0) "Target %.1f%%".format(targetIncline) else "Program 0.0%",
-                fontSize = 11.sp,
-                color = Color(0x99FFFFFF),
-                maxLines = 1,
-            )
         }
     }
 }
@@ -1122,13 +1134,15 @@ private fun HudSuggestedCard(
 ) {
     Column(
         modifier = modifier
-            .width(128.dp)
+            .width(HUD_CARD_WIDTH)
+            .height(HUD_CARD_HEIGHT)
             .clip(RoundedCornerShape(20.dp))
             .background(HudColors.glassPanel)
             .border(BorderStroke(1.dp, HudColors.glassBorder), RoundedCornerShape(20.dp))
+            .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) {}
             .padding(horizontal = 12.dp, vertical = 14.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
     ) {
         Text(label, fontSize = 11.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.5.sp, color = accent)
         Text("SUGGESTED", fontSize = 10.sp, fontWeight = FontWeight.SemiBold, letterSpacing = 1.sp, color = Color(0x99FFFFFF))
@@ -1168,17 +1182,23 @@ private fun HudSpeedCard(
 
     Column(
         modifier = modifier
-            // Just wider than the 72 dp square buttons: a narrow card, not a wide box.
-            .width(128.dp)
+            // Just wider than the 72 dp square buttons: a narrow card, not a wide box. One fixed
+            // size whatever the card shows, so no button ever moves (user 2026-11-25: a card that
+            // grew in manual mode shifted the buttons, and the next tap hit Rejoin or the video).
+            .width(HUD_CARD_WIDTH)
+            .height(HUD_CARD_HEIGHT)
             .clip(RoundedCornerShape(20.dp))
             .background(HudColors.glassPanel)
             .border(BorderStroke(1.dp, borderCol), RoundedCornerShape(20.dp))
+            // A tap on the card's own gaps is the card's: it must not reach the video and pause the workout.
+            .clickable(interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }, indication = null) {}
             .padding(horizontal = 12.dp, vertical = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         // Header
         Row(
+            Modifier.height(18.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
@@ -1190,7 +1210,7 @@ private fun HudSpeedCard(
             )
             Spacer(Modifier.width(4.dp))
             Text(
-                text = "SPEED",
+                text = if (coachOn) "♥ SPEED" else "SPEED",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.5.sp,
@@ -1213,10 +1233,11 @@ private fun HudSpeedCard(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(64.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .let { if (onClickValue != null) it.clickable(onClick = onClickValue) else it }
-                    .padding(vertical = 4.dp),
+                    .let { if (onClickValue != null) it.clickable(onClick = onClickValue) else it },
                 horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
             ) {
                 Text(
                     text = displayValue,
@@ -1242,37 +1263,30 @@ private fun HudSpeedCard(
             )
         }
 
-        // Footer Target or Follow Program
-        if (manualOverride) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                HudPill(
-                    text = if (coachOn) "♥ COACH" else "MANUAL",
-                    tint = if (coachOn) Color(0xFFFF8A80) else HudColors.speed,
-                    bg = if (coachOn) Color(0x33B71C1C) else Color(0x3338BDF8),
-                )
+        // Footer: always the same slot, holding the target or the Rejoin button.
+        Box(Modifier.fillMaxWidth().height(HUD_FOOTER_HEIGHT), contentAlignment = Alignment.Center) {
+            if (manualOverride) {
                 // The manual value holds across steps until this is tapped (user request 2026-11-24).
                 Text(
-                    "Rejoin program",
+                    if (coachOn) "♥ Coach: rejoin" else "Rejoin program",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF0D0D0D),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
-                        .background(HudColors.speed)
+                        .background(if (coachOn) Color(0xFFFF8A80) else HudColors.speed)
                         .clickable(onClick = onReset)
                         .padding(horizontal = 10.dp, vertical = 6.dp),
                 )
+            } else {
+                Text(
+                    text = if (targetSpeed > 0.0) "Target ${units.speedText(targetSpeed)}" else "Program 0.0",
+                    fontSize = 11.sp,
+                    color = Color(0x99FFFFFF),
+                    maxLines = 1,
+                )
             }
-        } else {
-            Text(
-                text = if (targetSpeed > 0.0) "Target ${units.speedText(targetSpeed)}" else "Program 0.0",
-                fontSize = 11.sp,
-                color = Color(0x99FFFFFF),
-                maxLines = 1,
-            )
         }
     }
 }
@@ -1557,6 +1571,8 @@ private fun HudBottomControls(
     onCoachSize: (Float) -> Unit = {},
     /** Open the coach designer over the workout. */
     onDesignCoach: () -> Unit = {},
+    /** 3D scenery (null with a video): opens the landscape, time and weather choices over the run. */
+    onScenery: (() -> Unit)? = null,
     snapshot: WorkoutEngineSnapshot,
     state: TreadmillState,
     preview: Boolean,
@@ -1772,6 +1788,15 @@ private fun HudBottomControls(
                         }
                     }
                 }
+            }
+            // 3D workouts: change the scenery as you run (user 2026-11-25), to the right of the coach button.
+            if (onScenery != null) {
+                HudSquareButton(
+                    icon = Icons.Filled.Landscape,
+                    description = "Scenery: landscape, time of day and weather",
+                    enabled = true,
+                    onClick = onScenery,
+                )
             }
             // Videos are attached in the editor or from video search, not here (user request).
 

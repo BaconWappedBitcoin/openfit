@@ -7,6 +7,25 @@ and no subscription, no account and no ads.
 ![The OpenFit workout screen: a Paris running video with the coach, speed and incline cards and the workout profile](docs/screenshots/workout.jpg)
 
 > 🎬 **Launch video:** coming soon.
+>
+> 💬 **Community:** questions, workouts and ideas on [r/OpenFitHome](https://www.reddit.com/r/OpenFitHome).
+
+## What's new
+
+- **Virtual trails.** No video needed: run through a 3D landscape (forest, pine forest, mountain pass,
+  autumn woods, meadow, farm fields, heather moor, desert, coast path or old town) at the time of day and
+  in the weather you pick, with hills that suit the landscape, a trail map and the coach alongside. The
+  cool-down carries on along the same trail.
+- **Change the scenery as you run.** A scenery button beside the coach button switches the landscape,
+  time of day and weather without leaving the workout. Pick a trail, length, effort, time and weather
+  on one screen, play any starter workout straight from Home, and see the speed and incline profile in
+  No treadmill mode too.
+- **Cool-down inside the video.** A video workout's last ten minutes are its cool-down, and ending
+  early carries the cool-down on in the video instead of switching to a drawn path.
+- **GPX routes on the map.** A workout made from a GPX file shows its real route on the trail map.
+- **Updates you approve.** OpenFit checks for a new version and asks first, never during a workout.
+- **Coach.** Its own volume and mute, captions you can turn on or off, natural voices, names, and saved
+  coaches to pick from.
 
 OpenFit talks to the treadmill console over Bluetooth Low Energy, runs speed-and-incline workouts
 (including ones made from YouTube scenery videos), and shows a full-screen workout display over the
@@ -19,6 +38,9 @@ may need work (see [Adding a treadmill](android/docs/adding-a-treadmill.md)).
 - **Scenic video runs.** Any YouTube walking or running video becomes a workout: AI reads the video's
   pace and hills and builds the speed and incline steps. "Match my speed" plays the video faster or
   slower with the belt, and a 3-2-1 countdown starts it together.
+- **Virtual trails.** Ten 3D landscapes to run through without a video, each with its own trees,
+  ground and sky, from morning to night and from clear to snow. Hills follow the workout's incline and
+  the trail moves at your speed.
 - **Virtual coach.** A 3D runner on screen paces you, checks in every minute, calls out changes and tells
   you about the place you're running through. Design your own in the coach designer.
 - **Training plans.** Walking habit, Walk to run, Hill strength, and 5K, 10K, half-marathon and marathon
@@ -55,6 +77,8 @@ may need work (see [Adding a treadmill](android/docs/adding-a-treadmill.md)).
 | **Training plans** | **History and achievements** |
 | ![Quick start with colour presets, a goal and the workout's shape](docs/screenshots/quickstart.jpg) | ![The community library of shared workouts](docs/screenshots/community.jpg) |
 | **Quick start** | **Community** |
+| ![Virtual trails: ten 3D landscapes to pick from](docs/screenshots/trails.jpg) | ![Running a virtual trail through the old town with the coach](docs/screenshots/trail.jpg) |
+| **Virtual trails** | **On a virtual trail** |
 | ![Coach designer: outfit, colours, skin tone and hair](docs/screenshots/coach.jpg) | |
 | **Coach designer** | |
 

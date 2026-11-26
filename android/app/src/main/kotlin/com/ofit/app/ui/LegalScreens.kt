@@ -31,6 +31,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -119,7 +121,7 @@ fun DisclaimerGate(onAccept: () -> Unit) {
 
 /** Menu → About & legal. */
 @Composable
-fun LegalScreen(versionName: String, onBack: () -> Unit) {
+fun LegalScreen(versionName: String, onBack: () -> Unit, updater: com.ofit.app.settings.AppUpdater? = null) {
     Column(
         Modifier
             .fillMaxSize()
@@ -135,6 +137,7 @@ fun LegalScreen(versionName: String, onBack: () -> Unit) {
         Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 AboutCard(versionName)
+                updater?.let { UpdatesCard(it) }
                 DonateCard()
                 Column(
                     Modifier
@@ -318,6 +321,57 @@ private fun AboutCard(versionName: String) {
                     onClick = { open("$GITHUB_URL/issues") },
                     modifier = Modifier.height(52.dp),
                 ) { Text("Report a problem") }
+            }
+        }
+    }
+}
+
+/** Updates (user requests 2026-11-24/25): the version and a check now; installing only on the runner's tap. */
+@Composable
+private fun UpdatesCard(updater: com.ofit.app.settings.AppUpdater) {
+    val state by updater.state.collectAsState()
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    Column(
+        Modifier
+            .widthIn(max = 1000.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(Color(0xFF1A1A1A))
+            .padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Text("Updates", fontSize = 22.sp, fontWeight = FontWeight.Bold)
+        Text(
+            "This is version ${updater.currentVersion}. New versions come from the project's GitHub releases, " +
+                "are checked against their published checksum, and are installed only when you tap Update and confirm, " +
+                "never during a workout.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color(0xCCFFFFFF),
+        )
+        if (updater.isDevelopmentBuild) {
+            Text(
+                "This is a development build, signed differently from releases: install a release from GitHub once to get updates here.",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color(0xFFFFC857),
+            )
+        }
+        val line = when (val s = state) {
+            com.ofit.app.settings.AppUpdater.State.Idle -> null
+            com.ofit.app.settings.AppUpdater.State.Checking -> "Checking…"
+            com.ofit.app.settings.AppUpdater.State.UpToDate -> "OpenFit is up to date."
+            is com.ofit.app.settings.AppUpdater.State.Available -> "Version ${s.release.version} is available."
+            is com.ofit.app.settings.AppUpdater.State.Downloading -> "Downloading ${s.release.version}…"
+            is com.ofit.app.settings.AppUpdater.State.Installing -> "Installing ${s.release.version}: OpenFit restarts when it's done."
+            is com.ofit.app.settings.AppUpdater.State.Failed -> s.message
+        }
+        line?.let { Text(it, fontWeight = FontWeight.SemiBold) }
+        androidx.compose.foundation.layout.Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            androidx.compose.material3.OutlinedButton(
+                onClick = { scope.launch { updater.check() } },
+                enabled = state !is com.ofit.app.settings.AppUpdater.State.Checking,
+            ) { Text("Check now") }
+            (state as? com.ofit.app.settings.AppUpdater.State.Available)?.let { a ->
+                androidx.compose.material3.Button(onClick = { updater.install(a.release) }) { Text("Update to ${a.release.version}") }
             }
         }
     }

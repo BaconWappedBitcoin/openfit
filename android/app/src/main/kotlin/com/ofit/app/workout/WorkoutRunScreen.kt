@@ -32,6 +32,7 @@ import android.view.WindowManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.AlertDialog
@@ -82,6 +83,8 @@ fun WorkoutRunScreen(
     saved: SavedWorkout,
     /** Picking up an interrupted workout (P4): jump here once it has started. */
     resumeAtMillis: Long = 0,
+    /** A virtual trail's landscape: fixed, while time and weather still follow the runner's choices. */
+    land: String? = null,
     /** Intensity (P7): the level this run is at, a suggestion from the last rating, and a way to change it before Start. */
     intensity: com.ofit.protocol.Intensity.Level = com.ofit.protocol.Intensity.Level.STANDARD,
     intensitySuggestion: com.ofit.protocol.Intensity.Suggestion? = null,
@@ -95,6 +98,7 @@ fun WorkoutRunScreen(
     onNoTreadmill: (Boolean) -> Unit = onPreviewChange,
     /** The video is stuck (an ad): hold the program's clock. */
     onVideoHeld: (Boolean) -> Unit = {},
+    onHasVideo: (Boolean) -> Unit = {},
     /** Why Start was refused, if it was. */
     startProblem: String? = null,
     /** Jump to a point in the workout. */
@@ -180,6 +184,12 @@ fun WorkoutRunScreen(
     var coachVolume by remember { mutableStateOf(videoPrefs.getFloat("coach_volume", 1f)) }
     val coachPersona = activeCoach.persona
     var coachCaption by remember { mutableStateOf<String?>(null) }
+    // The 3D trail's look, for workouts without a video: chosen before Start, or a surprise drawn
+    // once each time the screen opens (user request 2026-11-25).
+    var sceneryOpen by remember { mutableStateOf(false) }
+    var worldChoices by remember { mutableStateOf(WorldLook.choices(context).let { if (land != null) it.copy(land = land) else it }) }
+    val surpriseDraw = remember(saved.id) { kotlin.random.Random(System.nanoTime()) .nextInt() }
+    val worldLook = remember(worldChoices, surpriseDraw) { WorldLook.resolve(worldChoices, kotlin.random.Random(surpriseDraw)) }
     // The coach's pace against the speed it is given, kept per workout (user request 2026-11-24).
     var coachPace by remember(saved.id) { mutableStateOf(videoPrefs.getFloat("coach_pace:" + saved.id, 1f)) }
     // The coach's size, one setting for every workout (user request 2026-11-24).
@@ -295,6 +305,8 @@ fun WorkoutRunScreen(
     androidx.compose.runtime.DisposableEffect(saved.id) {
         onDispose { onVideoHeld(false) }
     }
+    // Match my speed only means something with a video (user report 2026-11-25).
+    androidx.compose.runtime.LaunchedEffect(youtubeId, videoUri) { onHasVideo(youtubeId != null || videoUri != null) }
     val engineMessage = when {
         videoHeld -> "Video paused (an ad, or loading). Your workout is holding at the current speed and incline."
         !snapshot.isActive && startProblem != null -> startProblem
@@ -304,6 +316,11 @@ fun WorkoutRunScreen(
     // Whether the program is running right now. The video follows this: it plays while the
     // program runs and stops when it does not, so it is paused in the cool-down (user request).
     val running = snapshot.state == WorkoutEngineState.RUNNING && countdown == 0
+    // The cool-down plays on in the video while it has time left, the drawn path taking over only when it
+    // runs out (user 2026-11-25). The video follows the program's clock, which carries on through the
+    // cool-down, and the program covers the whole video.
+    val videoLeftSeconds = saved.program.totalDurationSeconds - snapshot.totalElapsedMillis / 1000.0
+    val videoCooling = snapshot.isCoolingDown && videoLeftSeconds > 3
 
     // In a preview there is no machine, so the numbers shown are the program's own. The machine's
     // own state is left alone: a preview never pretends that a machine is running (FR-013).
@@ -358,7 +375,7 @@ fun WorkoutRunScreen(
         if (youtubeId != null) {
             YouTubePlayer(
                 videoId = youtubeId!!,
-                playing = running,
+                playing = running || videoCooling,
                 positionMillis = { current.totalElapsedMillis.toInt() },
                 modifier = Modifier.fillMaxSize(),
                 seekRequest = videoSeek,
@@ -374,17 +391,36 @@ fun WorkoutRunScreen(
         } else if (videoUri != null) {
             LocalVideoPlayer(
                 uri = videoUri,
-                playing = running,
+                playing = running || videoCooling,
                 positionMillis = { current.totalElapsedMillis.toInt() },
                 modifier = Modifier.fillMaxSize(),
                 seekRequest = videoSeek,
                 rate = playbackRate,
                 volume = playerVolume,
             )
+        } else {
+            // No video: the 3D trail (user idea 2026-11-24), its hills following the workout's
+            // incline and moving at its speed. The same forest for the same workout.
+            WorldScene(
+                look = worldLook,
+                distanceMeters = saved.program.steps.sumOf { it.speedKph * it.durationSeconds / 3.6 },
+                miles = com.ofit.app.settings.LocalUnits.current == com.ofit.protocol.UnitSystem.IMPERIAL,
+                // A workout made from a GPX file shows its real route on the map.
+                route = remember(saved.program.name) { WorldRoute.outline(context, saved.program.name) },
+                speedKph = { displayState.displayedSpeedKph ?: snapshot.speedKph },
+                inclinePercent = { displayState.displayedInclinePercent ?: snapshot.inclinePercent },
+                // The cool-down carries on along the same trail, just slower (user request 2026-11-25).
+                // Moves with the belt from the first moment, countdown included, so it keeps step
+                // with the coach (user report 2026-11-25); unlike a video it has no timeline to hold.
+                running = { snapshot.state == WorkoutEngineState.RUNNING || snapshot.isCoolingDown },
+                seed = (saved.id.hashCode() and 0x7fff) + 1,
+                modifier = Modifier.fillMaxSize(),
+            )
         }
 
         // Cool-down: the video stops, and a drawn path at the belt's speed takes its place (user request 2026-11-24).
-        if (snapshot.isCoolingDown) {
+        // A virtual trail has no video to stop: it keeps going instead.
+        if (snapshot.isCoolingDown && !videoCooling && (youtubeId != null || videoUri != null)) {
             CoolDownScene(speedKph = displayState.displayedSpeedKph ?: snapshot.speedKph, modifier = Modifier.fillMaxSize())
         }
 
@@ -471,6 +507,8 @@ fun WorkoutRunScreen(
             runCoach = coach,
             coachSpeaks = coachSpeaks,
             onDesignCoach = { designingCoach = true },
+            // 3D workouts: a scenery button beside the coach button, to change the scene as you run.
+            onScenery = if (youtubeId == null && videoUri == null) ({ sceneryOpen = !sceneryOpen }) else null,
             coachSize = coachSize,
             onCoachSize = { size ->
                 coachSize = size
@@ -604,6 +642,26 @@ fun WorkoutRunScreen(
                     .align(Alignment.TopCenter)
                     .statusBarsPadding()
                     .padding(top = 120.dp),
+            )
+        }
+
+        // The 3D trail's look, before Start, for a workout without a video.
+        // Before Start, a 3D workout that did not come from Virtual trails picks its scenery here; the scenery button opens it any time.
+        if (youtubeId == null && videoUri == null && !snapshot.isFinished && !awaitingStart && countdown == 0 && (sceneryOpen || (land == null && !snapshot.isActive))) {
+            SceneryPicker(
+                choices = worldChoices,
+                showing = worldLook,
+                onChoices = { c ->
+                    worldChoices = c
+                    WorldLook.save(context, c)
+                },
+                // Low on the screen, just above the progress bar and controls: the top is the HUD's
+                // and the intensity picker's (user report 2026-11-25: it covered the top of the HUD).
+                // Between the Incline and Speed cards, not over them (user report 2026-11-25).
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
+                    .padding(bottom = 172.dp, start = 160.dp, end = 160.dp),
             )
         }
 
@@ -777,5 +835,50 @@ private fun IntensityPicker(
         suggestion?.takeIf { it.level != level }?.let {
             Text("${it.reason}: try ${it.level.label}", color = Color(0xCCFFFFFF), fontSize = 14.sp)
         }
+    }
+}
+
+/** Landscape, time of day and weather for the 3D trail, as rows of chips; "Surprise me" on each. */
+@Composable
+private fun SceneryPicker(
+    choices: WorldLook,
+    showing: WorldLook,
+    onChoices: (WorldLook) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    androidx.compose.foundation.layout.Column(
+        modifier
+            .clip(RoundedCornerShape(24.dp))
+            .background(androidx.compose.ui.graphics.Color(0xCC0D0D0D))
+            .padding(horizontal = 18.dp, vertical = 12.dp),
+        verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(6.dp),
+    ) {
+        Text(
+            "SCENERY  ·  " + WorldLook.label(WorldLook.LANDS, showing.land) + ", " +
+                WorldLook.label(WorldLook.TIMES, showing.time).lowercase() + ", " + WorldLook.label(WorldLook.WEATHERS, showing.weather).lowercase(),
+            color = androidx.compose.ui.graphics.Color(0xCCFFFFFF),
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+        )
+        @Composable
+        fun row(list: List<Pair<String, String>>, picked: String, onPick: (String) -> Unit) {
+            // Each row scrolls sideways when it is wider than the space between the side cards.
+            androidx.compose.foundation.layout.Row(
+                Modifier.horizontalScroll(androidx.compose.foundation.rememberScrollState()),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(6.dp),
+            ) {
+                (listOf(WorldLook.SURPRISE to "Surprise me") + list).forEach { (key, label) ->
+                    androidx.compose.material3.FilterChip(
+                        selected = picked == key,
+                        onClick = { onPick(key) },
+                        label = { Text(label, fontSize = 13.sp) },
+                        shape = RoundedCornerShape(50),
+                    )
+                }
+            }
+        }
+        row(WorldLook.LANDS, choices.land) { onChoices(choices.copy(land = it)) }
+        row(WorldLook.TIMES, choices.time) { onChoices(choices.copy(time = it)) }
+        row(WorldLook.WEATHERS, choices.weather) { onChoices(choices.copy(weather = it)) }
     }
 }

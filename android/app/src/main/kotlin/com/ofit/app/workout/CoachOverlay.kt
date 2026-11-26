@@ -54,6 +54,7 @@ enum class CoachChoice(val label: String) {
 
 private const val TAG = "OfitCoach"
 private const val HOST = "https://ofit.local/coach/"
+private const val THREE_HOST = "https://ofit.local/three/"
 
 /**
  * The virtual coach (user idea, 2026-11-24): a 3D runner over the video that walks, jogs or sprints
@@ -248,8 +249,12 @@ fun CoachFigure(
                         // The coach's page and models come from the app itself.
                         override fun shouldInterceptRequest(v: WebView, request: WebResourceRequest): WebResourceResponse? {
                             val url = request.url.toString()
-                            if (!url.startsWith(HOST)) return null
-                            val path = "coach/" + url.removePrefix(HOST).substringBefore('?')
+                            // three.js is bundled with the app (assets/three/), so the page loads fast and offline.
+                            val path = when {
+                                url.startsWith(THREE_HOST) -> "three/" + url.removePrefix(THREE_HOST).substringBefore('?')
+                                url.startsWith(HOST) -> "coach/" + url.removePrefix(HOST).substringBefore('?')
+                                else -> return null
+                            }
                             val mime = when {
                                 path.endsWith(".html") -> "text/html"
                                 path.endsWith(".js") -> "text/javascript"
@@ -269,8 +274,11 @@ fun CoachFigure(
                 }, android.view.ViewGroup.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT)) }
             },
             onRelease = { frame ->
-                (frame as? android.widget.FrameLayout)?.let { f -> (f.getChildAt(0) as? WebView)?.destroy() }
-                webView[0] = null
+                val old = (frame as? android.widget.FrameLayout)?.getChildAt(0) as? WebView
+                // Only forget the page being released: when the look changes, the new page is made
+                // before the old one goes, and clearing it froze the world (user report 2026-11-25).
+                if (webView[0] === old) webView[0] = null
+                old?.destroy()
             },
             modifier = modifier,
         )

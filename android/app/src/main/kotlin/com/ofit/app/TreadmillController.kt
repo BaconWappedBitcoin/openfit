@@ -158,6 +158,9 @@ class TreadmillController(context: Context) {
     /** The user's own API keys, encrypted on this tablet. */
     val secrets = com.ofit.app.settings.SecretStore(appContext)
 
+    /** Updates from GitHub releases; never installed while a workout runs. */
+    val updater by lazy { com.ofit.app.settings.AppUpdater(appContext, scope) { !workouts.snapshot.value.isActive } }
+
     /** Video search, video-to-workout, and the community library. */
     val library = com.ofit.app.library.LibraryManager(
         api = com.ofit.app.library.LibraryApi(
@@ -722,6 +725,8 @@ class TreadmillController(context: Context) {
     }
 
     init {
+        // Look for an update now and then (and install it, when automatic updates are on).
+        scope.launch { kotlinx.coroutines.delay(10_000); updater.checkAtStart() }
         // The demo survives a restart, like the choice of treadmill.
         if (_demo.value) setDemoTreadmill(true)
         // So is No treadmill mode.

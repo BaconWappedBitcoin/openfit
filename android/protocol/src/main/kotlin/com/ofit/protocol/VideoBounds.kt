@@ -50,6 +50,8 @@ object VideoBounds {
 
     /** True once a skipping workout has reached the outro, so it should end there. */
     fun reachedOutro(program: WorkoutProgram, skip: Boolean, elapsedSeconds: Long): Boolean {
+        // A program that cools down inside its video plays on to its end: the outro is part of the cool-down.
+        if (program.coolDownFromSeconds != null) return false
         val outro = program.outroStartSeconds ?: return false
         return skip && elapsedSeconds >= outro
     }

@@ -43,6 +43,12 @@ data class WorkoutProgram(
      */
     val introEndSeconds: Int? = null,
     val outroStartSeconds: Int? = null,
+    /**
+     * Where a cool-down built into this program starts, in seconds (user request 2026-11-25): a
+     * video workout's last 10 minutes are its cool-down, so it cools down inside its video. Set only
+     * when a program is run (see [CoolDown.withTail]), never saved; null means no built-in one.
+     */
+    val coolDownFromSeconds: Int? = null,
 ) {
     /** The bounds as given, kept only when they make sense for this program's length. */
     fun withBounds(introEnd: Int?, outroStart: Int?): WorkoutProgram {
